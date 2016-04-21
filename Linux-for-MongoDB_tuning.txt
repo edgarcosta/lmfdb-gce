@@ -1,0 +1,84 @@
+From MongoDB docs:
+ 
+Operating System Configuration
+
+Linux
+
+    1. Turn off transparent hugepages and defrag. See Transparent Huge Pages Settings for more information.
+
+    2. Adjust the readahead settings on the devices storing your database files to suit your use case. If your working set is bigger that the available RAM, and the document access pattern is random, consider lowering the readahead to 32 or 16. Evaluate different settings to find an optimal value that maximizes the resident memory and lowers the number of page faults.
+    
+    3. Use the noop or deadline disk schedulers for SSD drives.
+    
+    4. Use the noop disk scheduler for virtualized drives in guest VMs.
+    
+    5. Disable NUMA or set vm.zone_reclaim_mode to 0 and run mongod instances with node interleaving. See: MongoDB and NUMA Hardware for more information.
+    
+    6. Adjust the ulimit values on your hardware to suit your use case. If multiple mongod or mongos instances are running under the same user, scale the ulimit values accordingly. See: UNIX ulimit Settings for more information.
+    
+    7. Use noatime for the dbPath mount point.
+    
+    8. Configure sufficient file handles (fs.file-max), kernel pid limit (kernel.pid_max), and maximum threads per process (kernel.threads-max) for your deployment. For large systems, values of 98000, 32768, and 64000 are a good starting point.
+    
+    9. Ensure that your system has swap space configured. Refer to your operating system’s documentation for details on appropriate sizing.
+    
+    10.Ensure that the system default TCP keepalive is set correctly. A value of 300 often provides better performance for replica sets and sharded clusters. See: Does TCP keepalive time affect MongoDB Deployments? in the Frequently Asked Questions for more information.
+
+    
+
+On LMFDB GCE mongod instances:
+
+1 https://docs.mongodb.org/manual/tutorial/transparent-huge-pages
+(/etc/init.d/disable-transparent-hugepages)
+
+2. We are not using MMAPv1 engine. (correct?)
+
+3,4. noop seems to already be default on GC (cat /sys/block/sda/queue/scheduler)
+
+5. a) cat /proc/sys/vm/zone_reclaim_mode reports 0
+   b) apt install numactl; Ubuntu service start script /etc/init/mongod.conf then sets numactl --interleave=all
+   
+
+6. Recommended ulimit Settings:
+    -f (file size): unlimited
+    -t (cpu time): unlimited
+    -v (virtual memory): unlimited [1]
+    -n (open files): 64000
+    -m (memory size): unlimited [1] [2]
+    -u (processes/threads): 64000
+   Actual, seems to already be set in /etc/init/mongod.conf: 
+   cat /proc/<Mongod-PID>/limits:
+Limit                     Soft Limit           Hard Limit           Units     
+Max cpu time              unlimited            unlimited            seconds   
+Max file size             unlimited            unlimited            bytes     
+Max data size             unlimited            unlimited            bytes     
+Max stack size            8388608              unlimited            bytes     
+Max core file size        0                    unlimited            bytes     
+Max resident set          unlimited            unlimited            bytes     
+Max processes             64000                64000                processes 
+Max open files            64000                64000                files     
+Max locked memory         65536                65536                bytes     
+Max address space         unlimited            unlimited            bytes     
+Max file locks            unlimited            unlimited            locks     
+Max pending signals       60084                60084                signals   
+Max msgqueue size         819200               819200               bytes     
+Max nice priority         0                    0                    
+Max realtime priority     0                    0                    
+Max realtime timeout      unlimited            unlimited            us
+
+7. /var/lib/mongodb mounted with noatime option
+
+8. cat /proc/sys/fs/file-max => 1538035
+   cat /proc/sys/kernel/pid_max => 32768
+   cat /proc/sys/kernel/threads-max => 120168
+
+9. no swap
+
+10. cat /proc/sys/net/ipv4/tcp_keepalive_time => 7200
+    changed to
+    net.ipv4.tcp_keepalive_time = 120 in /etc/sysctl.conf
+    
+
+
+
+
