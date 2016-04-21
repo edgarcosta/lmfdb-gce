@@ -11,11 +11,12 @@ LMFDB:WARWICK
 
 2.
 LMFDB:GC-US
-104.197.135.84 (www.)lmfdb.xyz - running a dummy, 
-                                 replace with lmfdb sage app server
-static IP       m0.lmfdb.xyz   - create, install MDB, use data snapshot from Warwick
+104.197.135.84 (www.)lmfdb.xyz - running a dummy,
+								 replace with lmfdb sage app server
+								 
+static		IPm0.lmfdb.xyz   - create, install MDB, use data snapshot from Warwick
                                  replSet 'lmfdb0'
-static IP       arb.lmfdb.xyz  - create, install MDB
+static IP	arb.lmfdb.xyz  - create, install MDB
                                  replSet 'lmfdb0'
 open firewall for TCP:27017 from *.lmfdb.{org,xyz}
 
