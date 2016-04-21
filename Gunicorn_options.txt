@@ -5,5 +5,7 @@ http://docs.gunicorn.org/en/latest/configure.html
 http://docs.gunicorn.org/en/latest/faq.html
 
 
+Not running proxy/nginx, use async. Keep-alive?
+“If you want to deploy Gunicorn to handle unbuffered requests (ie, serving requests directly from the internet) you should use one of the async workers.” Not running proxy/nginx.
 
 
