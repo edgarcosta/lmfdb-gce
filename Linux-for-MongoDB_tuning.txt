@@ -31,7 +31,8 @@ On LMFDB GCE mongod instances:
 1 https://docs.mongodb.org/manual/tutorial/transparent-huge-pages
 (/etc/init.d/disable-transparent-hugepages)
 
-2. We are not using MMAPv1 engine. (correct?)
+2. We are not using MMAPv1 engine. We are using WiredTiger storage engine. 
+See: https://docs.mongodb.org/manual/core/wiredtiger/
 
 3,4. noop seems to already be default on GC (cat /sys/block/sda/queue/scheduler)
 
