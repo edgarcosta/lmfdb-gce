@@ -1,13 +1,13 @@
 Gunicorn Options/Tuning
 
 http://docs.gunicorn.org/en/latest/design.html
-
 Generally we recommend (2 x $num_cores) + 1 as the number of workers to start off with.
 Some examples of behavior requiring asynchronous workers:
         Applications making long blocking calls (Ie, external web services)
         Serving requests directly to the internet
         …
 
+http://docs.gunicorn.org/en/latest/faq.html
 Increase ulimit:
 /etc/security/limits.conf:
 *               soft    nofile          65535
@@ -21,13 +21,15 @@ To increase the worker count by one:
 $ kill -TTIN $masterpid
 (-TTOU to decrease)
 
-
 http://docs.gunicorn.org/en/latest/run.html
+-w WORKERS
+-k WORKERCLASS - The type of worker process to run. You’ll definitely want to read the production page for the implications of this parameter. You can set this to $(NAME) where $(NAME) is one of sync, eventlet, gevent, or tornado, gthread, gaiohttp. sync is the default.
+Not running proxy/nginx, use async: “If you want to deploy Gunicorn to handle unbuffered requests 
+(i.e., serving requests directly from the internet) you should use one of the async workers.”
+
 http://docs.gunicorn.org/en/latest/configure.html
-http://docs.gunicorn.org/en/latest/faq.html
 
 
-Not running proxy/nginx, use async. Keep-alive?
-“If you want to deploy Gunicorn to handle unbuffered requests (ie, serving requests directly from the internet) you should use one of the async workers.” Not running proxy/nginx.
+
 
 
