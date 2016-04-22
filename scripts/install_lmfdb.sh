@@ -29,7 +29,6 @@ git clone https://github.com/edgarcosta/lmfdb-gce.git /home/lmfdb/lmfdb-gce &&
 chmod +x /home/lmfdb/lmfdb-gce/scripts/post-receive &&
 rm /home/lmfdb/lmfdb.git/hooks/post-receive &&
 ln -s /home/lmfdb/lmfdb-gce/scripts/post-receive /home/lmfdb/lmfdb.git/hooks/post-receive &&
-#TODO add hook script for gce
 #TODO add crontab to update the gits
 
 #linking (re)start and stop scripts
