@@ -40,7 +40,7 @@ iptables-save > /etc/iptables/rules.v4
 
 apt install iptables-persistent
 (will load /etc/iptables/rules.v4 on boot)
-
+(ufw show raw — to see ALL rules)
 
 
 
