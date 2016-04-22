@@ -1,0 +1,5 @@
+LABEL=cloudimg-rootfs	/	 		ext4	defaults	0 0
+LABEL=SAGE		/home/sage		ext4 	ro,noauto	0 0
+LABEL=DATA		/home/lmfdb/data	ext4 	ro,noauto	0 0
+riemann-zeta-zeros	/home/lmfdb/buckets/riemann-zeta-zeros/ gcsfuse ro,noauto,user 0 0
+class-groups-quadratic-imaginary-fields /home/lmfdb/buckets/class-groups-quadratic-imaginary-fields/ gcsfuse ro,noauto,user 0 0 

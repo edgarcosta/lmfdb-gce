@@ -1,0 +1,14 @@
+bind = "0.0.0.0:8080"
+workers = 3
+SESSION_PROTECTION = None
+daemon = True
+pidfile = '/home/lmfdb/gunicorn-prod.pid'
+# 
+errorlog = '/home/lmfdb/logs/prod/errorlog'
+accesslog = '/home/lmfdb/logs/prod/accesslog'
+loglevel = 'info' # change to 'debug' for more output
+logfile = '/home/lmfdb/logs/prod/flasklog'
+#
+default_proc_name = 'lmfdb-prod'
+timeout = 30
+max_requests = 100
