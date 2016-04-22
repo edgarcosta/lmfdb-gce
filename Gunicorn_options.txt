@@ -6,6 +6,7 @@ Some examples of behavior requiring asynchronous workers:
         Applications making long blocking calls (Ie, external web services)
         Serving requests directly to the internet
         …
+(worker_class = async in config doesn't seem to work, Gunicorn doesn't start.)
 
 http://docs.gunicorn.org/en/latest/faq.html
 Increase ulimit:
