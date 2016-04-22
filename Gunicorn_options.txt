@@ -27,8 +27,14 @@ http://docs.gunicorn.org/en/latest/run.html
 Not running proxy/nginx, use async: “If you want to deploy Gunicorn to handle unbuffered requests 
 (i.e., serving requests directly from the internet) you should use one of the async workers.”
 
-http://docs.gunicorn.org/en/latest/configure.html
 
+Port 80
+1) authbind 
+authbind python httpserver test works fine;
+authbind sage gunicorn doesn't work…
+
+2) netfilter
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
 
 
 
