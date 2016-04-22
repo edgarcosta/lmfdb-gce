@@ -7,6 +7,12 @@ Some examples of behavior requiring asynchronous workers:
         Applications making long blocking calls (Ie, external web services)
         Serving requests directly to the internet
         …
+To increase the worker count by one:
+$ kill -TTIN $masterpid
+
+To decrease the worker count by one:
+$ kill -TTOU $masterpid
+
         
         
 http://docs.gunicorn.org/en/latest/run.html
