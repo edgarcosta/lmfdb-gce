@@ -2,7 +2,7 @@
 
 N=5000
 C=10
-base_url='http://www.lmfdb.xyz:8080'
+base_url='http://www.lmfdb.xyz:80'
 lmfdb_urls=(
 '/L/degree1/'
 '/L/degree2/'
