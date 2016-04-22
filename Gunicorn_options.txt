@@ -7,14 +7,21 @@ Some examples of behavior requiring asynchronous workers:
         Applications making long blocking calls (Ie, external web services)
         Serving requests directly to the internet
         …
+
+Increase ulimit:
+/etc/security/limits.conf:
+*               soft    nofile          65535
+*               hard    nofile          65535
+
+Increase the maximum socket backlog:
+/etc/sysctl.conf:
+net.core.somaxconn="2048"
+
 To increase the worker count by one:
 $ kill -TTIN $masterpid
+(-TTOU to decrease)
 
-To decrease the worker count by one:
-$ kill -TTOU $masterpid
 
-        
-        
 http://docs.gunicorn.org/en/latest/run.html
 http://docs.gunicorn.org/en/latest/configure.html
 http://docs.gunicorn.org/en/latest/faq.html
