@@ -15,7 +15,7 @@ Increase ulimit:
 
 Increase the maximum socket backlog:
 /etc/sysctl.conf:
-net.core.somaxconn="2048"
+net.core.somaxconn = 2048
 
 To increase the worker count by one:
 $ kill -TTIN $masterpid
