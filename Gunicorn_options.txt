@@ -36,6 +36,11 @@ authbind sage gunicorn doesn't work…
 2) netfilter
 iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
 
+iptables-save > /etc/iptables/rules.v4
+
+apt install iptables-persistent
+(will load /etc/iptables/rules.v4 on boot)
+
 
 
 
