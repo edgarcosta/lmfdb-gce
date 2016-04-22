@@ -1,0 +1,18 @@
+#After a short talk with John he mentioned two nice sources of examples:
+#1- almost any link in:
+http://www.lmfdb.xyz:8080/L/degree1/
+http://www.lmfdb.xyz:8080/L/degree2/
+http://www.lmfdb.xyz:8080/L/degree3/
+http://www.lmfdb.xyz:8080/L/degree4/
+http://www.lmfdb.xyz:8080/zeros/first/
+
+#2- asking for random objects:
+http://www.lmfdb.xyz:8080/EllipticCurve/Q/random
+http://www.lmfdb.xyz:8080/EllipticCurve/random
+http://www.lmfdb.xyz:8080/Genus2Curve/Q/random
+http://www.lmfdb.xyz:8080/NumberField/random
+http://www.lmfdb.xyz:8080/Lattice/random
+http://www.lmfdb.xyz:8080/ModularForm/GL2/TotallyReal/random 
+
+
+
