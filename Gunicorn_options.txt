@@ -1,7 +1,14 @@
 Gunicorn Options/Tuning
 
-!! http://docs.gunicorn.org/en/latest/design.html !!
+http://docs.gunicorn.org/en/latest/design.html
 
+Generally we recommend (2 x $num_cores) + 1 as the number of workers to start off with.
+Some examples of behavior requiring asynchronous workers:
+        Applications making long blocking calls (Ie, external web services)
+        Serving requests directly to the internet
+        …
+        
+        
 http://docs.gunicorn.org/en/latest/run.html
 http://docs.gunicorn.org/en/latest/configure.html
 http://docs.gunicorn.org/en/latest/faq.html
