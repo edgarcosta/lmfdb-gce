@@ -1,0 +1,27 @@
+Sarunas,
+
+After a short talk with John he mentioned two nice sources of examples:
+1-
+almost any link in:
+http://beta.lmfdb.org/L/degree1/
+http://beta.lmfdb.org/L/degree2/
+http://beta.lmfdb.org/L/degree3/
+http://beta.lmfdb.org/L/degree4/
+http://beta.lmfdb.org/zeros/first/
+
+2- asking for random objects:
+http://beta.lmfdb.org/EllipticCurve/Q/random
+http://beta.lmfdb.org/EllipticCurve/random
+http://beta.lmfdb.org/Genus2Curve/Q/random
+http://beta.lmfdb.org/NumberField/random
+http://beta.lmfdb.org/Lattice/random
+http://beta.lmfdb.org/ModularForm/GL2/TotallyReal/random 
+
+At the moment these "random" requests put an extra stress on the mongodb server on the first request, as they load the whole key list of a table, and that can take a while, but I plan to fix that issue soon.
+
+Also, at the moment the client is only running on n1-standard-1 (1 vCPU, 3.75 GB memory) with 3 workers. Feel free to change this and edit the config.
+Also, see "LMFDB/scripts/startstop/start_client.sh " to start the client again (perhaps after editing the config file).
+
+
+Best,
+Edgar
