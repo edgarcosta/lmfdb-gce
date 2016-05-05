@@ -2,9 +2,9 @@
 date
 pushd /home/lmfdb/lmfdb-git-prod
 git fetch 
-git checkout prod -f 
+git checkout origin/prod -f 
 popd
 pushd /home/lmfdb/lmfdb-git-beta
 git fetch
-git checkout beta -f
+git checkout origin/beta -f
 popd
