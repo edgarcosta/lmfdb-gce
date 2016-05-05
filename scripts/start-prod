@@ -10,4 +10,4 @@ export GIT_DIR='/home/lmfdb/lmfdb.git/'
 
 export GIT_WORK_TREE='/home/lmfdb/lmfdb-git-prod'
 cd $GIT_WORK_TREE
-echo 'gunicorn -c gunicorn-config lmfdb.website:app' | $SAGE -sh
+echo 'gunicorn -c gunicorn-config-prod lmfdb.website:app' | $SAGE -sh

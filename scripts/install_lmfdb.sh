@@ -31,10 +31,10 @@ popd
 git clone https://github.com/edgarcosta/lmfdb-gce.git /home/lmfdb/lmfdb-gce 
 
 #take care of the hook
-chmod +x /home/lmfdb/lmfdb-gce/scripts/post-receive 
 ln -s /home/lmfdb/lmfdb-gce/scripts/post-receive /home/lmfdb/lmfdb.git/hooks/post-receive 
 
-chmod +x /home/lmfdb/lmfdb-gce/scripts/lmfdb_fetch.sh
+#add crontab 
+crontab  /home/lmfdb/lmfdb-gce/scripts/crontab
 
 #linking (re)start and stop scripts
 ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/start-beta 

@@ -2,5 +2,5 @@
 #jump to script's directory
 cd `dirname "$0"`
 echo 'restarting actual production server ...'
-kill -HUP `cat gunicorn.pid`
+kill -HUP `cat gunicorn-prod.pid`
 echo '... and done!'
