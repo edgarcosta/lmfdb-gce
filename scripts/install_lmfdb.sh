@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -e
 _user="$(id -u -n)"
 _uid="$(id -u)"
 echo "User name : $_user"
@@ -11,47 +12,35 @@ then
 fi
 
 
-#mount buckets
-mkdir -p  /home/lmfdb/buckets/class-groups-quadratic-imaginary-fields/  /home/lmfdb/buckets/class-groups-quadratic-imaginary-fields/ &&
-gcsfuse --type-cache-ttl "1h" --stat-cache-ttl "1h" riemann-zeta-zeros /home/lmfdb/buckets/riemann-zeta-zeros/&&
-gcsfuse --type-cache-ttl "1h" --stat-cache-ttl "1h" class-groups-quadratic-imaginary-fields class-groups-quadratic-imaginary-fields/ &&
-# create dirs in data
-#mkdir -p /home/lmfdb/data /home/lmfdb/data/zeros &&
-# link buckets
-#ln -s /home/lmfdb/buckets/class-groups-quadratic-imaginary-fields /home/lmfdb/data/class_numbers&&
-#ln -s /home/lmfdb/buckets/riemann-zeta-zeros /home/lmfdb/data/zeros/zeta &&
+mkdir -p /home/lmfdb/logs/beta /home/lmfdb/logs/prod 
+git clone --bare https://github.com/LMFDB/lmfdb.git lmfdb.git
 
-mkdir -p /home/lmfdb/logs/beta /home/lmfdb/logs/prod &&
-git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-beta &&
-pushd /home/lmfdb/lmfdb-git-beta &&
-git checkout beta &&
-popd &&
-git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-prod &&
-pushd /home/lmfdb/lmfdb-git-prod &&
-git checkout prod &&
-popd &&
-mv /home/lmfdb/lmfdb-git-prod/.git /home/lmfdb/lmfdb.git &&
-rm -rf /home/lmfdb/lmfdb-git-beta/.git &&
+#checkout beta
+export GIT_WORK_TREE=/home/lmfdb/lmfdb-git-beta
+git checkout beta -f
 
-git clone https://github.com/edgarcosta/lmfdb-gce.git /home/lmfdb/lmfdb-gce &&
+export GIT_WORK_TREE=/home/lmfdb/lmfdb-git-prod
+git checkout prod -f
+
+git clone https://github.com/edgarcosta/lmfdb-gce.git /home/lmfdb/lmfdb-gce 
 
 #take care of the hook
-chmod +x /home/lmfdb/lmfdb-gce/scripts/post-receive &&
-rm /home/lmfdb/lmfdb.git/hooks/post-receive &&
-ln -s /home/lmfdb/lmfdb-gce/scripts/post-receive /home/lmfdb/lmfdb.git/hooks/post-receive &&
+chmod +x /home/lmfdb/lmfdb-gce/scripts/post-receive 
+rm /home/lmfdb/lmfdb.git/hooks/post-receive 
+ln -s /home/lmfdb/lmfdb-gce/scripts/post-receive /home/lmfdb/lmfdb.git/hooks/post-receive 
 #TODO add crontab to update the gits
 
 #linking (re)start and stop scripts
-ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/start-beta &&
-ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/start-prod &&
-ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/restart-beta &&
-ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/restart-prod &&
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/start-beta 
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/start-prod 
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/restart-beta 
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/restart-prod 
 
 #linking config files
-ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-beta /home/lmfdb/lmfdb-git-beta &&
-ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-prod /home/lmfdb/lmfdb-git-prod &&
-ln -s /home/lmfdb/lmfdb-gce/config/mongoclient.config  /home/lmfdb/lmfdb-git-beta &&
-ln -s /home/lmfdb/lmfdb-gce/config/mongoclient.config  /home/lmfdb/lmfdb-git-prod &&
+ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-beta /home/lmfdb/lmfdb-git-beta 
+ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-prod /home/lmfdb/lmfdb-git-prod 
+ln -s /home/lmfdb/lmfdb-gce/config/mongoclient.config  /home/lmfdb/lmfdb-git-beta 
+ln -s /home/lmfdb/lmfdb-gce/config/mongoclient.config  /home/lmfdb/lmfdb-git-prod 
 
 # Read Password
 echo -n MongoDB Password: 
@@ -62,5 +51,5 @@ echo $password > /home/lmfdb/lmfdb-git-prod/password
 #You should be all set
 
 
-
+set +e
 
