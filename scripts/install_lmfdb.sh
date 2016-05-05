@@ -13,22 +13,28 @@ fi
 
 
 mkdir -p /home/lmfdb/logs/beta /home/lmfdb/logs/prod 
-git clone --bare https://github.com/LMFDB/lmfdb.git lmfdb.git
+git clone --bare https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb.git
 
 #checkout beta
+mkdir -p /home/lmfdb/lmfdb-git-beta
+pushd /home/lmfdb/lmfdb.git
 export GIT_WORK_TREE=/home/lmfdb/lmfdb-git-beta
 git checkout beta -f
 
+#checkout prod
+mkdir -p /home/lmfdb/lmfdb-git-prod
 export GIT_WORK_TREE=/home/lmfdb/lmfdb-git-prod
 git checkout prod -f
+unset GIT_WORK_TREE
+popd
 
 git clone https://github.com/edgarcosta/lmfdb-gce.git /home/lmfdb/lmfdb-gce 
 
 #take care of the hook
 chmod +x /home/lmfdb/lmfdb-gce/scripts/post-receive 
-rm /home/lmfdb/lmfdb.git/hooks/post-receive 
 ln -s /home/lmfdb/lmfdb-gce/scripts/post-receive /home/lmfdb/lmfdb.git/hooks/post-receive 
-#TODO add crontab to update the gits
+
+chmod +x /home/lmfdb/lmfdb-gce/scripts/lmfdb_fetch.sh
 
 #linking (re)start and stop scripts
 ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/start-beta 
