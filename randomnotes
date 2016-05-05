@@ -2,4 +2,6 @@
 - google buckets are bad for the whole ~/data/ folder, too much latency
 - perhaps move most of ~/data/ folder should be in the DB?
 - sourcetags are only for internal usage
-- we are not using the instal script, but instead a golden image
+- we are not using the install script, but instead a golden image
+- post-receive for this git?
+- should we push config changes with git?

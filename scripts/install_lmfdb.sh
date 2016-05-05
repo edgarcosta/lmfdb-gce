@@ -39,8 +39,8 @@ crontab  /home/lmfdb/lmfdb-gce/scripts/crontab
 #linking (re)start and stop scripts
 ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/start-beta 
 ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/start-prod 
-ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/restart-beta 
-ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/restart-prod 
+ln -s /home/lmfdb/lmfdb-gce/scripts/restart-beta /home/lmfdb/restart-beta 
+ln -s /home/lmfdb/lmfdb-gce/scripts/restart-prod /home/lmfdb/restart-prod 
 
 #linking config files
 ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-beta /home/lmfdb/lmfdb-git-beta 

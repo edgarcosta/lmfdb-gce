@@ -20,7 +20,6 @@ sudo useradd sage -u 1200 -d /home/sage -m
 sudo useradd lmfdb -u 1300 -d /home/lmfdb -m 
 # add lmfdb to fuse
 sudo usermod -a -G fuse lmfdb 
-sudo su lmfdb -c "mkdir -p /home/lmfdb/data" 
 
 #copy compiled sage
 mkdir sage
@@ -28,9 +27,56 @@ sudo mount /dev/disk/by-label/SAGE sage
 sudo su sage -c "rsync -av --progress /home/sage/image/ /home/sage/"
 sudo ln -s /home/sage/sage-root/sage /usr/local/bin
 
-#be sure that everything is up and running
-sage -b
+#be sure that everything is up and running as sage user
+sudo su sage -c "cd /home/sage/sage-7.1/ && ./sage -b"
 
 
+#mount disks
+git clone https://github.com/edgarcosta/lmfdb-gce.git ~/lmfdb-gce/
+echo "updating fstab"
+sudo cp ~/lmfdb-gce/config/fstab /etc/fstab 
+bash ~/lmfdb-gce/server_scripts/mount.sh
 
+#now switch to lmfdb
+sudo su lmfdb
+cd
+mkdir -p /home/lmfdb/logs/beta /home/lmfdb/logs/prod 
+git clone --bare https://github.com/LMFDB/lmfdb.git lmfdb.git
+
+
+#checkout beta
+pushd /home/lmfdb/lmfdb.git
+mkdir -p /home/lmfdb/lmfdb-git-beta
+export GIT_WORK_TREE=/home/lmfdb/lmfdb-git-beta
+git checkout beta -f
+
+#checkout prod
+mkdir -p /home/lmfdb/lmfdb-git-prod
+export GIT_WORK_TREE=/home/lmfdb/lmfdb-git-prod
+git checkout prod -f
+unset GIT_WORK_TREE
+popd
+
+
+ln -s /home/lmfdb/lmfdb-gce/scripts/post-receive /home/lmfdb/lmfdb.git/hooks/post-receive 
+crontab  /home/lmfdb/lmfdb-gce/scripts/crontab
+
+#linking (re)start and stop scripts
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/start-beta 
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/start-prod 
+ln -s /home/lmfdb/lmfdb-gce/scripts/restart-beta /home/lmfdb/restart-beta 
+ln -s /home/lmfdb/lmfdb-gce/scripts/restart-prod /home/lmfdb/restart-prod 
+
+#linking config files
+ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-beta /home/lmfdb/lmfdb-git-beta 
+ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-prod /home/lmfdb/lmfdb-git-prod 
+ln -s /home/lmfdb/lmfdb-gce/config/mongoclient.config  /home/lmfdb/lmfdb-git-beta 
+ln -s /home/lmfdb/lmfdb-gce/config/mongoclient.config  /home/lmfdb/lmfdb-git-prod 
+
+
+# Read Password
+echo -n MongoDB Password: 
+read -s password
+echo $password > /home/lmfdb/lmfdb-git-beta/password
+echo $password > /home/lmfdb/lmfdb-git-prod/password
 

@@ -38,9 +38,6 @@ echo "updating fstab"
 sudo cp ~/lmfdb-gce/config/fstab /etc/fstab 
 bash ~/lmfdb-gce/server_scripts/mount.sh
 
-
-
-
 echo "installing the client"
 sudo su lmfdb -c "sh ~/lmfdb-gce/scripts/install_lmfdb.sh" 
 
