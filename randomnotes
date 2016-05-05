@@ -1,0 +1,5 @@
+- 137.205.56.254 is the external ip for lmfdb.warwick.ac.uk
+- google buckets are bad for the whole ~/data/ folder, too much latency
+- perhaps move most of ~/data/ folder should be in the DB?
+- sourcetags are only for internal usage
+- we are not using the instal script, but instead a golden image

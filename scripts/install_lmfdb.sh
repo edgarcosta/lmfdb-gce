@@ -10,7 +10,17 @@ then
     echo "Only the user sage with UID = 1300 should be running this script"; exit 1;
 fi
 
-#mkdir -p  /home/lmfdb/buckets/class-groups-quadratic-imaginary-fields/  /home/lmfdb/buckets/class-groups-quadratic-imaginary-fields/ &&
+
+#mount buckets
+mkdir -p  /home/lmfdb/buckets/class-groups-quadratic-imaginary-fields/  /home/lmfdb/buckets/class-groups-quadratic-imaginary-fields/ &&
+gcsfuse --type-cache-ttl "1h" --stat-cache-ttl "1h" riemann-zeta-zeros /home/lmfdb/buckets/riemann-zeta-zeros/&&
+gcsfuse --type-cache-ttl "1h" --stat-cache-ttl "1h" class-groups-quadratic-imaginary-fields class-groups-quadratic-imaginary-fields/ &&
+# create dirs in data
+#mkdir -p /home/lmfdb/data /home/lmfdb/data/zeros &&
+# link buckets
+#ln -s /home/lmfdb/buckets/class-groups-quadratic-imaginary-fields /home/lmfdb/data/class_numbers&&
+#ln -s /home/lmfdb/buckets/riemann-zeta-zeros /home/lmfdb/data/zeros/zeta &&
+
 mkdir -p /home/lmfdb/logs/beta /home/lmfdb/logs/prod &&
 git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-beta &&
 pushd /home/lmfdb/lmfdb-git-beta &&

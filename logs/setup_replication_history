@@ -1,0 +1,114 @@
+#1 
+
+check that everyone can talk with each other
+
+on warwick do:
+# autossh -M 50000 mongo-warwick -N
+
+on every server do:
+mongo warwick.lmfdx.xyz:37010
+mongo m0.lmfdx.xyz:37010
+mongo m1.lmfdx.xyz:37010
+
+
+#2 double check the keyfiles
+# edgarcosta@m0:~$ sudo md5sum  /srv/mongodb/mongodb-keyfile 
+5bf42b661cb2294e0522dcf1c9f21c4b  /srv/mongodb/mongodb-keyfile
+
+# edgarcosta@m1:~$ sudo md5sum  /srv/mongodb/mongodb-keyfile 
+5bf42b661cb2294e0522dcf1c9f21c4b  /srv/mongodb/mongodb-keyfile
+
+# lmfdb@lmfdb:~$ md5sum MONGO_KEYFILE 
+5bf42b661cb2294e0522dcf1c9f21c4b  MONGODB_KEYFILE
+
+#3 double check the configs
+
+m0 == m1
+
+lmfdb check!
+
+#4 stop mongod at m0 and m1
+sudo service mongod stop
+
+
+#5 delete disk
+
+#at both
+sudo umount /var/lib/mongodb
+
+#at home
+gcloud compute instances detach-disk m0 --disk m0-mongodb
+gcloud compute instances detach-disk m1 --disk m1-mongodb
+gcloud compute disks delete m0-mongodb
+gcloud compute disks delete m1-mongodb
+gcloud compute disks create m0-mongodb --source warwick-snapshot-201605021718 --size 1300
+gcloud compute disks create m1-mongodb --source warwick-snapshot-201605021718 --size 1300
+gcloud compute instances attach-disk m0 --disk m0-mongodb
+gcloud compute instances attach-disk m1 --disk m1-mongodb
+
+#at both
+sudo e2label /dev/sdb LMFDB
+sudo mount /var/lib/mongodb
+sudo chown edgarcosta -R /var/lib/mongodb/
+
+
+
+
+#6 create new disks from snapshot and attach them
+
+
+#7 restart mongodb at warwick with
+./stop-mongod
+./start-mongod
+
+#8 initiate replica set
+use admin;
+db.auth("admin",PASSWORD);
+rs.initiate()
+cfg = rs.conf();
+cfg.members[0].host="warwick.lmfdb.xyz:37010"
+rs.reconfig(cfg)
+
+#9 take snapshot
+sh /data/db-snapshots/make-snapshot-for-dartmouth.sh
+
+
+#8 rsync everything
+#at m0
+rsync -av --progress --delete  lmfdb-warwick:/data/db-snapshots/snapshot-for-dartmouth/ /var/lib/mongodb/
+#at m1
+rsync -av --progress --delete  m0:/var/lib/mongodb/ /var/lib/mongodb
+
+#10
+#at both
+sudo chown mongodb -R /var/lib/mongodb
+
+#11 get rid of old logs
+sudo rm -f /var/log/mongodb/mongod.log
+
+#12 add m0 and m1 to the replica set
+rs.add("m0.lmfdb.xyz");
+rs.add("m1.lmfdb.xyz");
+
+#13 change the write concern
+cfg = rs.conf()
+cfg.settings.getLastErrorDefaults = { w: "majority", wtimeout: 5000 }
+rs.reconfig(cfg)
+
+
+#14 add tags
+conf = rs.conf()
+conf.members[0].tags = { "dc": "warwick"  }
+conf.members[1].tags = { "dc": "us-central"  }
+conf.members[2].tags = { "dc": "us-central"  }
+rs.reconfig(conf)
+
+
+#15 make warwick primary by default
+conf = rs.conf()
+conf.members[0].priority = 2
+rs.reconfig(conf)
+
+
+
+

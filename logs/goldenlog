@@ -1,0 +1,36 @@
+# htop
+sudo apt-get update
+sudo apt-get install htop
+
+#install prerequisitives for sage
+sudo apt-get update
+sudo apt-get install binutils gcc g++ gfortran make m4 perl tar git libssl-dev
+
+#install gcfuse
+export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
+echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install gcsfuse
+sudo usermod -a -G fuse $USER
+
+
+# create users
+sudo useradd sage -u 1200 -d /home/sage -m 
+sudo useradd lmfdb -u 1300 -d /home/lmfdb -m 
+# add lmfdb to fuse
+sudo usermod -a -G fuse lmfdb 
+sudo su lmfdb -c "mkdir -p /home/lmfdb/data" 
+
+#copy compiled sage
+mkdir sage
+sudo mount /dev/disk/by-label/SAGE sage
+sudo su sage -c "rsync -av --progress /home/sage/image/ /home/sage/"
+sudo ln -s /home/sage/sage-root/sage /usr/local/bin
+
+#be sure that everything is up and running
+sage -b
+
+
+
+

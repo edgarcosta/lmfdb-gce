@@ -36,6 +36,8 @@ make ptestlong &&
 wget https://raw.githubusercontent.com/LMFDB/lmfdb/master/requirements.txt &&
 ./sage -pip install -r requirements.txt &&
 ./sage -pip install gunicorn &&
+./sage -pip install greenlet eventlet gevent &&
+./sage -b &&
 cd .. &&
 chmod a+rX -R sage-${version} &&
 echo "If you want this to be the new version to be used, don't forget to do:" &&
