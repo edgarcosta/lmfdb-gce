@@ -49,15 +49,16 @@ git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-prod
 
 #checkout beta
 pushd /home/lmfdb/lmfdb-git-beta
-git checkout beta -f
+git checkout origin/beta -f
 popd
 #checkout prod
 pushd /home/lmfdb/lmfdb-git-prod
-git checkout prod -f
+git checkout origin/prod -f
 popd
 
 
-ln -s /home/lmfdb/lmfdb-gce/scripts/post-receive /home/lmfdb/lmfdb.git/hooks/post-receive 
+ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout-beta /home/lmfdb/lmfdb-git-beta/.git/hooks/post-checkout 
+ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout-prod /home/lmfdb/lmfdb-git-prod/.git/hooks/post-checkout 
 crontab  /home/lmfdb/lmfdb-gce/scripts/crontab
 
 #linking (re)start and stop scripts
