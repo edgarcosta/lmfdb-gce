@@ -111,4 +111,18 @@ rs.reconfig(conf)
 
 
 
+# new hosts file :)
+#
+conf = rs.conf()
+conf.members[2].host = "m1:27017"
+rs.reconfig(conf)
+conf = rs.conf()
+conf.members[1].host = "m0:27017"
+rs.reconfig(conf)
+conf = rs.conf()
+conf.members[1].host = "m0:27017"
+rs.reconfig(conf)
+conf = rs.conf()
+conf.members[0].host = "warwick:37010"
+rs.reconfig(conf)
 
