@@ -1,0 +1,9 @@
+gcloud compute disks create data-central --source-snapshot data-20160504 --zone us-central1-b
+gcloud compute instances create www-central --image golden-20160505 --disk name=data-central,mode=ro --machine-type n1-highcpu-8 --metadata-from-file startup-script=server_scripts/startup_script.sh --tags lmfdb-www,lmfdb,http-server  --zone us-central1-b --no-boot-disk-auto-delete
+
+
+gcloud compute instances create www-central1 --image golden-20160505 --disk name=data-central,mode=ro --machine-type n1-highcpu-8 --metadata-from-file startup-script=server_scripts/startup_script.sh --tags lmfdb-www,lmfdb,http-server  --zone us-central1-b --no-boot-disk-auto-delete
+
+gcloud compute instances create www-central2 --image golden-20160505 --disk name=data-central,mode=ro --machine-type n1-highcpu-8 --metadata-from-file startup-script=server_scripts/startup_script.sh --tags lmfdb-www,lmfdb,http-server  --zone us-central1-b --no-boot-disk-auto-delete
+
+
