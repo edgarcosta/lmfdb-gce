@@ -1,0 +1,45 @@
+1. (Gunicorn).
+
+1.1 http://docs.gunicorn.org/en/latest/faq.html
+Increase ulimit:
+/etc/security/limits.conf:
+*               soft    nofile          65535
+*               hard    nofile          65535
+
+1.2 Increase the maximum socket backlog:
+/etc/sysctl.conf:
+net.core.somaxconn = 2048
+
+
+2. HTTP 80 -> 8080 Gunicorn
+
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+
+iptables-save > /etc/iptables/rules.v4
+
+apt install iptables-persistent
+(will load /etc/iptables/rules.v4 on boot)
+(ufw show raw — to see ALL rules)
+
+3. Logrotate
+
+/etc/logrotate.d/lmfdb:
+/home/lmfdb/logs/beta/accesslog
+/home/lmfdb/logs/beta/errorlog
+/home/lmfdb/logs/prod/accesslog
+/home/lmfdb/logs/prod/errorlog
+/home/lmfdb/logs/lmfdb_fetch
+{
+        su lmfdb lmfdb
+        rotate 7
+        daily
+        missingok
+        notifempty
+        copytruncate
+        delaycompress
+        compress
+        create 640 lmfdb lmfdb
+}
+
+
+
