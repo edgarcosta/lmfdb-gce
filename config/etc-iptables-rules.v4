@@ -1,0 +1,21 @@
+# redirect 80 -> 8080:
+#
+# 1) iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+# 2) apt install iptables-persistent
+# 3) iptables-save > /etc/iptables/rules.v4
+
+cat /etc/iptables/rules.v4
+*nat
+:PREROUTING ACCEPT [4754:298335]
+:INPUT ACCEPT [272393:16356375]
+:OUTPUT ACCEPT [612424:37068103]
+:POSTROUTING ACCEPT [612424:37068103]
+-A PREROUTING -i eth0 -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8080
+COMMIT
+*filter
+:INPUT ACCEPT [17530:11182020]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [22144:10946588]
+:sshguard - [0:0]
+-A INPUT -j sshguard
+COMMIT

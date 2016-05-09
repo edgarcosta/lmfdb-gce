@@ -1,0 +1,17 @@
+# put in /etc/logrotate.d/
+/home/lmfdb/logs/beta/accesslog
+/home/lmfdb/logs/beta/errorlog
+/home/lmfdb/logs/prod/accesslog
+/home/lmfdb/logs/prod/errorlog
+/home/lmfdb/logs/lmfdb_fetch
+{
+        su lmfdb lmfdb
+        rotate 7
+        daily
+        missingok
+        notifempty
+        copytruncate
+        delaycompress
+        compress
+        create 640 lmfdb lmfdb
+}
