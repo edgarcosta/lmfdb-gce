@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -e
+startupscript=server_scripts/startup_script.sh
+if [ ! -f $startupscript ]
+then
+    echo "$startupscript not found!"
+    exit 1;
+fi 
+image=$(gcloud compute images list --filter="name=golden*" --sort-by creationTimestamp | head -n 2 | tail -n 1 | cut -f1 -d" ")
+number=$(gcloud compute instances list --filter="name=www-central*" --sort name | tail -n 1 | cut -f1 -d" " | cut -c12)
+number=$((${number} + 1))
+name=www-test
+echo "We will be using image =" $image
+echo "to create "$name
+
+echo "Sleeping 5s before creating instance"
+sleep 5
+
+echo "Creating address"
+gcloud compute addresses create $name
+
+echo "Creating instance" 
+gcloud compute instances create $name --image $image --disk name=data-central,mode=ro --machine-type n1-highcpu-8 --metadata-from-file startup-script=$startupscript --tags lmfdb-www,lmfdb,http-server  --zone us-central1-b --no-boot-disk-auto-delete --address $name
+
+ip=$(gcloud compute addresses describe $name  | head -n 1 | cut -f2 -d" ")
+echo "Adding $ip to DNS"
+gcloud dns record-sets transaction start  -z=lmfdb-xyz
+gcloud dns record-sets transaction add --name="$name.lmfdb.xyz" --type=A --ttl=300 "$ip"  -z=lmfdb-xyz
+gcloud dns record-sets transaction describe  -z=lmfdb-xyz
+gcloud dns record-sets transaction execute  -z=lmfdb-xyz
+
+
+
+set +e
