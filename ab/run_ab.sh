@@ -1,15 +1,15 @@
 #!/bin/bash
 
-N=5000
-C=10
-base_url='http://www.lmfdb.xyz:80'
+N=20000
+C=3
+base_url='http://www.lmfdb.org'
 lmfdb_urls=(
 '/L/degree1/'
 '/L/degree2/'
 '/L/degree3/'
 '/L/degree4/'
-'/zeros/first/'
-#'/EllipticCurve/Q/random/'
+#'/zeros/first/'
+'/EllipticCurve/Q/'
 #'/EllipticCurve/random/'
 #'/Genus2Curve/Q/random/'
 #'/NumberField/random/'
@@ -19,8 +19,8 @@ lmfdb_urls=(
 
 for u in ${lmfdb_urls[@]}; do
     url=${base_url}${u}
-    ufname=${u//\//_}${C}_${N}
-    xterm -T "${u}"  -r -e "ab -e ${ufname}.csv -g ${ufname}.tsv -c$C -n$N ${url};read" &
+    ufname="wwwlmfdbxyz_${u//\//_}${C}_${N}"
+    xterm -T "${u}" -e "ab -r -k -g ${ufname}.tsv -c$C -n$N ${url};read" &
     #xterm -e "ab -c$C -n$N ${u};read" &
 done
 
@@ -31,4 +31,5 @@ done
 #xterm -e 'ab -c1 -n100 http://www.lmfdb.xyz:8080/' &
 
 
-
+#
+#time wget http://www.lmfdb.org/EllipticCurve/4.4.1125.1/839.4/h/1
