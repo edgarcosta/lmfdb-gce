@@ -19,3 +19,5 @@ ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_ms.config  /home/lmfdb/lmfdb-git-
 
 /home/lmfdb/lmfdb-gce/scripts/restart-prod
 /home/lmfdb/lmfdb-gce/scripts/restart-beta
+
+set +e
