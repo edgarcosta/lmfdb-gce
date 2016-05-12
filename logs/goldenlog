@@ -70,8 +70,8 @@ ln -s /home/lmfdb/lmfdb-gce/scripts/restart-prod /home/lmfdb/restart-prod
 #linking config files
 ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-beta /home/lmfdb/lmfdb-git-beta 
 ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-prod /home/lmfdb/lmfdb-git-prod 
-ln -s /home/lmfdb/lmfdb-gce/config/mongoclient.config  /home/lmfdb/lmfdb-git-beta 
-ln -s /home/lmfdb/lmfdb-gce/config/mongoclient.config  /home/lmfdb/lmfdb-git-prod 
+ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_lmfdb0.config  /home/lmfdb/lmfdb-git-beta/mongoclient.config 
+ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_lmfdb0.config  /home/lmfdb/lmfdb-git-prod/mongoclient.config
 
 
 # Read Password
