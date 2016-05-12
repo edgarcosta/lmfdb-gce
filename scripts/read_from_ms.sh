@@ -11,9 +11,10 @@ then
     echo "Only the user sage with UID = 1300 should be running this script"; exit 1;
 fi
 
-
+set +e
 rm /home/lmfdb/lmfdb-git-beta/mongoclient.config
-rm /home/lmfdb/lmfdb-git-beta/mongoclient.config
+rm /home/lmfdb/lmfdb-git-prod/mongoclient.config
+set -e
 ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_ms.config  /home/lmfdb/lmfdb-git-beta/mongoclient.config 
 ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_ms.config  /home/lmfdb/lmfdb-git-prod/mongoclient.config
 
