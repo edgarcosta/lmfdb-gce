@@ -2,7 +2,7 @@
 set -e
 DATE=$(date +"%Y-%m-%d-%H%M")
 echo "Creating snapshot from www-central"
-gcloud compute disks snapshot www-central --snapshot-names golden-$DATE
+gcloud compute disks snapshot www-central0 --snapshot-names golden-$DATE
 echo "Creating disk from snapshot"
 gcloud compute disks create golden-tmp --source-snapshot golden-$DATE --zone us-central1-b
 echo "Creating image from disk"
