@@ -7,7 +7,7 @@ then
     echo "$startupscript not found!"
     exit 1;
 fi 
-image=$(gcloud compute images list --filter="name=golden*" --sort-by creationTimestamp | head -n 2 | tail -n 1 | cut -f1 -d" ")
+image=$(gcloud compute images list --filter="name=golden*" --sort-by creationTimestamp | tail -n 1 | cut -f1 -d" ")
 number=$(gcloud compute instances list --filter="name=www-central*" --sort name | tail -n 1 | cut -f1 -d" " | cut -c12)
 number=$((${number} + 1))
 name=www-central$number
