@@ -5,7 +5,7 @@ There are two mongodb's a development one and a prod.
 
 ## Development
 
-#### Servers:
+#### Servers
 The development consists of 3 mongodb servers in a replica set:
 * warwick:37010 aka lmfdb.warwick.ac.uk:37010
 * m0:27017
@@ -16,7 +16,7 @@ warwick.lmfdb.xyz and lmfdb.warwick.ac.uk.
 warwick.lmfdb.xyz is a dummy server that forwards the traffic from the cloud servers to lmfdb.warwick.ac.uk via an SSH tunnel
 
 
-### Instances Specs::
+### Instances Specs
 * warwick.lmfdb.xyz f1-micro
 * arb.lmfdb.xyz: f1-micro
 * arb.lmfdb.xyz: f1-micro
@@ -27,33 +27,35 @@ Ref: https://cloud.google.com/compute/docs/machine-types
 * n1-highmem-4: 4 CPUs, 26 GB of memory.
 * n1-highmem-8: 8 CPUs, 52 GB of memory.
 
-### Operating system: Ubuntu 14.04 TLS
+### Operating system
+Ubuntu 14.04 TLS
 
-Disks:
+### Disks
 * all the machines have a 10GB disk for the root file system
 * m0 stores the DB  (/var/lib/mongodb) on a 1.5TB+ that can be expanded on the fly
 
-### MongoDB conf:
+### MongoDB conf
 * warwick: priority: 2
 * readPreference: { "w" : "majority", wtimeout" : 5000 }, this forces that writes at warwick must be acknowledged by m0, before you can keep writing
 * storageSystem: at m0 WiredTiger, at warwick MMAPv1
 
 ## Production 
 
-### Servers:
+### Servers
 The Production mongodb only uses one server:
 * ms:27017
 
-### Instance Specs:
+### Instance Specs
 * ms.lmfdb.xyz: n1-highmem-8 (perhaps reduce to n1-highmem-4?)
 
-### Operating system: Ubuntu 14.04 TLS
+### Operating system
+Ubuntu 14.04 TLS
 
 
-### MongoDB conf:
+### MongoDB conf
 storageSystem: WiredTiger
 
-### Disks:
+### Disks
 * 10GB disk for the root file system
 * ms stores the DB  (/var/lib/mongodb) on a 1.5TB+ that can be expanded on the fly.
 
