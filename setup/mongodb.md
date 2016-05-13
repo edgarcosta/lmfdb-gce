@@ -17,7 +17,7 @@ warwick.lmfdb.xyz is a dummy server that forwards the traffic from the cloud ser
 
 
 ### Instances Specs
-* warwick.lmfdb.xyz f1-micro
+* warwick.lmfdb.xyz: f1-micro
 * arb.lmfdb.xyz: f1-micro
 * arb.lmfdb.xyz: f1-micro
 * m0.lmfdb.xyz: n1-highmem-8 (perhaps after monitoring the servers for a while reduce to n1-highmem-4?)
