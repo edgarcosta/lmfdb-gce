@@ -22,7 +22,7 @@ warwick.lmfdb.xyz is a dummy server that forwards the traffic from the cloud ser
 * arb.lmfdb.xyz: f1-micro
 * m0.lmfdb.xyz: n1-highmem-8 (perhaps reduce to n1-highmem-4?)
 
-Ref: [https://cloud.google.com/compute/docs/machine-types]
+Ref: https://cloud.google.com/compute/docs/machine-types 
 * f1-micro: , 1 shared CPU, 0.60 GB of memory
 * n1-highmem-4: 4 CPUs, 26 GB of memory.
 * n1-highmem-8: 8 CPUs, 52 GB of memory.
