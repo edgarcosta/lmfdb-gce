@@ -7,9 +7,9 @@ There are two mongodb's a development one and a prod.
 
 #### Servers
 The development consists of 3 mongodb servers in a replica set:
-* warwick:37010 aka lmfdb.warwick.ac.uk:37010
-* m0:27017
-* arb:27017, an arbiter, i.e., a dummy server, without data to make the number of servers odd and untie elections.
+* warwick:37010 aka warwick.lmfdb.xyz or lmfdb.warwick.ac.uk:37010
+* m0:27017 aka m0.lmfdb.xyz
+* arb:27017 aka arb.lmfdb.xyz, an arbiter, i.e., a dummy server, without data to make the number of servers odd and untie elections.
 
 remark: at the moment there are indeed two warwick servers:
 warwick.lmfdb.xyz and lmfdb.warwick.ac.uk.
@@ -43,7 +43,7 @@ Ubuntu 14.04 TLS
 
 ### Servers
 The Production mongodb only uses one server:
-* ms:27017
+* ms:27017 aka ms.lmfdb.xyz:27017
 
 ### Instance Specs
 * ms.lmfdb.xyz: n1-highmem-8 (perhaps reduce to n1-highmem-4?)
