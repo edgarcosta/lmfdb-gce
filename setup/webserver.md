@@ -8,6 +8,7 @@
 
 ### Instances Specs
 * n1-highcpu-8 at first, then n1-highcpu-4
+
 Ref: https://cloud.google.com/compute/docs/machine-types 
 * n1-highcpu-4: 4 CPUs, 3.6 GB of memory.
 * n1-highcpu-8: 8 CPUs, 7.2 GB of memory.
