@@ -1,6 +1,6 @@
 # MongoDB Setup
 
-There are two mongodb's a development one and a prod.
+There are two MongoDB databases: development and production.
 
 
 ## Development
