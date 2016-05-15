@@ -8,5 +8,5 @@ echo "waiting 5s"
 sleep 5s;
 git fetch
 git checkout -f origin/master
-
+logout
 set +e
