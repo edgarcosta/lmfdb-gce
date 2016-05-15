@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-startupscript=server_scripts/startup_script.sh
+startupscript=server_scripts/get_startup_and_run.sh 
 if [ ! -f $startupscript ]
 then
     echo "$startupscript not found!"
