@@ -1,0 +1,1 @@
+*/15 * * * * bash ~/lmfdb-gce/server_scripts/update_knowls.sh >> ~/logs/update_knowls.log 2>&1
