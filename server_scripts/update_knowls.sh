@@ -8,7 +8,7 @@ mkdir $timestamp
 mongodump --host m1 -u $MONGO_USERNAME -p $MONGO_PASSWORD --authenticationDatabase admin -o $timestamp --db knowledge
 rm -rf $timestamp/knowledge/system.profile*
 rm -rf $timestamp/knowledge/system.users*
-mongorestore  -u $MONGO_USERNAME -p $MONGO_PASSWORD --authenticationDatabase admin  --db knowledge --drop $timestamp/knowledge
+time mongorestore  -u $MONGO_USERNAME -p $MONGO_PASSWORD --authenticationDatabase admin  --db knowledge --drop $timestamp/knowledge
 rm -rf $timestamp
 popd
 set +e
