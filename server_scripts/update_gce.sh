@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-sudo -u lmfdb bash << EOF
+sudo su lmfdb -c "bash" << EOF
 set -e
 cd ~/lmfdb-gce
 git status
