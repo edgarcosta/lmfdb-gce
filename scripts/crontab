@@ -1,1 +1,1 @@
-*/30 * * * * bash /home/lmfdb/lmfdb-gce/scripts/lmfdb_fetch.sh >> /home/lmfdb/logs/lmfdb_fetch 2>&1
+*/15 * * * * bash /home/lmfdb/lmfdb-gce/scripts/lmfdb_fetch.sh >> /home/lmfdb/logs/lmfdb_fetch 2>&1
