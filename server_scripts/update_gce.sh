@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-sudo -u lmfdb bash  - eof<<
+sudo -u lmfdb bash << EOF
 set -e
 cd ~/lmfdb-gce
 git status
@@ -10,6 +10,6 @@ sleep 5s;
 git fetch
 git checkout -f origin/master
 set +e
-eof
+EOF
 
 set +e
