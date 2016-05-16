@@ -18,7 +18,7 @@ set -e
 ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_lmfdb0.config  /home/lmfdb/lmfdb-git-beta/mongoclient.config 
 ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_lmfdb0.config  /home/lmfdb/lmfdb-git-prod/mongoclient.config
 
-/home/lmfdb/lmfdb-gce/scripts/restart-prod
-/home/lmfdb/lmfdb-gce/scripts/restart-beta
+/home/lmfdb/restart-prod
+/home/lmfdb/restart-beta
 
 set +e
