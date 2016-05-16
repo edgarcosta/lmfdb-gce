@@ -49,7 +49,7 @@ gcloud compute instances attach-disk m1 --disk m1-mongodb
 #at both
 sudo e2label /dev/sdb LMFDB
 sudo mount /var/lib/mongodb
-sudo chown edgarcosta -R /var/lib/mongodb/
+sudo chown mongodb -R /var/lib/mongodb/
 
 
 
