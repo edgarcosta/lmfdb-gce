@@ -7,11 +7,11 @@
 * www-central1.lmfdb.xyz
 
 ### Instances Specs
-* n1-highcpu-8 at first, then n1-highcpu-4
+* n1-highcpu-4 at first, then n1-highcpu-2
 
-Ref: https://cloud.google.com/compute/docs/machine-types 
+Ref: https://cloud.google.com/compute/docs/machine-types
+* n1-highcpu-2: 2 CPUs, 1.8 GB of memory. 
 * n1-highcpu-4: 4 CPUs, 3.6 GB of memory.
-* n1-highcpu-8: 8 CPUs, 7.2 GB of memory.
 
 ### Operating system
 Ubuntu 14.04 TLS

@@ -20,12 +20,12 @@ warwick.lmfdb.xyz is a dummy server that forwards the traffic from the cloud ser
 * warwick.lmfdb.xyz: f1-micro
 * arb.lmfdb.xyz: f1-micro
 * arb.lmfdb.xyz: f1-micro
-* m0.lmfdb.xyz: n1-highmem-8 (perhaps after monitoring the servers for a while reduce to n1-highmem-4?)
+* m0.lmfdb.xyz: n1-highmem-2 
 
 Ref: https://cloud.google.com/compute/docs/machine-types 
 * f1-micro: 1 shared CPU, 0.60 GB of memory
+* n1-highmem-2: 2 CPUs, 13 GB of memory.
 * n1-highmem-4: 4 CPUs, 26 GB of memory.
-* n1-highmem-8: 8 CPUs, 52 GB of memory.
 
 ### Operating system
 Ubuntu 14.04 TLS
@@ -46,7 +46,7 @@ The Production mongodb only uses one server:
 * ms:27017 aka ms.lmfdb.xyz:27017
 
 ### Instance Specs
-* ms.lmfdb.xyz: n1-highmem-8 (perhaps after monitoring the servers for a while reduce to n1-highmem-4?)
+* ms.lmfdb.xyz: n1-highmem-2 (perhaps n1-highmem-4?)
 
 ### Operating system
 Ubuntu 14.04 TLS
