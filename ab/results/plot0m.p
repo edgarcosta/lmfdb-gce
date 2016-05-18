@@ -2,7 +2,7 @@
 set terminal pngcairo size 1000,800
 
 # save file to "benchmark.png"
-set output "benchmark0m.png"
+set output "benchmark_mmap-wt.png"
 
 # This sets the aspect ratio of the graph
 set size 1, 1
@@ -37,8 +37,8 @@ set datafile separator '\t'
 
 # Plot the data
 plot \
-"8workers-eventlet-mmap.tsv" using 2:5 with points title '8wemmap', \
-"8workers-sync-mmap.tsv" using 2:5 with points title '8wmmap'
+"8workers-sync-wt.tsv" using 2:5 with points title 'wt', \
+"8workers-sync-mmap.tsv" using 2:5 with points title 'mmap'
 
 
 

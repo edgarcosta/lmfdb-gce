@@ -14,7 +14,7 @@
 
 # output as png image
 set terminal pngcairo size 1000,800
-set output 'benchmark_mmap-wt.png'
+set output 'benchmark_wt_sync-evlet.png'
 set datafile separator '\t'
 
 # The graph title
@@ -43,5 +43,5 @@ set xrange [0:3000]
 bin(x) = 10*floor(x/10.0)
 plot \
 "8workers-sync-wt.tsv" using (bin($5)):(1) every ::1 smooth frequency with boxes title 'WiredTiger, sync', \
-"8workers-sync-mmap.tsv" using (bin($5)):(1) every ::1 smooth frequency with boxes title 'MMAP, sync'
+"8workers-sync-wt-evlet.tsv" using (bin($5)):(1) every ::1 smooth frequency with boxes title 'WiredTiger, eventlets'
 
