@@ -1,0 +1,13 @@
+# put in /etc/logrotate.d/
+/home/lmfdb/logs/update_knowls.log
+{
+        su lmfdb lmfdb
+        rotate 7
+        daily
+        missingok
+        notifempty
+        copytruncate
+        delaycompress
+        compress
+        create 640 lmfdb lmfdb
+}
