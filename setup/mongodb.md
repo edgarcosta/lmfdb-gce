@@ -37,7 +37,7 @@ Ubuntu 14.04 TLS
 ### MongoDB conf
 * warwick: priority: 2
 * readPreference: { "w" : "majority", wtimeout" : 5000 }, this forces that writes at warwick must be acknowledged by m0, before you can keep writing
-* storageSystem: at m0 WiredTiger, at warwick MMAPv1
+* storageSystem: at m0 WiredTiger w/zlib, at warwick MMAPv1
 
 ## Production 
 
@@ -53,14 +53,15 @@ Ubuntu 14.04 TLS
 
 
 ### MongoDB conf
-storageSystem: WiredTiger
+storageSystem: WiredTiger w/zlib?
 
 ### Disks
 * 10GB disk for the root file system
 * ms stores the DB  (/var/lib/mongodb) on a 1.5TB+ that can be expanded on the fly.
 
 
-
+### Misc:
+* every 15 min the user ```lmfdb``` runs the script ```update_knowls.sh```
 
 
 
