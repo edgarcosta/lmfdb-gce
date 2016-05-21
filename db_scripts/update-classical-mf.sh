@@ -12,8 +12,8 @@ mongorestore -u $WRITE_USER -p $WRITE_PASS --authenticationDatabase modularforms
 done;
 for coll in "dimension_table" "dimension_table.chunks" "dimension_table.files" "webmodformspace" "webmodformspace.chunks" "webmodformspace.files" "webnewforms" "webnewforms.chunks" "webnewforms.files" "webeigenvalues.chunks" "webeigenvalues.files"
 do
-mongo modularforms2 -u $WRITE_USER -p $WRITE_PASS --authenticationDatabase admin --eval "printjson(db.${coll}.renameCollection('old_${coll}'))"
-mongo modularforms2 -u $WRITE_USER -p $WRITE_PASS --authenticationDatabase admin --eval "printjson(db.new_${coll}.renameCollection('${coll}'))"
+mongo modularforms2 -u $WRITE_USER -p $WRITE_PASS --authenticationDatabase modularforms2 --eval "printjson(db.${coll}.renameCollection('old_${coll}'))"
+mongo modularforms2 -u $WRITE_USER -p $WRITE_PASS --authenticationDatabase modularforms2 --eval "printjson(db.new_${coll}.renameCollection('${coll}'))"
 done;
 rm -rf /mnt/tmp/scratch/modularforms2
 echo "After you verify that everything looks good, run clean-classical-mfd.sh to drop the old collections"
