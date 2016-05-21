@@ -20,17 +20,17 @@
 ## Disks
 We are keeping some old disks, until things settle up.
 * data-central: the from lmfdb.warwick.ac.uk/data/ that is not in buckets
-* m*-mongodb* : disks with mongodb databases the sufix "-wt" means wiredTiger, and "-wt-zlib" means wiredTiger with zlib.
+* m\*-mongodb\* : disks with mongodb databases the sufix "-wt" means wiredTiger, and "-wt-zlib" means wiredTiger with zlib.
 More details, see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
  and 
 [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
 * ms-tmp: tmp disk to push data from m0 to ms with mongodump and mongorestore
 
 ## Snapshots
-* golden-*: ready to go image for a root disk to start a www-central* instance.
-* warwick-*: old snapshots from the MongoDB at warwick
-* data-*: to restore data-central
+* golden-\*: ready to go image for a root disk to start a www-central* instance.
+* warwick-\*: old snapshots from the MongoDB at warwick
+* data-central: to restore data-central
 
 ## Images
-* golden-* : used for automatic creation of www-central*
+* golden-\* : used for automatic creation of www-central*
 
