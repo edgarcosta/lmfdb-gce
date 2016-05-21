@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-echo "do we need to worry about the jsons??????"
 echo "Don't forget to set and export READ_USER, READ_PASS, WRITE_USER, WRITE_PASS"
 echo "sleeping 5s"
 sleep 5s
