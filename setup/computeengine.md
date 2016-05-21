@@ -35,22 +35,22 @@
 ### www-central0
 * Goal: serving lmfdb.org, see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
 * Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
-* Disks: www-central0, data (read-only)
+* Disks: www-central0, data-central (read-only)
 
 ### www-central1
 * Goal: serving lmfdb.org, see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
 * Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
-* Disks: www-central1, data (read-only)
+* Disks: www-central1, data-central (read-only)
 
 ### www-central2
 * Goal: benchmarking, soon to be deleted
 * Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
-* Disks: www-central2, data (read-only)
+* Disks: www-central2, data-central (read-only)
 
 ### www-central3
 * Goal: Debugging and testing while reading from ms1
 * Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
-* Disks: www-central3, data (read-only)
+* Disks: www-central3, data-central (read-only)
 
 
 ## Instances groups
