@@ -1,10 +1,10 @@
 # Current setup
 
 Start by reading:
- * [MongoDB setup](setup/mongodb.md)
- * [Webserver setup](setup/webserver.md)
+ * [MongoDB setup](mongodb.md)
+ * [Webserver setup](webserver.md)
  
 For more details read: 
- * [Network setup](setup/network.md)
+ * [Network setup](network.md)
  * [Compute engine](computeengine.md), aka VMs setup
- * [Bucket storage](setup/buckets.md)
+ * [Bucket storage](buckets.md)
