@@ -2,23 +2,23 @@
 
 ## VM instances
 ### arb
-* Goal: arbitrer in the upcoming replica set with just m0 and lmfdb.warwick.ac.uk see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
+* Goal: arbitrer in the upcoming replica set with just m0 and lmfdb.warwick.ac.uk see [MongoDB setup](mongodb.md)
 * Type: f1-micro
 * Disks: arb
 
 ### m0
-* Goal: replicate (with m1 for the moment) the MongoDB server at lmfdb.warwick.ac.uk, see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
+* Goal: replicate (with m1 for the moment) the MongoDB server at lmfdb.warwick.ac.uk, see [MongoDB setup](mongodb.md)
 * Type: n1-highmem-2 (2 vCPUs, 13 GB memory)
 * Disks: m0, m0-mongodb-wt-zlib
 
 ### m1
-* Goal: replicate (with m0) the MongoDB server at lmfdb.warwick.ac.uk, soon to be deleted, see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
+* Goal: replicate (with m0) the MongoDB server at lmfdb.warwick.ac.uk, soon to be deleted, see [MongoDB setup](mongodb.md)
 * Type: n1-highmem-2 (2 vCPUs, 13 GB memory)
 * Disks: m1, m1-mongodb-wt-zlib
 * Comment: it will be deleted once we decide what storage engine to use in ms
 
 ### ms
-* Goal: standalone mongoDB server serving lmfdb.org, see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
+* Goal: standalone mongoDB server serving lmfdb.org, see [MongoDB setup](mongodb.md)
 * Type: n1-highmem-2 (2 vCPUs, 13 GB memory)
 * Disks: ms, ms-mongodb-1, ms-tmp 
 
@@ -28,17 +28,17 @@
 * Disks: ms1, ms1-mongodb, tmp-disk-1
 
 ###  warwick
-* Goal: takes care of the SSH tunnel to lmfdb.warwick.ac.uk, see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
+* Goal: takes care of the SSH tunnel to lmfdb.warwick.ac.uk, see [MongoDB setup](mongodb.md)
 * Type: f1-micro
 * Disks: arb
 
 ### www-central0
-* Goal: serving lmfdb.org, see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
+* Goal: serving lmfdb.org, see [Webserver setup](webserver.md)
 * Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
 * Disks: www-central0, data-central (read-only)
 
 ### www-central1
-* Goal: serving lmfdb.org, see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
+* Goal: serving lmfdb.org, see [Webserver setup](webserver.md)
 * Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
 * Disks: www-central1, data-central (read-only)
 
@@ -54,16 +54,16 @@
 
 
 ## Instances groups
-* www-fronted = { www-central0, www-central1}, see  see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
+* www-fronted = { www-central0, www-central1}, see  see [Webserver setup](webserver.md)
 
 
 ## Disks
 We are keeping some old disks, until things settle up.
 * data-central: the from lmfdb.warwick.ac.uk/data/ that is not in buckets
 * m\*-mongodb\* : disks with mongodb databases the sufix "-wt" means wiredTiger, and "-wt-zlib" means wiredTiger with zlib.
-More details, see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
+More details, see [Webserver setup](webserver.md)
  and 
-[MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
+[MongoDB setup](mongodb.md)
 * ms-tmp: tmp disk to push data from m0 to ms with mongodump and mongorestore
 
 ## Snapshots
