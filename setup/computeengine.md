@@ -1,17 +1,57 @@
 # Compute Engine
 
 ## VM instances
-* arb:  soon to become an arbitrer in the replica set with m0 and lmfdb.warwick.ac.uk, see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
-* m0: it is in the replica set with m1 and lmfdb.warwick.ac.uk, see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
-* m1: soon to be deleted, at the moment it is in the replica set with m0 and lmfdb.warwick.ac.uk, see: [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md) 
-* ms: standalone mongoDB server serving lmfdb.org
-* ms1:  soon to be deleted, standalone monogDB server for tests
-* warwick: takes care of the SSH tunnel to lmfdb.warwick.ac.uk, see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
-* www-central0: in the instance group www-frontend and serving lmfdb.org, see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
+### arb
+* Goal: arbitrer in the upcoming replica set with just m0 and lmfdb.warwick.ac.uk see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
+* Type: f1-micro
+* Disks: arb
 
-* www-central1: in the instance group www-frontend and serving lmfdb.org, see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
-* www-central2: soon to be deleted, now used sporadically for benchmarks
-* www-central3: soon to be deleted, now used sporadically for tests, and has been reading from ms1
+### m0
+* Goal: replicate (with m1 for the moment) the MongoDB server at lmfdb.warwick.ac.uk, see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
+* Type: n1-highmem-2 (2 vCPUs, 13 GB memory)
+* Disks: m0, m0-mongodb-wt-zlib
+
+### m1
+* Goal: replicate (with m0) the MongoDB server at lmfdb.warwick.ac.uk, soon to be deleted, see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
+* Type: n1-highmem-2 (2 vCPUs, 13 GB memory)
+* Disks: m1, m1-mongodb-wt-zlib
+* Comment: it will be deleted once we decide what storage engine to use in ms
+
+### ms
+* Goal: standalone mongoDB server serving lmfdb.org, see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
+* Type: n1-highmem-2 (2 vCPUs, 13 GB memory)
+* Disks: ms, ms-mongodb-1, ms-tmp 
+
+### ms1
+* Goal: standalone monogDB server for tests, soon to be deleted
+* Type: n1-highmem-2 (2 vCPUs, 13 GB memory)
+* Disks: ms1, ms1-mongodb, tmp-disk-1
+
+###  warwick
+* Goal: takes care of the SSH tunnel to lmfdb.warwick.ac.uk, see [MongoDB setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/mongodb.md)
+* Type: f1-micro
+* Disks: arb
+
+### www-central0
+* Goal: serving lmfdb.org, see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
+* Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
+* Disks: www-central0, data (read-only)
+
+### www-central1
+* Goal: serving lmfdb.org, see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
+* Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
+* Disks: www-central1, data (read-only)
+
+### www-central2
+* Goal: benchmarking, soon to be deleted
+* Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
+* Disks: www-central2, data (read-only)
+
+### www-central3
+* Goal: Debugging and testing while reading from ms1
+* Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
+* Disks: www-central3, data (read-only)
+
 
 ## Instances groups
 * www-fronted = { www-central0, www-central1}, see  see [Webserver setup](https://github.com/edgarcosta/lmfdb-gce/blob/master/setup/webserver.md)
