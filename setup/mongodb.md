@@ -5,6 +5,11 @@ There are two MongoDB databases: development and production.
 
 ## Development
 
+
+<a href="images/lmfdb0.png"><img src="images/lmfdb0.png"  height="500"  ></a>
+
+
+
 #### Servers
 The development consists of 3 mongodb servers in a replica set:
 * warwick:37010/lmfdb.warwick.ac.uk:37010
