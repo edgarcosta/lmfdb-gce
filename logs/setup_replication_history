@@ -111,7 +111,7 @@ rs.reconfig(conf)
 
 
 
-# new hosts file :)
+#16 new hosts file :)
 #
 conf = rs.conf()
 conf.members[2].host = "m1:27017"
@@ -125,4 +125,10 @@ rs.reconfig(conf)
 conf = rs.conf()
 conf.members[0].host = "warwick:37010"
 rs.reconfig(conf)
+
+#17 a more relaxed write concern
+
+cfg = rs.conf()
+cfg.settings.getLastErrorDefaults = { w: "majority", wtimeout: 15000 }
+rs.reconfig(cfg)
 
