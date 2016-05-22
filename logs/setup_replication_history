@@ -7,8 +7,8 @@ on warwick do:
 
 on every server do:
 mongo warwick.lmfdx.xyz:37010
-mongo m0.lmfdx.xyz:37010
-mongo m1.lmfdx.xyz:37010
+mongo m0.lmfdx.xyz:27017
+mongo m1.lmfdx.xyz:27017
 
 
 #2 double check the keyfiles
