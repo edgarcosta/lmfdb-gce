@@ -1,10 +1,14 @@
 # Current setup
 
-Start by reading:
- * [MongoDB setup](mongodb.md)
- * [Webserver setup](webserver.md)
+## [MongoDB setup](mongodb.md)
+ <a href="images/lmfdb0.png"><img src="images/lmfdb0.png"  height="300"  ></a>
  
-For more details read: 
- * [Network setup](network.md)
- * [Compute engine](computeengine.md), aka VMs setup
- * [Bucket storage](buckets.md)
+## [Webserver setup](webserver.md)
+ <a href="images/lmfdb0.png"><img src="images/webserver.png"  height="300"  ></a>
+ 
+
+More details: 
+ 
+* [Network setup](network.md)
+* [Compute engine](computeengine.md), aka VMs setup
+* [Bucket storage](buckets.md)
