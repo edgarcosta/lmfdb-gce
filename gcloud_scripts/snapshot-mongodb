@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -e
 DATE=$(date +"%Y-%m-%d-%H%M")
-echo "Creating snapshot from m0-mongodb"
-gcloud compute disks snapshot m0-mongodb --snapshot-names m0-mongodb-$DATE
-echo "Creating snapshot from m1-mongodb"
-gcloud compute disks snapshot m1-mongodb --snapshot-names m1-mongodb-$DATE
+echo "Creating snapshot from m0-mongodb-wt-zlib"
+gcloud compute disks snapshot m0-mongodb-wt-zlib --snapshot-names m0-mongodb-wt-zlib-$DATE
+echo "Creating snapshot from m1-mongodb-wt-zlib"
+gcloud compute disks snapshot m1-mongodb-wt-zlib --snapshot-names m1-mongodb-wt-zlib-$DATE
 set +e
 
