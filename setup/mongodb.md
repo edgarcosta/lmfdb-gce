@@ -36,7 +36,7 @@ Ubuntu 14.04 TLS
 
 ### MongoDB conf
 * warwick: priority: 2
-* readPreference: { "w" : "majority", wtimeout" : 5000 }, this forces that writes at warwick must be acknowledged by m0, before you can keep writing
+* readPreference: { "w" : "majority", wtimeout" : 15000 }, this forces that writes at warwick must be acknowledged by m0, before you can keep writing
 * storageSystem: at m0 WiredTiger with zlib, at warwick MMAPv1
 
 ## Production 
