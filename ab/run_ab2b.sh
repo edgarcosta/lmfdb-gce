@@ -2,7 +2,7 @@
 
 N=20000
 C=3
-base_url='http://www.lmfdb.org'
+base_url='http://www-central2.lmfdb.xyz'
 lmfdb_urls=(
 '/L/degree1/'
 '/L/degree2/'

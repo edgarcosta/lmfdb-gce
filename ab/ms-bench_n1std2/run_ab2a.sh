@@ -1,23 +1,19 @@
 #!/bin/bash
 
 N=2000
-C=3
+C=1
 base_url='http://www-central2.lmfdb.xyz'
 lmfdb_urls=(
 '/EllipticCurve/browse/'
 '/EllipticCurve/Q/stats'
 '/NumberField/?ram_primes=11'
 '/Genus2Curve/Q/stats'
-'/ModularForm/GL2/Q/holomorphic/23/38/1/?group=0'
-'/ModularForm/GL2/Q/holomorphic/23/38/1/a/'
-'/ModularForm/GL2/Q/holomorphic/23/40/1/?group=0'
-'/ModularForm/GL2/Q/holomorphic/23/40/1/a/'
 )
 
 for u in ${lmfdb_urls[@]}; do
     url=${base_url}${u}
     ufname="n1std2_wt_${u//\//_}${C}_${N}"
-    xterm -T "${u}" -e "ab -r -k -g ${ufname}.tsv -c$C -n$N ${url};read" &
+    xterm -T "${u}" -e "ab -r -t 150 -k -g ${ufname}.tsv -c$C -n$N ${url};read" &
     #xterm -e "ab -c$C -n$N ${u};read" &
 done
 
