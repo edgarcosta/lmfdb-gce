@@ -12,4 +12,4 @@ logfile = '/home/lmfdb/logs/beta/flasklog'
 raw_env = ['BETA=1']
 default_proc_name = 'lmfdb-beta'
 timeout = 30
-max_requests = 100
+max_requests = 1000

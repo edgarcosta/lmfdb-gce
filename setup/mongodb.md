@@ -36,10 +36,12 @@ Ubuntu 14.04 TLS
 
 ### MongoDB conf
 * warwick: priority: 2
-* readPreference: { "w" : "majority", wtimeout" : 5000 }, this forces that writes at warwick must be acknowledged by m0, before you can keep writing
+* readPreference: { "w" : "majority", wtimeout" : 15000 }, this forces that writes at warwick must be acknowledged by m0, before you can keep writing
 * storageSystem: at m0 WiredTiger with zlib, at warwick MMAPv1
 
 ## Production 
+
+<a href="images/webserver.png"><img src="images/webserver.png"  height="500"  ></a>
 
 ### Servers
 The Production mongodb only uses one server:
@@ -57,7 +59,7 @@ storageSystem: WiredTiger with zlib (TBD)
 
 ### Disks
 * 10GB disk for the root file system
-* ms stores the DB  (/var/lib/mongodb) on a 10TB that can be expanded on the fly.
+* ms stores the DB  (/var/lib/mongodb) on a 1.0TB that can be expanded on the fly.
 
 
 ### Misc:
