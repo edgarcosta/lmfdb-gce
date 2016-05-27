@@ -14,12 +14,12 @@
 
 # output as png image
 set terminal pngcairo size 1000,800
-set output 'ab_hist_gunicorn_L_degree2.png'
+set output 'ab_hist_gunicorn_nodb.png'
 set datafile separator '\t'
 
 # The graph title
 set title "Apache Benchmark"
-set label "www-central2.lmfdb.xyz/L/degree2" at graph 0.05, 0.95
+set label "www-central2.lmfdb.xyz/zeroes/zeta" at graph 0.05, 0.95
 
 # Draw gridlines oriented on the y axis
 set grid y
@@ -40,11 +40,13 @@ set ylabel "Requests"
 set style fill transparent solid 0.3 noborder
 
 set yrange [0:*]
-set xrange [0:500]
+set xrange [0:100]
 bin(x,bwidth) = bwidth*floor(x/bwidth)
 bwidth=1
 plot \
-"wt_sync__L_degree2_5_10000.tsv" using (bin($5,bwidth)):(1) every ::1 smooth frequency with boxes title 'sync (no keepalive)', \
-"wt_eventlet_ka__L_degree2_5_10000.tsv" using (bin($5,bwidth)):(1) every ::1 smooth frequency with boxes title 'eventlet (keepalive)', \
-"wt_gevent_ka__L_degree2_5_10000.tsv" using (bin($5,bwidth)):(1) every ::1 smooth frequency with boxes title 'gevent (keepalive)'
-
+"nodb_eventlet_ka__zeros_zeta_5_10000.tsv" using (bin($5,bwidth)):(1) every ::1 smooth frequency with boxes title 'eventlet (keepalive)', \
+"nodb_gevent_ka__zeros_zeta_5_10000.tsv" using (bin($5,bwidth)):(1) every ::1 smooth frequency with boxes title 'gevent (keepalive)'
+#"nodb_eventlet_ka__NumberField_QuadraticImaginaryClassGroups5_10000.tsv" using (bin($5,bwidth)):(1) every ::1 smooth frequency with boxes title 'eventlet (keepalive)', \
+#"nodb_eventlet_ka__universe5_10000.tsv" using (bin($5,bwidth)):(1) every ::1 smooth frequency with boxes title 'eventlet (keepalive)', \
+#"nodb_gevent_ka__NumberField_QuadraticImaginaryClassGroups5_10000.tsv" using (bin($5,bwidth)):(1) every ::1 smooth frequency with boxes title 'gevent (keepalive)', \
+#"nodb_gevent_ka__universe5_10000.tsv" using (bin($5,bwidth)):(1) every ::1 smooth frequency with boxes title 'gevent (keepalive)', \
