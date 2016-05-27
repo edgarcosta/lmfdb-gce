@@ -3,16 +3,19 @@
 N=10000
 C=5
 base_url='http://www-central2.lmfdb.xyz'
+_lmfdb_urls=(
+'/EllipticCurve/browse/'
+)
+
 lmfdb_urls=(
-'/L/degree1/'
-'/L/degree2/'
-'/L/degree3/'
-'/L/degree4/'
+'/universe'
+'/NumberField/QuadraticImaginaryClassGroups'
+'/zeros/zeta/'
 )
 
 for u in ${lmfdb_urls[@]}; do
     url=${base_url}${u}
-    ufname="wt_gevent_ka_${u//\//_}${C}_${N}"
+    ufname="nodb_eventlet_ka_${u//\//_}${C}_${N}"
     xterm -T "${u}" -e "ab -r -k -g ${ufname}.tsv -c$C -n$N ${url};read" &
 done
 
@@ -35,3 +38,10 @@ done
 #> http://beta.lmfdb.org/ModularForm/GL2/Q/holomorphic/23/38/1/a/
 #> http://beta.lmfdb.org/ModularForm/GL2/Q/holomorphic/23/40/1/?group=0
 #> http://beta.lmfdb.org/ModularForm/GL2/Q/holomorphic/23/40/1/a/
+
+#> There aren't many that have no DB involved at all, but you might try this
+#> one:
+#>
+#> http://www.lmfdb.org/universe
+#> http://lmfdb.org/NumberField/QuadraticImaginaryClassGroups
+#> http://lmfdb.org/zeros/zeta/
