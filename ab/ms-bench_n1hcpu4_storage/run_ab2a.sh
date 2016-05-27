@@ -4,17 +4,17 @@ N=10000
 C=5
 base_url='http://www-central2.lmfdb.xyz'
 lmfdb_urls=(
-'/L/ModularForm/GL2/Q/holomorphic/5/6/4/a/0/'
+'/L/degree1/'
+'/L/degree2/'
+'/L/degree3/'
+'/L/degree4/'
 )
 
 for u in ${lmfdb_urls[@]}; do
     url=${base_url}${u}
-    ufname="n1hcpu4_wtzl_${u//\//_}${C}_${N}"
+    ufname="n1hcpu4_mmap_${u//\//_}${C}_${N}"
     xterm -T "${u}" -e "ab -r -g ${ufname}.tsv -c$C -n$N ${url};read" &
-    #xterm -e "ab -c$C -n$N ${u};read" &
 done
-
-#exit
 
 #> Pages that hist the database lightly/moderately would be:
 #>
