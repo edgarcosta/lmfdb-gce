@@ -1,5 +1,4 @@
-/etc/logrotate.d/mongodb:
-
+# Add "systemLog.logRotate: reopen" to mongod.conf!
 /var/log/mongodb/*.log {
     daily
     rotate 30
@@ -14,13 +13,4 @@
         /bin/kill -SIGUSR1 `cat /var/lib/mongo/mongod.lock 2> /dev/null` 2> /dev/null || true
     endscript
 }
-
-/etc/mongodb.conf: add "logRotate: reopen" (needed when rotating from OS)
-
-# where to write logging data.
-systemLog:
-  destination: file
-  logAppend: true
-  logRotate: reopen
-  path: /var/log/mongodb/mongod.log
 
