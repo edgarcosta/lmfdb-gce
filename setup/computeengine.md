@@ -39,25 +39,25 @@
 
 ### www-central0
 * Goal: serving lmfdb.org, see [Webserver setup](webserver.md)
-* Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
+* Type: n1-standard-2 
 * Disks: www-central0, data-central (read-only)
 * Comments: at boot fetchs and runs the startup script with [get_startup_and_run.sh](lmfdb-gce/server_scripts/get_startup_and_run.sh)
 
 ### www-central1
 * Goal: serving lmfdb.org, see [Webserver setup](webserver.md)
-* Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
+* Type: n1-standard-2 
 * Disks: www-central1, data-central (read-only)
 * Comments: at boot fetchs and runs the startup script with [get_startup_and_run.sh](lmfdb-gce/server_scripts/get_startup_and_run.sh)
 
 ### www-central2
 * Goal: benchmarking, soon to be deleted
-* Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
+* Type: n1-standard-2 
 * Disks: www-central2, data-central (read-only)
 * Comments: at boot fetchs and runs the startup script with [get_startup_and_run.sh](lmfdb-gce/server_scripts/get_startup_and_run.sh)
 
 ### www-central3
 * Goal: Debugging and testing while reading from ms1
-* Type: n1-highcpu-4 (perhaps soon to be n1-highcpu-2?)
+* Type: n1-standard-2 
 * Disks: www-central3, data-central (read-only)
 * Comments: at boot fetchs and runs the startup script with [get_startup_and_run.sh](lmfdb-gce/server_scripts/get_startup_and_run.sh)
 

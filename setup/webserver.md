@@ -17,11 +17,8 @@
 * www-central1.lmfdb.xyz
 
 ## Instances Specs
-* Now n1-highcpu-4 at first, then n1-highcpu-2
+* Now n1-standard-2: 2CPUs, 7.5 GB of memory 
 
-Ref: https://cloud.google.com/compute/docs/machine-types
-* n1-highcpu-2: 2 CPUs, 1.8 GB of memory. 
-* n1-highcpu-4: 4 CPUs, 3.6 GB of memory.
 
 ## Operating system
 Ubuntu 14.04 TLS
