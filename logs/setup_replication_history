@@ -132,3 +132,19 @@ cfg = rs.conf()
 cfg.settings.getLastErrorDefaults = { w: "majority", wtimeout: 15000 }
 rs.reconfig(cfg)
 
+
+#18 switch m1 for arb
+@ m1
+db.shutdownServer()
+
+@warwick
+
+rs.remove("m1:27017")
+rs.addArb("arb:27017")
+
+#19 increase timeout. decrease m0 priority
+#
+lmfdb0:PRIMARY> cfg = rs.conf()
+lmfdb0:PRIMARY> cfg.settings.heartbeatTimeoutSecs = 30
+lmfdb0:PRIMARY> cfg.members[1].priority = 0
+lmfdb0:PRIMARY> rs.reconfig(cfg)
