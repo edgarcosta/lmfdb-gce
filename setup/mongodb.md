@@ -50,22 +50,24 @@ The Production mongodb only uses one server:
 * ms:27017 aka ms.lmfdb.xyz:27017
 
 ### Instance Specs
-* ms.lmfdb.xyz: n1-highmem-2, 2 CPUs, 13 GB of memory (can easily be increased)
+* ms.lmfdb.xyz: n1-highmem-4 (4 vCPUs, 26 GB memory)
 
 ### Operating system
 Ubuntu 14.04 TLS
 
 
 ### MongoDB conf
-storageSystem: WiredTiger with zlib (TBD)
+storageSystem: WiredTiger with zlib 
 
 ### Disks
 * 10GB disk for the root file system
-* ms stores the DB  (/var/lib/mongodb) on a 1.0TB that can be expanded on the fly.
+* ms-mongodb-wt-zlib stores the DB  (/var/lib/mongodb) on a 500GB that can be expanded on the fly.
+* ms-tmp 250GB disk for performing data pushes
+* ms1-mongodb-wt-zlib 300GB with an old snapshot for performing tests if necessary.
 
 
 ### Misc:
 * every 15 min the user ```lmfdb``` runs the script ```update_knowls.sh```
-
-
+* to run a temporary test server do ```sudo mongodb -c "mongodb -f /etc/mongod-ms1-34567.conf"```
+* to update the snapshot do ```sudo rsync -avz /var/lib/mongodb /mnt/ms1/ --progress```
 
