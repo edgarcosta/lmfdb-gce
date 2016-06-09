@@ -63,7 +63,7 @@ storageSystem: WiredTiger with zlib
 * 10GB disk for the root file system
 * ms-mongodb-wt-zlib stores the DB  (/var/lib/mongodb) on a 500GB that can be expanded on the fly.
 * ms-tmp 250GB disk for performing data pushes
-* ms1-mongodb-wt-zlib 300GB with an old snapshot for performing tests if necessary.
+* ms1-mongodb-wt-zlib 300GB with an old snapshot for performing tests when necessary.
 
 
 ### Misc:
