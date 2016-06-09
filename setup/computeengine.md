@@ -12,24 +12,12 @@
 * Disks: m0, m0-mongodb-wt-zlib
 * Misc: Storage engine: wiredTiger w/zlib
 
-### m1
-* Goal: replicate (with m0) the MongoDB server at lmfdb.warwick.ac.uk, soon to be deleted, see [MongoDB setup](mongodb.md)
-* Type: n1-highmem-2 (2 vCPUs, 13 GB memory)
-* Disks: m1, m1-mongodb-wt-zlib
-* Misc: Storage engine: wiredTiger w/zlib
-* Comment: it will be deleted once we decide what storage engine to use in ms
-
 ### ms
 * Goal: standalone mongoDB server serving lmfdb.org, see [MongoDB setup](mongodb.md)
 * Type: n1-highmem-2 (2 vCPUs, 13 GB memory)
-* Disks: ms, ms-mongodb-1, ms-tmp 
-* Misc: Storage engine: MMAPv1
+* Disks: ms, ms-mongodb-wt-zlib, ms-tmp, ms1-mongodb-wt-zlib
+* Misc: Storage engine: wiredTiger w/zlib
 
-### ms1
-* Goal: standalone monogDB server for tests, soon to be deleted
-* Type: n1-highmem-2 (2 vCPUs, 13 GB memory)
-* Disks: ms1, ms1-mongodb, tmp-disk-1
-* Misc: Storage engine: MMAPv1
 
 ###  warwick
 * Goal: takes care of the SSH tunnel to lmfdb.warwick.ac.uk, see [MongoDB setup](mongodb.md)
@@ -74,6 +62,7 @@ More details, see [Webserver setup](webserver.md)
  and 
 [MongoDB setup](mongodb.md)
 * ms-tmp: tmp disk to push data from m0 to ms with mongodump and mongorestore
+* ms1-mongodb-wt-zlib old snapshot of the DB for tests
 
 ## Snapshots
 * golden-\*: ready to go image for a root disk to start a www-central* instance.
