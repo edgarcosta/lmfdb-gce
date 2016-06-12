@@ -68,6 +68,6 @@ storageSystem: WiredTiger with zlib
 
 ### Misc:
 * every 15 min the user ```lmfdb``` runs the script ```update_knowls.sh```
-* to run a temporary test server do ```sudo mongodb -c "mongodb -f /etc/mongod-ms1-34567.conf"```
+* to run a temporary test server do ```sudo su mongodb -s /bin/bash -c "mongod -f /etc/mongod-ms1-34567.conf"```
 * to update the snapshot do ```sudo rsync -avz /var/lib/mongodb /mnt/ms1/ --progress```
 
