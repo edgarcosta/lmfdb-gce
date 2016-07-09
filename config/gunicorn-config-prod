@@ -10,5 +10,5 @@ loglevel = 'info' # change to 'debug' for more output
 logfile = '/home/lmfdb/logs/prod/flasklog'
 #
 default_proc_name = 'lmfdb-prod'
-timeout = 30
+timeout = 25 
 max_requests = 1000
