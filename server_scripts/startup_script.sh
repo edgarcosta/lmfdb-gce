@@ -8,5 +8,8 @@ su lmfdb -c "gcsfuse --type-cache-ttl "1h" --stat-cache-ttl "1h" class-groups-qu
 #updating gits files
 su lmfdb -c "cd /home/lmfdb/lmfdb-gce/ && git fetch && git checkout -f origin/master"
 su lmfdb -c "bash /home/lmfdb/lmfdb-gce/scripts/lmfdb_fetch.sh"
+#logrotate might mess up with the logs ownership and permissions
+chown lmfdb -R /home/lmfdb/logs
+chown u+w -R /home/lmfdb/logs
 su lmfdb -c "bash /home/lmfdb/start-prod"
 set +e
