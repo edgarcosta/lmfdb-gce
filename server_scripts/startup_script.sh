@@ -7,9 +7,11 @@ su lmfdb -c "gcsfuse --type-cache-ttl "1h" --stat-cache-ttl "1h" riemann-zeta-ze
 su lmfdb -c "gcsfuse --type-cache-ttl "1h" --stat-cache-ttl "1h" class-groups-quadratic-imaginary-fields-nearline /home/lmfdb/buckets/class-groups-quadratic-imaginary-fields/"
 #updating gits files
 su lmfdb -c "cd /home/lmfdb/lmfdb-gce/ && git fetch && git checkout -f origin/master"
+set +e
 su lmfdb -c "bash /home/lmfdb/lmfdb-gce/scripts/lmfdb_fetch.sh"
+set -e
 #logrotate might mess up with the logs ownership and permissions
 chown lmfdb -R /home/lmfdb/logs
-chown u+w -R /home/lmfdb/logs
+chmod u+w -R /home/lmfdb/logs
 su lmfdb -c "bash /home/lmfdb/start-prod"
 set +e
