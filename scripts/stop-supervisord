@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+echo 'Killing supervisord ...'
+kill -TERM `cat /home/lmfdb/supervisord.pid`
+echo '... and done!'

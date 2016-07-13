@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+supervisord -c /home/lmfdb/lmfdb-gce/config/supervisord.conf
