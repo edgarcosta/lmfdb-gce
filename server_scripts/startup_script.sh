@@ -13,5 +13,5 @@ set -e
 #logrotate might mess up with the logs ownership and permissions
 chown lmfdb -R /home/lmfdb/logs
 chmod u+w -R /home/lmfdb/logs
-su lmfdb -c "supervisord -c /home/lmfdb/lmfdb-gce/config/supervisord.conf"
+su lmfdb -c "bash /home/lmfdb/lmfdb-gce/scripts/start-supervisord"
 set +e
