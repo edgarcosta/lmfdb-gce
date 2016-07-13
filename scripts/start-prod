@@ -12,7 +12,7 @@ export GIT_WORK_TREE='/home/lmfdb/lmfdb-git-prod'
 cd $GIT_WORK_TREE
 while true; do
     echo 'gunicorn -c gunicorn-config-prod lmfdb.website:app'
-    exec $SAGE -sh -c 'gunicorn -c gunicorn-config-prod lmfdb.website:app' 
+    exec $SAGE -sh -c 'cd $GIT_WORK_TREE; gunicorn -c gunicorn-config-prod lmfdb.website:app' 
     date
     sleep 10s;
 done
