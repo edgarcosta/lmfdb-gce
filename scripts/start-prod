@@ -2,6 +2,7 @@
 
 _term() { 
   echo "Caught SIGTERM signal!" 
+  kill -TERM `cat /home/lmfdb/gunicorn-prod.pid`
   kill -TERM "$child" 2>/dev/null
 }
 
