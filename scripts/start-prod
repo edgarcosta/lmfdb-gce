@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+_term() { 
+  echo "Caught SIGTERM signal!" 
+  kill -TERM "$child" 2>/dev/null
+}
+
+trap _term SIGTERM
+
+
 SAGE_ROOT=/home/sage/sage-root
 SAGE=$SAGE_ROOT/sage
 
@@ -12,7 +20,9 @@ export GIT_WORK_TREE='/home/lmfdb/lmfdb-git-prod'
 cd $GIT_WORK_TREE
 while true; do
     echo 'gunicorn -c gunicorn-config-prod lmfdb.website:app'
-    exec $SAGE -sh -c 'cd $GIT_WORK_TREE; gunicorn -c gunicorn-config-prod lmfdb.website:app' 
+    $SAGE -sh -c 'cd $GIT_WORK_TREE; gunicorn -c gunicorn-config-prod lmfdb.website:app' &
+    child=$!
+    wait "$child"
     date
     sleep 10s;
 done
