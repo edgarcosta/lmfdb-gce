@@ -1,7 +1,7 @@
 bind = "0.0.0.0:8080"
 workers = 5
 SESSION_PROTECTION = None
-daemon = True
+#daemon = True
 pidfile = '/home/lmfdb/gunicorn-prod.pid'
 # 
 errorlog = '/home/lmfdb/logs/prod/errorlog'

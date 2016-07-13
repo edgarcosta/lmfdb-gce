@@ -13,5 +13,5 @@ set -e
 #logrotate might mess up with the logs ownership and permissions
 chown lmfdb -R /home/lmfdb/logs
 chmod u+w -R /home/lmfdb/logs
-su lmfdb -c "bash /home/lmfdb/start-prod"
+su lmfdb -c "nohup bash /home/lmfdb/start-prod &"
 set +e

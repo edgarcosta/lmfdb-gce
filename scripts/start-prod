@@ -10,4 +10,9 @@ export TEXINPUTS=.:$SAGE_ROOT/local/share/texmf:
 
 export GIT_WORK_TREE='/home/lmfdb/lmfdb-git-prod'
 cd $GIT_WORK_TREE
-echo 'gunicorn -c gunicorn-config-prod lmfdb.website:app' | $SAGE -sh
+while true; do
+    echo 'gunicorn -c gunicorn-config-prod lmfdb.website:app' | $SAGE -sh;
+    date
+    sleep 10s;
+done
+
