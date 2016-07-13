@@ -27,7 +27,12 @@ sudo su lmfdb -c "mkdir -p /home/lmfdb/data"
 
 #install git
 sudo apt-get update 
-sudo apt-get install git
+sudo apt-get install -y git
+
+#install supervisord
+sudo apt-get install -y supervisord
+sudo update-rc.d supervisor disable
+
 
 
 # clone git
@@ -48,8 +53,6 @@ echo "# sudo su sage -c \"rsync -av --progress /home/sage/image/ /home/sage/\""
 
 
 echo "Now you can start lmfdb with:" 
-echo "# sudo su lmfdb -c \"/home/lmfdb/start-beta\"" 
-echo "or" 
-echo "# sudo su lmfdb -c \"/home/lmfdb/start-beta\"" 
+echo "# sudo su lmfdb -c \"/home/lmfdb/start-supervisord\"" 
 
 set +e

@@ -1,10 +1,13 @@
 # htop
 sudo apt-get update
-sudo apt-get install htop
+sudo apt-get install -y htop
 
 #install prerequisitives for sage
 sudo apt-get update
-sudo apt-get install binutils gcc g++ gfortran make m4 perl tar git libssl-dev
+sudo apt-get  install -y binutils gcc g++ gfortran make m4 perl tar git libssl-dev 
+sudo apt-get install -y supervisord
+sudo update-rc.d supervisor disable
+
 
 #install gcfuse
 export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
@@ -40,7 +43,7 @@ bash ~/lmfdb-gce/server_scripts/mount.sh
 #now switch to lmfdb
 sudo su lmfdb
 cd
-mkdir -p /home/lmfdb/logs/beta /home/lmfdb/logs/prod 
+mkdir -p /home/lmfdb/logs/beta /home/lmfdb/logs/prod /home/lmfdb/logs/supervisord/ 
 git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-beta
 git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-prod
 
@@ -63,15 +66,18 @@ crontab  /home/lmfdb/lmfdb-gce/scripts/crontab
 
 #linking (re)start and stop scripts
 ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/start-beta 
-ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/start-prod 
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/start-prod
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-supervisord /home/lmfdb/start-supervisord
 ln -s /home/lmfdb/lmfdb-gce/scripts/restart-beta /home/lmfdb/restart-beta 
 ln -s /home/lmfdb/lmfdb-gce/scripts/restart-prod /home/lmfdb/restart-prod 
+ln -s /home/lmfdb/lmfdb-gce/scripts/stop-supervisord /home/lmfdb/stop-supervisord
+
 
 #linking config files
 ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-beta /home/lmfdb/lmfdb-git-beta 
 ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-prod /home/lmfdb/lmfdb-git-prod 
-ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_lmfdb0.config  /home/lmfdb/lmfdb-git-beta/mongoclient.config 
-ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_lmfdb0.config  /home/lmfdb/lmfdb-git-prod/mongoclient.config
+ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_ms.config  /home/lmfdb/lmfdb-git-beta/mongoclient.config 
+ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_ms.config  /home/lmfdb/lmfdb-git-prod/mongoclient.config
 
 
 # Read Password
