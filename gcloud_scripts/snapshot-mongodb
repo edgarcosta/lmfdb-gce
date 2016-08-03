@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
+#for crontab
+PATH="/usr/local/sbin:$PATH"
 DATE=$(date +"%Y-%m-%d-%H%M")
+echo $DATE
+
 echo "Creating snapshot from m0-mongodb-wt-zlib"
 gcloud compute disks snapshot m0-mongodb-wt-zlib --snapshot-names m0-mongodb-wt-zlib-$DATE
 echo "Creating snapshot from ms-mongodb-wt-zlib"
