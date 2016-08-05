@@ -30,4 +30,5 @@ Ubuntu 14.04 TLS
 
 ## Gunicorn conf
 * workers: 2*#cores + 1
-* for now sync, in the future asycn with keepalive?
+* for now sync, in the future asycn with keepalive
+* we are also using supervisord to restart gunicorn running in case something goes wrong
