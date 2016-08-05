@@ -15,6 +15,8 @@ fi
 if [ -n "$1" ]
 then
     echo "Compiling version $1"
+else
+    echo "Needs at least on argument, the version desired"; exit 1;
 fi
 
 echo "Sleeping 5s"
