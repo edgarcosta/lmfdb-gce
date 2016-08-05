@@ -57,8 +57,8 @@ for coll in ${COLLECTIONS[@]}; do
 done
 for coll in ${COLLECTIONS[@]}; do
   echo "Renaming ${coll} to ${coll}.old and ${newcoll} to ${coll} in cloud database ${DB}..."
-  mongo $DB -u editor -p $EDITOR_PASS --authenticationDatabase $DB --eval "printjson(db.${coll}.renameCollection('${coll}.old'))"
-  mongo $DB -u editor -p $EDITOR_PASS --authenticationDatabase $DB --eval "printjson(db.${newcoll}.renameCollection('${coll}'))"
+  mongo $DB -u admin -p $ADMIN_PASS --authenticationDatabase admin --eval "printjson(db.${coll}.renameCollection('${coll}.old'))"
+  mongo $DB -u admin -p $ADMIN_PASS --authenticationDatabase admin --eval "printjson(db.${newcoll}.renameCollection('${coll}'))"
 done
 rm -rf /mnt/tmp/scratch/$DB
 echo "...update complete."
