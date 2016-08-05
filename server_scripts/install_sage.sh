@@ -29,8 +29,8 @@ tar xf sage-${version}.tar.gz
 cd sage-${version} 
 #it can get stuck here while building documentation
 MAKE="make -j${j}" make 
-make ptest 
-make ptestlong 
+make test 
+make testlong 
 ./sage -i gap_packages 
 ./sage -i database_gap 
 ./sage -i pip 
