@@ -24,7 +24,7 @@ sleep 5s;
 
 version=$1
 #sudo apt-get install binutils gcc g++ gfortran make m4 perl tar git libssl-dev
-wget http://mirrors.xmission.com/sage/src/sage-${version}.tar.gz 
+wget -nc http://mirrors.xmission.com/sage/src/sage-${version}.tar.gz 
 tar xf sage-${version}.tar.gz
 cd sage-${version} 
 #it can get stuck here while building documentation
