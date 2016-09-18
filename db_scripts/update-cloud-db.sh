@@ -56,6 +56,7 @@ for coll in ${COLLECTIONS[@]}; do
   mongorestore -u editor -p $EDITOR_PASS --authenticationDatabase $DB --db $DB --collection $newcoll /mnt/tmp/scratch/${DB}/${coll}.bson
 done
 for coll in ${COLLECTIONS[@]}; do
+  newcoll=${coll}.new
   echo "Renaming ${coll} to ${coll}.old and ${newcoll} to ${coll} in cloud database ${DB}..."
   mongo $DB -u admin -p $ADMIN_PASS --authenticationDatabase admin --eval "printjson(db.${coll}.renameCollection('${coll}.old'))"
   mongo $DB -u admin -p $ADMIN_PASS --authenticationDatabase admin --eval "printjson(db.${newcoll}.renameCollection('${coll}'))"
