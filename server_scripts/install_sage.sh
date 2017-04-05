@@ -43,6 +43,6 @@ wget https://raw.githubusercontent.com/LMFDB/lmfdb/master/requirements.txt
 cd .. 
 chmod a+rX -R sage-${version} 
 echo "If you want this to be the new version to be used, don't forget to do:" 
-echo "$ rm sage-root && ln -s sage-${version}" 
+echo "$ rm ~/sage-root && ln -s sage-${version} ~/sage-root" 
 set +e
 
