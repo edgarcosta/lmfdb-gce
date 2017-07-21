@@ -37,7 +37,7 @@ Ubuntu 14.04 TLS
 ### MongoDB conf
 * warwick: priority: 2
 * m0: priority 0 (won't ever become a primary server)
-* [Write Concern][https://docs.mongodb.com/manual/reference/write-concern/]: { "w" : "majority", wtimeout" : 15000 }, this forces that writes at warwick must be acknowledged by m0 in 15s, before you can keep writing
+* [Write Concern](https://docs.mongodb.com/manual/reference/write-concern/): { "w" : "majority", wtimeout" : 15000 }, this forces that writes at warwick must be acknowledged by m0 in 15s, before you can keep writing
 * settings.heartbeatTimeoutSecs = 30
 * storageSystem: at m0 WiredTiger with zlib, at warwick MMAPv1
 
