@@ -1,3 +1,4 @@
+abvar="fq_isog fq_isog.stats fq_isog.rand"
 artin="representations representations.rand field_data"
 bmfs="dimensions forms forms.rand"
 curve_automorphisms="passports passports.rand"
