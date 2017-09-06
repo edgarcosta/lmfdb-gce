@@ -3,7 +3,7 @@
 # change to script's dir
 #cd `dirname "$0"`
 
-echo 'restarting beta server'
+echo 'restarting prod server'
 
 # restart server
 kill -HUP `cat ~/gunicorn-prod.pid`
