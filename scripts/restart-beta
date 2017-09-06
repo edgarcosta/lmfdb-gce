@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # change to script's dir
-cd `dirname "$0"`
+#cd `dirname "$0"`
 
 echo 'restarting beta server'
 
 # restart server
-kill -HUP `cat gunicorn-beta.pid`
+kill -HUP `cat ~/gunicorn-beta.pid`
 
 echo '... done'

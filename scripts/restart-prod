@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
-#jump to script's directory
-cd `dirname "$0"`
-echo 'restarting actual production server ...'
-kill -HUP `cat gunicorn-prod.pid`
-echo '... and done!'
+
+# change to script's dir
+#cd `dirname "$0"`
+
+echo 'restarting beta server'
+
+# restart server
+kill -HUP `cat ~/gunicorn-prod.pid`
+
+echo '... done'
