@@ -48,6 +48,6 @@ if [[ $response != "y" ]]; then
   exit
 fi
 for coll in ${COLLECTIONS[@]}; do
-  eval mongo $DB -u admin -p $ADMIN_PASS --authenticationDatabase admin --eval '\"printjson(db.getCollection('${coll}.old').drop())\"'
+  eval mongo $DB -u admin -p $ADMIN_PASS --authenticationDatabase admin --eval "\"printjson(db.getCollection('${coll}.old').drop())\""
 done
 rm -rf /mnt/tmp/scratch/$DB
