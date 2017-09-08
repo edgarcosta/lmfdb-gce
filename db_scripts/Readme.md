@@ -4,10 +4,11 @@ The script `update-cloud-db.sh` lets you specify a database and an optional list
 This script needs to be run from an account on ms.lmfdb.xyz from a directory that contains the files `update-cloud-db.sh` and `db-collections.txt` (part of this project), as well as a file called `passwords.txt` of the form:
 
 ```
-LMFDB_PASS="actual-password-goes-here"
-EDITOR_PASS="actual-password-goes-here"
-ADMIN_PASS="actual-password-goes-here"
+LMFDB_PASS="\"actual password goes here\""
+EDITOR_PASS="\"actual password goes here\""
+ADMIN_PASS="\"actual password goes here\""
 ```
+(the double quotes avoid the need of escaping most of the special characters)
 
 For example, to copy all collections in the elliptic_curves database you would use
 
