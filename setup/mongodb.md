@@ -24,7 +24,7 @@ warwick.lmfdb.xyz is a dummy server that forwards the traffic from the cloud ser
 ### Instances Specs
 * warwick.lmfdb.xyz: f1-micro, 1 shared CPU, 0.60 GB of memory
 * arb.lmfdb.xyz: f1-micro, 1 shared CPU, 0.60 GB of memory
-* m0.lmfdb.xyz: n1-highmem-2, 2 CPUs, 13 GB of memory
+* m0.lmfdb.xyz: n1-highmem-4, (4 vCPUs, 26 GB memory)
 
 
 ### Operating system
