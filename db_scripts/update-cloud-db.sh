@@ -50,16 +50,16 @@ fi
 echo "Beginning update..."
 for coll in ${COLLECTIONS[@]}; do
   echo "Dumping collection ${coll} in database ${DB} from m0..."
-  eval mongodump --host m0 -u lmfdb -p $LMFDB_PASS --authenticationDatabase admin -o /mnt/tmp/scratch --db $DB --collection $coll
+  mongodump --host "m0" -u "lmfdb" -p "$LMFDB_PASS" --authenticationDatabase admin -o /mnt/tmp/scratch --db $DB --collection $coll
   newcoll=${coll}.new
   echo "Creating collection ${newcoll} in database ${DB} on cloud by restoring dump of ${coll} from m0..."
-  eval mongorestore -u editor -p $EDITOR_PASS --authenticationDatabase $DB --db $DB --collection $newcoll /mnt/tmp/scratch/${DB}/${coll}.bson
+  mongorestore -u "editor" -p "$EDITOR_PASS" --authenticationDatabase "$DB" --db "$DB" --collection "$newcoll" /mnt/tmp/scratch/${DB}/${coll}.bson
 done
 for coll in ${COLLECTIONS[@]}; do
   newcoll=${coll}.new
   echo "Renaming ${coll} to ${coll}.old and ${newcoll} to ${coll} in cloud database ${DB}..."
-  eval mongo $DB -u admin -p $ADMIN_PASS --authenticationDatabase admin --eval "\"printjson(db.getCollection('${coll}').renameCollection('${coll}.old'))\""
-  eval mongo $DB -u admin -p $ADMIN_PASS --authenticationDatabase admin --eval "\"printjson(db.getCollection('${newcoll}').renameCollection('${coll}'))\""
+  mongo "$DB" -u "admin" -p "$ADMIN_PASS" --authenticationDatabase "admin" --eval "printjson(db.getCollection('${coll}').renameCollection('${coll}.old'))"
+  mongo "$DB" -u "admin" -p "$ADMIN_PASS" --authenticationDatabase "admin" --eval "printjson(db.getCollection('${newcoll}').renameCollection('${coll}'))"
 done
 rm -rf /mnt/tmp/scratch/$DB
 echo "...update complete."
