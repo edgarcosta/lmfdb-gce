@@ -5,10 +5,10 @@ set -e
 pushd ~/dump/
 timestamp=`date -u +%Y%m%d-%H%M`
 mkdir $timestamp
-eval mongodump --host m0 -u ${MONGO_USERNAME} -p ${MONGO_PASSWORD} --authenticationDatabase admin -o $timestamp --db knowledge
+mongodump --host m0 -u "${MONGO_USERNAME}" -p "${MONGO_PASSWORD}" --authenticationDatabase admin -o "$timestamp" --db knowledge
 rm -rf $timestamp/knowledge/system.profile*
 rm -rf $timestamp/knowledge/system.users*
-eval time mongorestore  -u ${MONGO_USERNAME} -p ${MONGO_PASSWORD} --authenticationDatabase admin  --db knowledge --drop $timestamp/knowledge
+time mongorestore  -u "${MONGO_USERNAME}" -p "${MONGO_PASSWORD}" --authenticationDatabase admin  --db knowledge --drop "$timestamp/knowledge"
 rm -rf $timestamp
 popd
 set +e
