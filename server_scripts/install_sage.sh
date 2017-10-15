@@ -37,6 +37,7 @@ make testlong
 ./sage -b 
 wget https://raw.githubusercontent.com/LMFDB/lmfdb/master/requirements.txt 
 ./sage -pip install -r requirements.txt 
+./sage -pip install bcrypt 
 ./sage -pip install gunicorn pyflakes
 ./sage -pip install greenlet eventlet gevent 
 ./sage -b 
