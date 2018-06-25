@@ -1,1 +1,2 @@
 */15 * * * * bash ~/lmfdb-gce/server_scripts/update_knowls.sh >> ~/logs/update_knowls.log 2>&1
+*/20 * * * * bash ~/lmfdb-gce/server_scripts/update_inventory.sh >> ~/logs/update_inventory.log 2>&1

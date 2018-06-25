@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e
 if [[ $1 = "" ]]; then
     echo "usage: ./cleanup-cloud-db.sh database-name [collection1 collection2 ...]"
     echo "       by default all collections listed in db-collections.txt for the specified database will be cleaned up (i.e. any .old versions will be dropped)"
@@ -51,3 +51,4 @@ for coll in ${COLLECTIONS[@]}; do
   mongo "$DB" -u "admin" -p "$ADMIN_PASS" --authenticationDatabase "admin" --eval "printjson(db.getCollection('${coll}.old').drop())"
 done
 rm -rf /mnt/tmp/scratch/$DB
+set +e

@@ -28,7 +28,7 @@ wget http://mirrors.xmission.com/sage/src/sage-${version}.tar.gz -O sage-${versi
 tar xf sage-${version}.tar.gz
 cd sage-${version} 
 #it can get stuck here while building documentation
-MAKE="make -j${j}" make 
+MAKE="make -j${j}" make build
 make test 
 make testlong 
 ./sage -i gap_packages 

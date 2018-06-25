@@ -3,7 +3,7 @@
 set -e
 . ~/userpassword
 pushd ~/dump/
-timestamp=`date -u +%Y%m%d-%H%M`
+timestamp=knowls`date -u +%Y%m%d-%H%M`
 mkdir $timestamp
 mongodump --host m0 -u "${MONGO_USERNAME}" -p "${MONGO_PASSWORD}" --authenticationDatabase admin -o "$timestamp" --db knowledge
 rm -rf $timestamp/knowledge/system.profile*

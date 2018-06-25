@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -e
 if [[ $1 = "" ]]; then
     echo "usage: ./update-cloud-db.sh database-name [collection1 collection2 ...]"
     echo "       by default all collections listed in db-collections.txt for the specified database will be updated"
@@ -64,3 +65,4 @@ done
 rm -rf /mnt/tmp/scratch/$DB
 echo "...update complete."
 echo "After you verify that the new collections look good, be sure to run cleanup-cloud-db.sh to drop the .old collections."
+set +e
