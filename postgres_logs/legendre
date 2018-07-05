@@ -1,0 +1,37 @@
+# check if
+ssl = on
+ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
+# if not
+# Generate a self signed certificate
+# https://blog.raveland.org/post/self_signed/
+openssl genrsa -out server.key 4096
+openssl req -new -key server.key -out server.csr
+openssl x509 -req -days 3650 -in server.csr -signkey server.key -out server.crt
+# move the files to right place and set
+ssl_cert_file = '/scratch/postgresql/10/server.crt'
+ssl_key_file = '/scratch/postgresql/10/server.key'
+
+# generate ssh-keys
+ssh-keygen
+# and copy them to postgres@devmirror
+
+
+
+
+# edit /etc/postgresql/10/main/postgresql.conf
+data_directory = '/scratch/postgresql/10/main'
+# this is default, but one should enforce it
+wal_level = replica
+synchronous_commit = on
+# in logfile segments, 16MB each; 0 disables
+wal_keep_segments = 256 # 4 GB
+archive_mode = on
+archive_command = 'rsync -a %p postgres@devmirror.lmfdb.xyz:/var/lib/postgresql/10/wal/%f'
+
+# add the line to /etc/postgresql/10/main/pg_hba.conf
+host    replication     all             35.225.45.113/32        md5
+
+
+# TODO
+# switch ports to default and ask IT to open the port

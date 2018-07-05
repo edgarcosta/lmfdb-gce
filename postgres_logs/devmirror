@@ -1,0 +1,67 @@
+# upgrade system and install postgresql
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install postgresql-all
+sudo shutdown -h now
+
+
+# add new disks 500gb Standard persistent disk
+# start server
+
+# stop postgressql server
+sudo systemctl stop postgresql@10-main.service
+
+# format the new disk
+# check that /dev/sdb is the correct id!
+sudo mkfs.ext4 /dev/sdb
+
+#label the disk
+sudo e2label /dev/sdb devmirror-sql
+
+# add the corresponding entry to /etc/fstab
+# LABEL=devmirror-sql /var/lib/postgresql/10/ ext4 noatime,defaults 0 0
+
+# mount the disk
+sudo mount /var/lib/postgresql/10/
+sudo chown postgres -R /var/lib/postgresql/10/
+sudo -u postgres mkdir /var/lib/postgresql/10/wal
+# edit /etc/postgresql/10/main/postgresql.conf
+hot_standby = on
+
+
+# add the following line to /var/lib/postgresql/.pgpass
+legendre.mit.edu:5432:*:postgres:password desired
+
+
+# Now do as postgres
+sudo -u postgres -i
+mkdir /var/lib/postgresql/10/main/
+pg_basebackup -h legendre.mit.edu -D /var/lib/postgresql/10/main/ -P -U postgres --wal-method=stream
+
+# add the file /var/lib/postgresql/10/recovery.conf
+  standby_mode = 'on'
+  primary_conninfo = 'host=legendre.mit.edu port=5432 user=postgres'
+  # assures that the master does not remove WAL segments until they have been received by all standbys
+  primary_slot_name = 'devmirror'
+  #restore_command = 'scp /var/lib/postgresql/10/wal/%f "%p"'
+  archive_cleanup_command = 'pg_archivecleanup /var/lib/postgresql/10/wal %r'
+
+
+# start the server
+sudo systemctl start postgresql@10-main.service
+
+# reboot the server and then check that everything is running as expected
+sudo reboot
+
+
+# the disk is mounted
+df -h
+# postgresql is running
+systemctl status postgresql@10-main.service
+
+
+
+
+
+
+

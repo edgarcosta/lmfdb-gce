@@ -1,0 +1,45 @@
+# Install apache
+sudo apt install apache2
+apt-get install libapache2-mod-wsgi-py3
+
+# Install pgadmin, follow: https://wiki.postgresql.org/wiki/Apt
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+sudo apt-get install wget ca-certificates
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install pgadmin4
+
+
+
+# In /usr/share/pgadmin4/web create config_local.py with
+LOG_FILE = '/var/log/pgadmin4/pgadmin4.log'
+SQLITE_PATH = '/var/lib/pgadmin4/pgadmin4.db'
+SESSION_DB_PATH = '/var/lib/pgadmin4/sessions'
+STORAGE_DIR = '/var/lib/pgadmin4/storage'
+
+sudo mkdir /var/lib/pgadmin4 /var/log/pgadmin4
+sudo chown www-data:www-data /var/lib/pgadmin4 /var/log/pgadmin4
+sudo -u www-data python3 /usr/share/pgadmin4/web/setup.py
+
+# setup edgarc@mit.edu and admin pass for lmfdb
+
+#as root create the file /etc/apache2/sites-available/pgadmin4.conf with:
+
+<VirtualHost *>
+    ServerName devmirror.lmfdb.xyz
+
+    WSGIDaemonProcess pgadmin processes=1 threads=25
+    WSGIScriptAlias / /usr/share/pgadmin4/web/pgAdmin4.wsgi
+
+    <Directory /usr/share/pgadmin4/web>
+        WSGIProcessGroup pgadmin
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+    </Directory>
+</VirtualHost>
+
+sudo a2dissite  000-default
+sudo a2ensite pgadmin4
+sudo systemctl restart apache2.service

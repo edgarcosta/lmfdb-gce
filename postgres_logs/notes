@@ -1,0 +1,22 @@
+Regions:
+
+Sticking to us-central1-b region
+
+Naming:
+
+devmirror - mirror of the development db
+prod - the prod db serving www.lmfdb.org
+www0, www1 - the two servers for the loadbalancer
+
+
+to late to code:
+
+
+
+# on standby add the file /var/lib/postgresql/10/recovery.conf
+standby_mode = 'on'
+primary_conninfo = 'host=legendre.mit.edu port=5433 user=postgres'
+# assures that the master does not remove WAL segments until they have been received by all standbys
+primary_slot_name = 'devmirror'
+restore_command = 'cp /var/lib/postgresql/10/wal/%f "%p"'
+archive_cleanup_command = 'pg_archivecleanup /var/lib/postgresql/10/wal %r'
