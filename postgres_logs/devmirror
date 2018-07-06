@@ -27,6 +27,7 @@ sudo chown postgres -R /var/lib/postgresql/10/
 sudo -u postgres mkdir /var/lib/postgresql/10/wal
 # edit /etc/postgresql/10/main/postgresql.conf
 hot_standby = on
+listen_addresses = '*'
 
 
 # add the following line to /var/lib/postgresql/.pgpass
@@ -46,6 +47,10 @@ pg_basebackup -h legendre.mit.edu -D /var/lib/postgresql/10/main/ -P -U postgres
   #restore_command = 'scp /var/lib/postgresql/10/wal/%f "%p"'
   archive_cleanup_command = 'pg_archivecleanup /var/lib/postgresql/10/wal %r'
 
+# only allow external access to the lmfdb database and for the lmfdb user
+# by adding the following 2 lines to the end of /etc/postgresql/10/main/pg_hba.conf
+# External
+host    lmfdb           lmfdb           0.0.0.0/0               md5
 
 # start the server
 sudo systemctl start postgresql@10-main.service

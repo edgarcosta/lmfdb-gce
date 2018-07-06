@@ -20,6 +20,7 @@ ssh-keygen
 
 
 # edit /etc/postgresql/10/main/postgresql.conf
+listen_addresses = '*'
 data_directory = '/scratch/postgresql/10/main'
 # this is default, but one should enforce it
 wal_level = replica
@@ -29,9 +30,8 @@ wal_keep_segments = 256 # 4 GB
 archive_mode = on
 archive_command = 'rsync -a %p postgres@devmirror.lmfdb.xyz:/var/lib/postgresql/10/wal/%f'
 
-# add the line to /etc/postgresql/10/main/pg_hba.conf
-host    replication     all             35.225.45.113/32        md5
+# add the three lines to /etc/postgresql/10/main/pg_hba.conf
+# Devmirror
+host    all		all             35.225.45.113/32        md5
+host    replication	all             35.225.45.113/32        md5
 
-
-# TODO
-# switch ports to default and ask IT to open the port

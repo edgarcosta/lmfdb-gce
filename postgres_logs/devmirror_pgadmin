@@ -22,12 +22,15 @@ sudo mkdir /var/lib/pgadmin4 /var/log/pgadmin4
 sudo chown www-data:www-data /var/lib/pgadmin4 /var/log/pgadmin4
 sudo -u www-data python3 /usr/share/pgadmin4/web/setup.py
 
-# setup edgarc@mit.edu and admin pass for lmfdb
+# setup edgarc@mit.edu and some pass
+
+
+# add the DNS record for pgadmin.lmfdb.xyz
 
 #as root create the file /etc/apache2/sites-available/pgadmin4.conf with:
 
 <VirtualHost *>
-    ServerName devmirror.lmfdb.xyz
+    ServerName pgadmin.lmfdb.xyz
 
     WSGIDaemonProcess pgadmin processes=1 threads=25
     WSGIScriptAlias / /usr/share/pgadmin4/web/pgAdmin4.wsgi
