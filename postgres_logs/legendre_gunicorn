@@ -1,0 +1,108 @@
+# install supervisord
+sudo apt-get install -y supervisord
+sudo update-rc.d supervisor disable
+# check that is disabled
+systemctl list-unit-files | grep supervisor
+
+
+#install gcfuse
+export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
+echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install gcsfuse
+
+
+#install gcloud
+export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add 
+sudo apt-get update
+sudo apt-get install google-cloud-sdk
+
+# create user
+sudo usermod -a -G fuse lmfdb
+
+
+# deal with data
+sudo -u lmfdb -i
+
+# gcloud authenticate as lmfdb.cloud@gmail.com
+mkdir /scratch/lmfdb-data
+ssh-keygen
+#copy content of .ssh/id_rsa.pub to .ssh/authorized_keys at lmfdb@www-central0.lmfdb.xyz
+# in a screen copy all the data to legendre
+rsync -lavz lmfdb@www-central0.lmfdb.xyz:/home/lmfdb/data/ /scratch/lmfdb-data
+logout
+
+# get a key for storage https://console.cloud.google.com/iam-admin/serviceaccounts, click on the 3dots next to user storage
+# and copy it to lmfdb@legendre:STORAGEKEY.json
+
+
+
+# add the following lines to fstab
+riemann-zeta-zeros-dra	/scratch/lmfdb-buckets/riemann-zeta-zeros/ gcsfuse ro,noauto,user,key_file=/home/lmfdb/STORAGEKEY.json,stat_cache_ttl=1h,type_cache_ttl=1h 0 0
+class-groups-quadratic-imaginary-fields-nearline /scratch/lmfdb-buckets/class-groups-quadratic-imaginary-fields/ gcsfuse ro,noauto,user,key_file=/home/lmfdb/STORAGEKEY.json,stat_cache_ttl=1h,type_cache_ttl=1h 0 0
+
+
+sudo -u lmfdb mkdir -p /scratch/lmfdb-buckets/riemann-zeta-zeros /scratch/lmfdb-buckets/class-groups-quadratic-imaginary-fields/
+sudo -u lmfdb mount /scratch/lmfdb-buckets/riemann-zeta-zeros
+sudo -u lmfdb mount /scratch/lmfdb-buckets/class-groups-quadratic-imaginary-fields/
+sudo chown -R lmfdb /scratch/lmfdb-data
+sudo -u lmfdb ln -s /scratch/lmfdb-data /home/lmfdb/data
+sudo -u lmfdb ln -s /scratch/lmfdb-buckets/class-groups-quadratic-imaginary-fields/ /scratch/lmfdb-data/class_numbers
+sudo -u lmfdb ln -s /scratch/lmfdb-buckets/riemann-zeta-zeros/ /scratch/lmfdb-data/zeros/zeta/data
+
+
+#SAGE instead of sage because of math.mit.edu groups
+sudo useradd SAGE -u 1200 -d /home/sage -m
+
+
+#setup lmfdb
+sudo -u lmfdb -i
+cd
+git clone https://github.com/edgarcosta/lmfdb-gce.git
+mkdir -p /home/lmfdb/logs/beta /home/lmfdb/logs/prod /home/lmfdb/logs/supervisord/ /home/lmfdb/logs/postgres
+crontab  /home/lmfdb/lmfdb-gce/scripts/crontab
+git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-beta
+git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-prod
+
+#temporarilly
+git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-postgres
+pushd /home/lmfdb/lmfdb-git-postgres
+git remote add roed314 https://github.com/roed314/lmfdb.git
+popd
+
+# fetch
+bash /home/lmfdb/lmfdb-gce/scripts/scripts/lmfdb_fetch.sh
+
+# copy hooks
+ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout-beta /home/lmfdb/lmfdb-git-beta/.git/hooks/post-checkout
+ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout-prod /home/lmfdb/lmfdb-git-prod/.git/hooks/post-checkout
+ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout-postgres /home/lmfdb/lmfdb-git-postgres/.git/hooks/post-checkout
+
+
+# copy scripts
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/start-beta
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/start-prod
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/start-postgres
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-supervisord-legendre /home/lmfdb/start-supervisord
+ln -s /home/lmfdb/lmfdb-gce/scripts/restart-beta /home/lmfdb/restart-beta
+ln -s /home/lmfdb/lmfdb-gce/scripts/restart-prod /home/lmfdb/restart-prod
+ln -s /home/lmfdb/lmfdb-gce/scripts/restart-prod /home/lmfdb/restart-postgres
+ln -s /home/lmfdb/lmfdb-gce/scripts/stop-supervisord /home/lmfdb/stop-supervisord
+
+
+# copy config files
+ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-beta /home/lmfdb/lmfdb-git-beta
+ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-prod /home/lmfdb/lmfdb-git-prod
+ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-postgres /home/lmfdb/lmfdb-git-postgres
+ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_m0.config  /home/lmfdb/lmfdb-git-beta/mongoclient.config
+ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_ms.config  /home/lmfdb/lmfdb-git-prod/mongoclient.config
+ln -s /home/lmfdb/lmfdb-gce/config/postgres_beta.ini  /home/lmfdb/lmfdb-git-postgres/config.ini
+
+
+# place the password
+read -s password
+echo $password > /home/lmfdb/lmfdb-git-beta/password
+echo $password > /home/lmfdb/lmfdb-git-postgres/password
