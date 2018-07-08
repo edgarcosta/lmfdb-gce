@@ -10,7 +10,7 @@ git checkout origin/beta -f
 popd
 if [ -d "/home/lmfdb/lmfdb-git-postgres" ]; then
 pushd /home/lmfdb/lmfdb-git-postgres
-git fetch roed314
+git fetch roed314 postgres
 git checkout roed314/postgres -f
 popd
 fi
