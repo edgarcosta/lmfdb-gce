@@ -107,3 +107,17 @@ ln -s /home/lmfdb/lmfdb-gce/config/postgres_beta.ini  /home/lmfdb/lmfdb-git-post
 read -s password
 echo $password > /home/lmfdb/lmfdb-git-beta/password
 echo $password > /home/lmfdb/lmfdb-git-postgres/password
+
+
+# install apache
+sudo apt-get install apache2
+sudo cp /home/lmfdb/lmfdb-gce/config/apache-lmfdb-legendre.conf /etc/apache2/sites-available/lmfdb.conf
+sudo a2enmod headers expires proxy proxy_http
+sudo a2dissite 000-default.conf
+sudo a2ensite lmfdb.conf
+
+
+# add records to dns
+prod.lmfdb.xyz
+beta.lmfdb.xyz
+postgres.lmfdb.xyz

@@ -1,9 +1,9 @@
 bind = "0.0.0.0:8081"
-workers = 3
+workers = 5
 SESSION_PROTECTION = None
-daemon = True
+#daemon = True
 pidfile = '/home/lmfdb/gunicorn-beta.pid'
-# 
+#
 errorlog = '/home/lmfdb/logs/beta/errorlog'
 accesslog = '/home/lmfdb/logs/beta/accesslog'
 loglevel = 'info' # change to 'debug' for more output
