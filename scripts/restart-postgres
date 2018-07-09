@@ -3,7 +3,7 @@
 # change to script's dir
 #cd `dirname "$0"`
 
-echo 'restarting prod server'
+echo 'restarting postgres server'
 
 # restart server
 kill -HUP `cat ~/gunicorn-postgres.pid`
