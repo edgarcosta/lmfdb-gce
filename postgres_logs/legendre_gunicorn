@@ -13,10 +13,10 @@ sudo apt-get update
 sudo apt-get install gcsfuse
 
 
-#install gcloud
+#install gcloud, might not be needed
 export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
 echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add 
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 sudo apt-get update
 sudo apt-get install google-cloud-sdk
 
@@ -85,11 +85,11 @@ ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout-postgres /home/lmfdb/lmfdb-git
 # copy scripts
 ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/start-beta
 ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/start-prod
-ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/start-postgres
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-postgres /home/lmfdb/start-postgres
 ln -s /home/lmfdb/lmfdb-gce/scripts/start-supervisord-legendre /home/lmfdb/start-supervisord
 ln -s /home/lmfdb/lmfdb-gce/scripts/restart-beta /home/lmfdb/restart-beta
 ln -s /home/lmfdb/lmfdb-gce/scripts/restart-prod /home/lmfdb/restart-prod
-ln -s /home/lmfdb/lmfdb-gce/scripts/restart-prod /home/lmfdb/restart-postgres
+ln -s /home/lmfdb/lmfdb-gce/scripts/restart-postgres /home/lmfdb/restart-postgres
 ln -s /home/lmfdb/lmfdb-gce/scripts/stop-supervisord /home/lmfdb/stop-supervisord
 
 
@@ -98,7 +98,8 @@ ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-beta /home/lmfdb/lmfdb-git-be
 ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-prod /home/lmfdb/lmfdb-git-prod
 ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-postgres /home/lmfdb/lmfdb-git-postgres
 ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_m0.config  /home/lmfdb/lmfdb-git-beta/mongoclient.config
-ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_ms.config  /home/lmfdb/lmfdb-git-prod/mongoclient.config
+# we still want to read from m0, as we just want to test the code on the dev data
+ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_m0.config  /home/lmfdb/lmfdb-git-prod/mongoclient.config
 ln -s /home/lmfdb/lmfdb-gce/config/postgres_beta.ini  /home/lmfdb/lmfdb-git-postgres/config.ini
 
 
