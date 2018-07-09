@@ -62,7 +62,7 @@ sudo useradd SAGE -u 1200 -d /home/sage -m
 sudo -u lmfdb -i
 cd
 git clone https://github.com/edgarcosta/lmfdb-gce.git
-mkdir -p /home/lmfdb/logs/beta /home/lmfdb/logs/prod /home/lmfdb/logs/supervisord/ /home/lmfdb/logs/postgres
+mkdir -p /home/lmfdb/logs/beta /home/lmfdb/logs/prod /home/lmfdb/logs/supervisor/ /home/lmfdb/logs/postgres
 crontab  /home/lmfdb/lmfdb-gce/scripts/crontab
 git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-beta
 git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-prod
