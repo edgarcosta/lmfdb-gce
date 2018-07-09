@@ -9,4 +9,4 @@ export TEXINPUTS=.:$SAGE_ROOT/local/share/texmf:
 # GIT_DIR points to the bare git repository containing both beta and prod branches
 
 export GIT_WORK_TREE='/home/lmfdb/lmfdb-git-postgres'
-exec $SAGE -sh -c 'cd $GIT_WORK_TREE; gunicorn -c gunicorn-config-prod lmfdb.website:app'
+exec $SAGE -sh -c 'cd $GIT_WORK_TREE; gunicorn -c gunicorn-config-postgres lmfdb.website:app'
