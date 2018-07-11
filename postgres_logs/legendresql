@@ -42,6 +42,14 @@ UPDATE pg_database SET datcollate='C';
 
 
 
+GRANT usage ON SCHEMA userdb to lmfdb;
+GRANT usage ON SCHEMA userdb to webserver;
+#TODO add the next two to the scripts
+GRANT SELECT (username, full_name) ON TABLE userdb.users TO lmfdb;
+GRANT SELECT, UPDATE, INSERT, DELETE  ON ALL TABLES IN SCHEMA userdb  TO webserver;
+
+
+
 
 
 
