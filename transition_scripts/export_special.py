@@ -795,7 +795,7 @@ def index_nf_fields():
         db.nf_fields.create_index(['class_group', 'id'])
         db.nf_fields.create_index(['class_number', 'id'])
         db.nf_fields.create_index(['coeffs'])
-        db.nf_fields.create_index(['degree', 'disc_abs', 'disc_sign', 'label', 'r2'])
+        db.nf_fields.create_index(['degree', 'disc_abs', 'disc_sign', 'iso_number', 'r2'])
         db.nf_fields.create_index(['disc_sign', 'disc_abs', 'id'])
         db.nf_fields.create_index(['disc_rad', 'id'])
         db.nf_fields.create_index(['degree', 'galt', 'disc_abs', 'disc_sign'])
