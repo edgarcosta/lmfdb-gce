@@ -311,6 +311,7 @@ drop_indexes = {'Lfunctions.Lfunctions': ['a1_2d', 'a2_2d', 'a3_2d', 'a4_2d', 'a
                 'modularforms2.webmodformspace': ["level_1_weight_1_chi_1"],
                 'modularforms2.webnewforms': ["level_1_weight_1_chi_1"],
                 'sato_tate_groups.st0_groups': ["degree_1", "weight_1", "name_1", "label_1"],
+		'transitivegroups.groups': ["orderkey_1_n_1_t_1"],
 }
 
 mod_indexes = {'abvar.fq_isog': {"gal_1": ['galois_n', 'galois_t', 'id'],
