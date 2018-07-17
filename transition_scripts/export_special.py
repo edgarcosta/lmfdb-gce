@@ -460,7 +460,8 @@ def import_knowls():
         with open('/scratch/importing/kwl_history.txt') as F:
             cur.copy_from(F, 'kwl_history', columns=["id", "title", "time", "who", "state"])
         cur.execute("ALTER TABLE kwl_knowls ADD CONSTRAINT kwl_knowls_pkey PRIMARY KEY (id)")
-        cur.execute("ALTER TABLE kwl_deleted ADD CONSTRAINT kwl_deleted_pkey PRIMARY KEY (id)")
+	# no primary key on deleted
+        #cur.execute("ALTER TABLE kwl_deleted ADD CONSTRAINT kwl_deleted_pkey PRIMARY KEY (id)")
         cur.execute("ALTER TABLE kwl_history ADD CONSTRAINT kwl_history_pkey PRIMARY KEY (id)")
     except Exception:
         print "Failure in importing knowls"
