@@ -115,7 +115,7 @@ def sort_collection(coll, sort, name):
     if sort is None:
         for i, rec in enumerate(coll.find()):
             report_time(i, total, name, t0)
-            yield None, rec
+            yield i, rec
     else:
         keys = []
         sort.append("_id")
