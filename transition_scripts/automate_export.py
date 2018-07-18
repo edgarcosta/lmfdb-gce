@@ -299,6 +299,10 @@ fixes = {'Lfunctions.Lfunctions':{'gamma_factors':'collection of integer', ## sh
          'modularforms2.dimension_table':{'space_labe;':False,
                                           'gamma1_label':'string'},
          'sato_tate_groups.st_groups':{'trace_zero_density':'string'},
+         'sato_tate_groups.small_groups':{'derived_group':'string',
+                                          'center':'string',
+                                          'abelian_quotient':'string',
+                                          'label':'string'},
          'siegel_modular_forms.dimensions':{'311':False},
          'transitivegroups.groups':{'orderkey':False},
 }
