@@ -676,7 +676,7 @@ def maxval_update(flds, maxvals, fld, rec):
 def report_time(i, total, name, t0):
     if i and i % 10000 == 0:
         t = datetime.now()
-        print "%s: %s/%s in %s"%(name, i, total, t-t0)
+        print "%s: %s/%s ~ %.2f  in %s"%(name, i, total, i/(1.0 * total),  t-t0)
 def sort_collection(coll, sort, name):
     t0 = datetime.now()
     total = coll.count()

@@ -108,7 +108,7 @@ def maxval_update(flds, maxvals, fld, rec):
 def report_time(i, total, name, t0, interval=10000):
     if i and i % interval == 0:
         t = datetime.now()
-        print "%s: %s/%s in %s"%(name, i, total, t-t0)
+        print "%s: %s/%s ~ %.2f in %s"%(name, i, total, i/(1.0 * total),  t-t0)
 def sort_collection(coll, sort, name):
     t0 = datetime.now()
     total = coll.count()
@@ -1286,6 +1286,7 @@ def export_artin_field_data():
     maxvals = defaultdict(int)
     try:
         ordered_cols = ["ConjClasses", "G-Name", "QpRts-minpoly", "ComplexConjugation", "FrobResolvents", "QpRts-prec", "ArtinReps", "G-Gens", "Polynomial", "QpRts", "Frobs", "QpRts-p", "TransitiveDegree", "Size"]
+	ordered_cols_plus_id = ["id"] + ordered_cols
         with open('exports/artin_field_data.txt', 'w') as Fout:
             for i, rec in sort_collection(artin_field_data, None, 'artin.field_data'):
                 flds = {}
@@ -1304,7 +1305,7 @@ def export_artin_field_data():
                     flds[fld] = strwrap(rec.get(fld))
                 if i is not None:
                     flds["id"] = str(i)
-                Fout.write("\t".join(flds[fld] for fld in ordered_cols) + "\n")
+                Fout.write("\t".join(flds[fld] for fld in ordered_cols_plus_id) + "\n")
         types = defaultdict(list)
         for fld in ["ComplexConjugation", "QpRts-prec", "QpRts-p", "TransitiveDegree"]:
             types[integer_size(maxvals[fld])].append(fld)
