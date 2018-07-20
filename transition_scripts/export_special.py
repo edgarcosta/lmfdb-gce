@@ -456,7 +456,7 @@ def import_knowls():
         # rename old tables
         for name in tablenames:
             if db._execute(SQL("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s' " % (name,) )).rowcount == 1:
-                cur.execute("DROP TABLE %s_old" % (name,))
+                cur.execute("DROP TABLE %s" % (name,))
                 dropped.append(name);
                 #cur.execute("ALTER TABLE %s RENAME TO %s_old" % (name, name,))
         print "dropped: ", dropped
