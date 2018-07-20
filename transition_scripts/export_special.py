@@ -455,7 +455,7 @@ def import_knowls():
     try:
         # rename old tables
         for name in tablenames:
-            if db._execute(SQL("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s'" % name)) == 1:
+            if db._execute(SQL("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s' " % (name,) )).row_count == 1:
                 renamed.append(name);
                 cur.execute("ALTER TABLE '%s' RENAME '%s_old' END IF" % (name, name,))
         # create tables
@@ -477,7 +477,7 @@ def import_knowls():
 
         # drop old tables
         for name in renamed:
-            cur.execute("DROP TABLE '%s_old' END IF" % (name, name))
+            cur.execute("DROP TABLE '%s_old' END IF" % (name,))
     except Exception:
         print "Failure in importing knowls"
         traceback.print_exc()
