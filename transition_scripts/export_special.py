@@ -454,7 +454,7 @@ def import_knowls():
     try:
         # rename old tables
         for name in tablenames:
-            cur.execute("ALTER TABLE %s DROP CONSTRAINT IF EXISTS %s_pkey" % (name, name));
+            cur.execute("ALTER TABLE IF EXISTS %s DROP CONSTRAINT IF EXISTS %s_pkey" % (name, name));
             cur.execute("DROP TABLE IF EXISTS %s" % name);
 
         # create tables
