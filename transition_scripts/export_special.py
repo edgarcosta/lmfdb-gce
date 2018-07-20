@@ -435,14 +435,16 @@ def export_knowls():
                 flds["history"] = json.dumps(history)
             flds["timestamp"] = str(knowl.get("timestamp",r"\N"))
             F.write((u"\t".join(flds[fld] for fld in ["_id", "cat", "title", "content", "authors", "last_author", "quality", "timestamp", "_keywords", "history"]) + u"\n").encode('utf-8'))
+    print "exported knowledge.knowls to 'exports/kwl_knowls.txt'"
     history_db = conn.knowledge.history
-    with open('kwl_history.txt', 'w') as F:
+    with open('exports/kwl_history.txt', 'w') as F:
         for history in history_db.find():
             flds = {}
             for fld in ["_id", "title", "who", "state"]:
                 flds[fld] = asiswrap(history.get(fld))
             flds["time"] = str(history.get("time", r"\N"))
             F.write("\t".join(flds[fld] for fld in ["_id", "title", "time", "who", "state"]) + "\n")
+    print "exported knowledge.history to 'exports/kwl_knowls.txt'"
     with open('import_special.py', 'a') as F:
         F.write("""
 def import_knowls():
@@ -471,6 +473,7 @@ def import_knowls():
         db.conn.commit()
         print "Succeeded in importing knowls"
 """)
+    print "wrote 'import_knowls' to import_special.py"
 
 def export_g2c_curves():
     conn = lmfdb.base.getDBConnection()
