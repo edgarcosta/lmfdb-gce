@@ -85,6 +85,7 @@ skip_collections = ['Lfunctions.full_collection',
 
                     'artin.representations',
                     'artin.field_data',
+                    'artin.field_data_new',
                     'knowledge.knowls',
                     'knowledge.history',
                     'elliptic_curves.curves',
