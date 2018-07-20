@@ -448,13 +448,14 @@ def export_knowls():
     with open('import_special.py', 'a') as F:
         F.write("""
 def import_knowls():
+    from psycopg2.sql import SQL
     cur = db.conn.cursor()
     tablenames = ['kwl_history', 'kwl_deleted', 'kwl_knowls'];
     renamed = [];
     try:
         # rename old tables
         for name in tablenames:
-            if db._execute(SQL("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s'") % name) == 1:
+            if db._execute(SQL("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s'" % name)) == 1:
                 renamed.append(name);
                 cur.execute("ALTER TABLE '%s' RENAME '%s_old' END IF" % (name, name,))
         # create tables
