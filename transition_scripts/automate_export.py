@@ -846,7 +846,7 @@ class Json(object):
                 cname = collection_names[cid]
                 if cname in skip_collections:
                     continue
-                assert cname in sorts
+                assert cname in sorts, "cname not in sorts:\ncname = %s\nsorts = %s" % (cname, sorts)
                 uname = renames[cname]
                 unames.append(uname)
                 cols = types[cname]
