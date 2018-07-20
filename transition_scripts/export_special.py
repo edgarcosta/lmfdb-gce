@@ -451,15 +451,12 @@ def import_knowls():
     from psycopg2.sql import SQL
     cur = db.conn.cursor()
     tablenames = ['kwl_history', 'kwl_deleted', 'kwl_knowls'];
-    dropped = [];
     try:
         # rename old tables
         for name in tablenames:
-            if db._execute(SQL("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s' " % (name,) )).rowcount == 1:
-                cur.execute("DROP TABLE %s" % (name,))
-                dropped.append(name);
-                #cur.execute("ALTER TABLE %s RENAME TO %s_old" % (name, name,))
-        print "dropped: ", dropped
+            cur.execute("ALTER TABLE %s DROP CONSTRAINT IF EXISTS %s_pkey" % (name, name));
+            cur.execute("DROP TABLE IF EXISTS %s" % name);
+
         # create tables
         cur.execute("CREATE TABLE kwl_knowls (id text, cat text, title text, content text, authors jsonb, last_author text, quality text, timestamp timestamp, _keywords jsonb, history jsonb)")
         cur.execute("CREATE TABLE kwl_deleted (id text, cat text, title text, content text, authors jsonb, last_author text, quality text, timestamp timestamp, _keywords jsonb, history jsonb)")
@@ -477,9 +474,6 @@ def import_knowls():
         #cur.execute("ALTER TABLE kwl_deleted ADD CONSTRAINT kwl_deleted_pkey PRIMARY KEY (id)")
         cur.execute("ALTER TABLE kwl_history ADD CONSTRAINT kwl_history_pkey PRIMARY KEY (id)")
 
-        # drop old tables
-        #for name in renamed:
-        #    cur.execute("DROP TABLE %s_old" % (name,))
     except Exception:
         print "Failure in importing knowls"
         traceback.print_exc()
