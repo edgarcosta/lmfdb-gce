@@ -457,7 +457,7 @@ def import_knowls():
         for name in tablenames:
             if db._execute(SQL("SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s' " % (name,) )).rowcount == 1:
                 renamed.append(name);
-                cur.execute("ALTER TABLE '%s' RENAME '%s_old'" % (name, name,))
+                cur.execute("ALTER TABLE '%s' RENAME TO '%s_old'" % (name, name,))
         print "renamed: ", renamed
         # create tables
         cur.execute("CREATE TABLE kwl_knowls (id text, cat text, title text, content text, authors jsonb, last_author text, quality text, timestamp timestamp, _keywords jsonb, history jsonb)")
