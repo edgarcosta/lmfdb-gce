@@ -449,7 +449,11 @@ def export_knowls():
         F.write("""
 def import_knowls():
     cur = db.conn.cursor()
+    tablenames = ['kwl_history', 'kwl_deleted', 'kwl_knowls'];
     try:
+        # rename old tables
+        for name in tablenames:
+            cur.execute("IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s') BEGIN ALTER TABLE '%s' RENAME '%s_old' END" % (name, name, name))
         cur.execute("CREATE TABLE kwl_knowls (id text, cat text, title text, content text, authors jsonb, last_author text, quality text, timestamp timestamp, _keywords jsonb, history jsonb)")
         cur.execute("CREATE TABLE kwl_deleted (id text, cat text, title text, content text, authors jsonb, last_author text, quality text, timestamp timestamp, _keywords jsonb, history jsonb)")
         cur.execute("CREATE TABLE kwl_history (id text, title text, time timestamp, who text, state text)")
@@ -465,6 +469,10 @@ def import_knowls():
 	# no primary key on deleted
         #cur.execute("ALTER TABLE kwl_deleted ADD CONSTRAINT kwl_deleted_pkey PRIMARY KEY (id)")
         cur.execute("ALTER TABLE kwl_history ADD CONSTRAINT kwl_history_pkey PRIMARY KEY (id)")
+
+        # drop old tables
+        for name in tablenames:
+            cur.execute("IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s_old') BEGIN DROP TABLE '%s_old' END" % (name, name))
     except Exception:
         print "Failure in importing knowls"
         traceback.print_exc()
