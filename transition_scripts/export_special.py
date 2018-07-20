@@ -453,7 +453,8 @@ def import_knowls():
     try:
         # rename old tables
         for name in tablenames:
-            cur.execute("IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s') BEGIN ALTER TABLE '%s' RENAME '%s_old' END" % (name, name, name))
+            cur.execute("IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s') THEN ALTER TABLE '%s' RENAME '%s_old' END IF" % (name, name, name))
+        # create tables
         cur.execute("CREATE TABLE kwl_knowls (id text, cat text, title text, content text, authors jsonb, last_author text, quality text, timestamp timestamp, _keywords jsonb, history jsonb)")
         cur.execute("CREATE TABLE kwl_deleted (id text, cat text, title text, content text, authors jsonb, last_author text, quality text, timestamp timestamp, _keywords jsonb, history jsonb)")
         cur.execute("CREATE TABLE kwl_history (id text, title text, time timestamp, who text, state text)")
@@ -472,7 +473,7 @@ def import_knowls():
 
         # drop old tables
         for name in tablenames:
-            cur.execute("IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s_old') BEGIN DROP TABLE '%s_old' END" % (name, name))
+            cur.execute("IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '%s_old') THEN DROP TABLE '%s_old' END IF" % (name, name))
     except Exception:
         print "Failure in importing knowls"
         traceback.print_exc()
