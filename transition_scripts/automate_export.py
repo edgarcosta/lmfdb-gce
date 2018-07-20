@@ -84,6 +84,7 @@ skip_collections = ['Lfunctions.full_collection',
                     'hgm.newmotives',
 
                     'artin.representations',
+                    'artin.representations_new',
                     'artin.field_data',
                     'artin.field_data_new',
                     'knowledge.knowls',
