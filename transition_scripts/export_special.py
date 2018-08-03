@@ -815,6 +815,128 @@ def index_nf_fields():
     else:
         print "Successfully exported nf_fields"
 
+def export_av_fqisog():
+    conn = lmfdb.base.getDBConnection()
+    av_fqisog = conn.abvar.fq_isog
+    maxvals = defaultdict(int)
+    try:
+        ordered_cols = ["C_cnts", "poly", "is_prim", "brauer_invs", "is_pp", "p_rank", "nf", "label", "pt_cnt", "A_cnts", "prim_models", "is_simp", "galois_t", "galois_n", "angles", "ang_rank", "decomp", "g", "places", "q", "is_jac", "slps"]
+        with open('exports/av_fqisog.txt', 'w') as Fout:
+            for i, rec in sort_collection(av_fqisog, ['g', 'q', 'poly'], 'abvar.fq_isog'):
+                flds = {}
+                for fld in ["is_pp", "p_rank", "pt_cnt", "galois_t", "galois_n", "ang_rank", "g", "q", "is_jac"]: # integer columns
+                    maxval_update(flds, maxvals, fld, rec)
+                for fld in ["C_cnts", "poly", "A_cnts"]: # spaced_str columns
+                    flds[fld] = splitwrap(rec.get(fld))
+                for fld in ["prim_models", "angles", "decomp", "places"]: # json columns
+                    flds[fld] = jsonwrap(rec.get(fld))
+                decomp = rec["decomp"]
+                flds["simple_factors"] = jsonwrap([F[0] for F in decomp])
+                dims = [int(F[0].split('.')[0]) for F in decomp]
+                mults = [F[1] for F in decomp]
+                for n in range(1,7):
+                    flds["dim%s_factors"%n] = intwrap(sum([mult for dim,mult in zip(dims,mults) if dim == n]))
+                flds["max_mult"] = intwrap(max(mults))
+                for fld in ["is_prim", "is_simp"]: # bool columns
+                    flds[fld] = boolwrap(rec.get(fld))
+                for fld in ["brauer_invs", "nf", "label", "slps"]: # str columns
+                    flds[fld] = strwrap(rec.get(fld))
+                flds["id"] = str(i)
+                Fout.write("\t".join(flds[fld] for fld in ["id"] + ordered_cols) + "\n")
+        types = defaultdict(list)
+
+        for fld in ["is_pp", "p_rank", "pt_cnt", "galois_t", "galois_n", "ang_rank", "g", "q", "is_jac"]:
+            types[integer_size(maxvals[fld])].append(fld)
+        types["smallint"].extend(["dim%s_factors"%n for n in range(1,7)] + ["max_mult"])
+        for fld in ["C_cnts", "poly", "A_cnts"]:
+            types['jsonb'].append(fld)
+        for fld in ["prim_models", "angles", "decomp", "places", "simple_factors"]:
+            types['jsonb'].append(fld)
+        for fld in ["is_prim", "is_simp"]:
+            types['boolean'].append(fld)
+        for fld in ["brauer_invs", "nf", "label", "slps"]:
+            types['text'].append(fld)
+        with open('import.py', 'a') as Fimp:
+            Fimp.write('''
+def import_av_fqisog():
+    try:
+        db.create_table('av_fqisog', {0}, label, ['g', 'q', 'poly'], True, search_order={1})
+    except Exception:
+        print "Failure in creating av_fqisog"
+        traceback.print_exc()
+        return
+    try:
+        db.av_fqisog.copy_from('/scratch/importing/av_fqisog.txt', search_cols={1}, includes_ids=True, resort=False)
+    except Exception:
+        print "Failure loading data into av_fqisog"
+        traceback.print_exc()
+        return
+    print "Successfully imported av_fqisog"
+    index_av_fqisog()
+def index_av_fqisog():
+    try:
+        print "Indexing av_fqisog"
+        db.av_fqisog.restore_pkeys()
+        db.av_fqisog.create_index([u'A_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'C_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'ang_rank', 'id'], 'btree')
+        db.av_fqisog.create_index([u'decomp', 'id'], 'btree') # json col: may want to use GIN
+        db.av_fqisog.create_index([u'g', u'A_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'C_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'ang_rank', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'decomp', 'id'], 'btree') # json col: may want to use GIN
+        db.av_fqisog.create_index([u'g', u'poly', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'pt_cnt', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'A_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'C_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'ang_rank', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'decomp', 'id'], 'btree') # json col: may want to use GIN
+        db.av_fqisog.create_index([u'g', u'q', u'is_jac', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'is_pp', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'is_prim', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'is_simp', u'is_prim', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'is_simp', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'label'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'p_rank', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'poly', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'pt_cnt', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'slps', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', 'id'], 'btree')
+        db.av_fqisog.create_index([u'is_jac', 'id'], 'btree')
+        db.av_fqisog.create_index([u'is_pp', 'id'], 'btree')
+        db.av_fqisog.create_index([u'is_prim', 'id'], 'btree')
+        db.av_fqisog.create_index([u'is_simp', 'id'], 'btree')
+        db.av_fqisog.create_index([u'label'], 'btree')
+        db.av_fqisog.create_index([u'nf', 'id'], 'btree')
+        db.av_fqisog.create_index([u'p_rank', u'g', u'q', u'label'], 'btree')
+        db.av_fqisog.create_index([u'p_rank', 'id'], 'btree')
+        db.av_fqisog.create_index([u'poly', 'id'], 'btree')
+        db.av_fqisog.create_index([u'pt_cnt', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'A_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'C_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'ang_rank', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'decomp', 'id'], 'btree') # json col: may want to use GIN
+        db.av_fqisog.create_index([u'q', u'g', u'label'], 'btree')
+        db.av_fqisog.create_index(['q', 'galois_n', 'galois_t', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'poly', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'pt_cnt', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', 'id'], 'btree')
+        db.av_fqisog.create_index([u'slps', 'id'], 'btree')
+    except Exception:
+        print "Failure in indexing av_fqisog"
+        traceback.print_exc()
+    else:
+        print "Successfully indexed av_fqisog"
+'''.format(dict(types), ordered_cols))
+    except Exception:
+        print "Failure in exporting av_fqisog"
+        traceback.print_exc()
+        with open("export_failures.txt",'a') as F:
+            F.write("av_fqisog\n")
+    else:
+        print "Successfully exported av_fqisog"
+
 def export_lfunc_zeros():
     conn = lmfdb.base.getDBConnection()
     coll = conn.test.Lfunctions_test2
