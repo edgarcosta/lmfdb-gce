@@ -833,7 +833,7 @@ def export_av_fqisog():
     av_fqisog = conn.abvar.fq_isog
     maxvals = defaultdict(int)
     try:
-        ordered_cols = ["C_cnts", "poly", "is_prim", "brauer_invs", "is_pp", "p_rank", "nf", "label", "pt_cnt", "A_cnts", "prim_models", "is_simp", "galois_t", "galois_n", "angles", "ang_rank", "decomp", "g", "places", "q", "is_jac", "slps"]
+        ordered_cols = ["C_cnts", "poly", "is_prim", "brauer_invs", "is_pp", "p_rank", "nf", "label", "pt_cnt", "A_cnts", "prim_models", "is_simp", "galois_t", "galois_n", "angles", "ang_rank", "decomp", "g", "places", "q", "is_jac", "slps", "simple_factors", "max_mult"] + ["dim%s_factors"%n for n in range(1,7)]
         with open('exports/av_fqisog.txt', 'w') as Fout:
             for i, rec in sort_collection(av_fqisog, ['g', 'q', 'poly'], 'abvar.fq_isog'):
                 flds = {}
