@@ -84,7 +84,9 @@ skip_collections = ['Lfunctions.full_collection',
                     'hgm.newmotives',
 
                     'artin.representations',
+                    'artin.representations_new',
                     'artin.field_data',
+                    'artin.field_data_new',
                     'knowledge.knowls',
                     'knowledge.history',
                     'elliptic_curves.curves',
@@ -146,6 +148,8 @@ sorts = {'HTPicard.picard': ['ev'],
          'abvar.fq_isog': ['g', 'q', 'poly'],
          'artin.representations': ['Dim','Conductor'],
          'artin.field_data': None,
+         'belyi.galmaps': ['deg', 'group_num', 'g', 'label'],
+         'belyi.passports': ['deg', 'group', 'g', 'plabel'],
          'bmfs.forms': ['level_norm','label'],
          'bmfs.dimensions': ['level_norm','label'],
          'curve_automorphisms.passports': ['genus','dim','cc'],
@@ -200,6 +204,14 @@ fixes = {'Lfunctions.Lfunctions':{'gamma_factors':'collection of integer', ## sh
                           'A_cnts':'space separated list of integer stored as string',
                           'poly':'space separated list of integer stored as string'},
          'artin.representations':{'Conductor_key':False},
+         'belyi.galmaps': {
+             'embeddings': 'collection of real',
+             'label': 'string',
+             'plabel': 'string',
+             },
+         'belyi.galmaps': {
+             'plabel' : 'string',
+             },
          'bmfs.dimensions':{'level_label':'string'},
          'bmfs.forms':{'Lratio':'string',
                        'level_label':'string'},
@@ -298,7 +310,12 @@ fixes = {'Lfunctions.Lfunctions':{'gamma_factors':'collection of integer', ## sh
          'modularforms2.webchar':{'label':'string'},
          'modularforms2.dimension_table':{'space_labe;':False,
                                           'gamma1_label':'string'},
-         'sato_tate_groups.st_groups':{'trace_zero_density':'string'},
+         'sato_tate_groups.st_groups':{'trace_zero_density':'string',
+                                       'component_group':'string'},
+         'sato_tate_groups.small_groups':{'derived_group':'string',
+                                          'center':'string',
+                                          'abelian_quotient':'string',
+                                          'label':'string'},
          'siegel_modular_forms.dimensions':{'311':False},
          'transitivegroups.groups':{'orderkey':False},
 }
@@ -311,6 +328,7 @@ drop_indexes = {'Lfunctions.Lfunctions': ['a1_2d', 'a2_2d', 'a3_2d', 'a4_2d', 'a
                 'modularforms2.webmodformspace': ["level_1_weight_1_chi_1"],
                 'modularforms2.webnewforms': ["level_1_weight_1_chi_1"],
                 'sato_tate_groups.st0_groups': ["degree_1", "weight_1", "name_1", "label_1"],
+		'transitivegroups.groups': ["orderkey_1_n_1_t_1"],
 }
 
 mod_indexes = {'abvar.fq_isog': {"gal_1": ['galois_n', 'galois_t', 'id'],
@@ -344,6 +362,8 @@ renames = {'HTPicard.picard': 'mwfp_forms',
            'abvar.fq_isog': 'av_fqisog',
            'artin.representations': 'artin_reps',
            'artin.field_data': 'artin_field_data',
+           'belyi.galmaps': 'belyi_galmaps',
+           'belyi.passports': 'belyi_passports',
            'bmfs.forms': 'bmf_forms',
            'bmfs.dimensions': 'bmf_dims',
            'curve_automorphisms.passports': 'hgcwa_passports',
@@ -392,6 +412,8 @@ label_cols = {'HTPicard.picard': 'maass_id',
               'Lfunctions.instances': 'url',
               'SL2Zsubgroups.groups': None,
               'abvar.fq_isog': 'label',
+              'belyi.galmaps': 'label',
+              'belyi.passports': 'plabel',
               'bmfs.forms': 'label',
               'bmfs.dimensions': 'label',
               'curve_automorphisms.passports': 'total_label',
@@ -671,7 +693,7 @@ def maxval_update(flds, maxvals, fld, rec):
 def report_time(i, total, name, t0):
     if i and i % 10000 == 0:
         t = datetime.now()
-        print "%s: %s/%s in %s"%(name, i, total, t-t0)
+        print "%s: %s/%s ~ %.2f  in %s"%(name, i, total, i/(1.0 * total),  t-t0)
 def sort_collection(coll, sort, name):
     t0 = datetime.now()
     total = coll.count()
@@ -826,7 +848,7 @@ class Json(object):
                 cname = collection_names[cid]
                 if cname in skip_collections:
                     continue
-                assert cname in sorts
+                assert cname in sorts, "cname not in sorts:\ncname = %s\nsorts = %s" % (cname, sorts)
                 uname = renames[cname]
                 unames.append(uname)
                 cols = types[cname]

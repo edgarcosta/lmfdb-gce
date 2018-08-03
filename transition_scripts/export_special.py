@@ -108,14 +108,14 @@ def maxval_update(flds, maxvals, fld, rec):
 def report_time(i, total, name, t0, interval=10000):
     if i and i % interval == 0:
         t = datetime.now()
-        print "%s: %s/%s in %s"%(name, i, total, t-t0)
+        print "%s: %s/%s ~ %.2f in %s"%(name, i, total, i/(1.0 * total),  t-t0)
 def sort_collection(coll, sort, name):
     t0 = datetime.now()
     total = coll.count()
     if sort is None:
         for i, rec in enumerate(coll.find()):
             report_time(i, total, name, t0)
-            yield None, rec
+            yield i, rec
     else:
         keys = []
         sort.append("_id")
@@ -297,7 +297,7 @@ def export_mwfp_forms():
             types['jsonb'].append(fld)
         types['text'] = ["maass_id"]
         with open('import_special.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_mwfp_forms():
     try:
         db.create_table('mwfp_forms', {0}, 'maass_id', ['ev'], False, search_order={1})
@@ -323,7 +323,7 @@ def index_mwfp_forms():
         traceback.print_exc()
     else:
         print "Successfully indexed mwfp_forms"
-'''.format(dict(types), ordered_cols))
+""".format(dict(types), ordered_cols))
     except Exception:
         print "Failure in exporting mwfp_forms"
         traceback.print_exc()
@@ -347,7 +347,7 @@ def export_g2c_instances():
                     flds["url"] = u"|".join(instance.get("urls"))
                 Fout.write((u"\t".join(flds[fld] for fld in ordered_cols) + u"\n").encode("utf-8"))
         with open("import_special.py", 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_g2c_instances():
     try:
         db.lfunc_instances.copy_from('/scratch/importing/g2c_instances.txt', search_cols=['Lhash', 'type', 'url'])
@@ -358,7 +358,7 @@ def import_g2c_instances():
         print err
     else:
         print "Successfully imported g2c_instances"
-''')
+""")
     except Exception as err:
         print "Failure in exporting g2c_instances"
         traceback.print_exc()
@@ -385,7 +385,7 @@ def export_users():
                 flds["created"] = datetimewrap(user.get("created"))
                 Fout.write((u"\t".join(flds[fld] for fld in ordered_cols) + u"\n").encode("utf-8"))
         with open("import_special.py", 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_users():
     try:
         conn = db.conn
@@ -401,7 +401,7 @@ def import_users():
         print err
     else:
         print "Successfully imported users"
-''')
+""")
     except Exception as err:
         print "Failure in exporting users"
         traceback.print_exc()
@@ -435,19 +435,29 @@ def export_knowls():
                 flds["history"] = json.dumps(history)
             flds["timestamp"] = str(knowl.get("timestamp",r"\N"))
             F.write((u"\t".join(flds[fld] for fld in ["_id", "cat", "title", "content", "authors", "last_author", "quality", "timestamp", "_keywords", "history"]) + u"\n").encode('utf-8'))
+    print "exported knowledge.knowls to 'exports/kwl_knowls.txt'"
     history_db = conn.knowledge.history
-    with open('kwl_history.txt', 'w') as F:
+    with open('exports/kwl_history.txt', 'w') as F:
         for history in history_db.find():
             flds = {}
             for fld in ["_id", "title", "who", "state"]:
                 flds[fld] = asiswrap(history.get(fld))
             flds["time"] = str(history.get("time", r"\N"))
             F.write("\t".join(flds[fld] for fld in ["_id", "title", "time", "who", "state"]) + "\n")
+    print "exported knowledge.history to 'exports/kwl_knowls.txt'"
     with open('import_special.py', 'a') as F:
-        F.write('''
+        F.write("""
 def import_knowls():
+    from psycopg2.sql import SQL
     cur = db.conn.cursor()
+    tablenames = ['kwl_history', 'kwl_deleted', 'kwl_knowls'];
     try:
+        # rename old tables
+        for name in tablenames:
+            cur.execute("ALTER TABLE IF EXISTS %s DROP CONSTRAINT IF EXISTS %s_pkey" % (name, name));
+            cur.execute("DROP TABLE IF EXISTS %s" % name);
+
+        # create tables
         cur.execute("CREATE TABLE kwl_knowls (id text, cat text, title text, content text, authors jsonb, last_author text, quality text, timestamp timestamp, _keywords jsonb, history jsonb)")
         cur.execute("CREATE TABLE kwl_deleted (id text, cat text, title text, content text, authors jsonb, last_author text, quality text, timestamp timestamp, _keywords jsonb, history jsonb)")
         cur.execute("CREATE TABLE kwl_history (id text, title text, time timestamp, who text, state text)")
@@ -460,8 +470,10 @@ def import_knowls():
         with open('/scratch/importing/kwl_history.txt') as F:
             cur.copy_from(F, 'kwl_history', columns=["id", "title", "time", "who", "state"])
         cur.execute("ALTER TABLE kwl_knowls ADD CONSTRAINT kwl_knowls_pkey PRIMARY KEY (id)")
-        cur.execute("ALTER TABLE kwl_deleted ADD CONSTRAINT kwl_deleted_pkey PRIMARY KEY (id)")
+	# no primary key on deleted
+        #cur.execute("ALTER TABLE kwl_deleted ADD CONSTRAINT kwl_deleted_pkey PRIMARY KEY (id)")
         cur.execute("ALTER TABLE kwl_history ADD CONSTRAINT kwl_history_pkey PRIMARY KEY (id)")
+
     except Exception:
         print "Failure in importing knowls"
         traceback.print_exc()
@@ -469,7 +481,8 @@ def import_knowls():
     else:
         db.conn.commit()
         print "Succeeded in importing knowls"
-''')
+""")
+    print "wrote 'import_knowls' to import_special.py"
 
 def export_g2c_curves():
     conn = lmfdb.base.getDBConnection()
@@ -505,7 +518,7 @@ def export_g2c_curves():
         for fld in ["eqn"]:
             types['text'].append(fld)
         with open('import_special.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_g2c_curves():
     try:
         db.create_table('g2c_curves', {0}, 'label', ['cond', 'class', 'abs_disc', 'disc_sign', 'label'], False, search_order={1})
@@ -548,7 +561,7 @@ def index_g2c_curves():
         traceback.print_exc()
     else:
         print "Successfully indexed g2c_curves"
-'''.format(dict(types), ordered_cols))
+""".format(dict(types), ordered_cols))
     except Exception:
         print "Failure in exporting g2c_curves"
         traceback.print_exc()
@@ -623,7 +636,7 @@ def export_ec_curves():
                 else:
                     extra_types[typ].append(col)
         with open('import_special.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_ec_curves():
     try:
         db.create_table('ec_curves', {0}, 'lmfdb_label', ['conductor', 'iso_nlabel', 'lmfdb_number'], True, {1}, search_order={2}, extra_order={3})
@@ -669,7 +682,7 @@ def index_ec_curves():
         traceback.print_exc()
     else:
         print "Successfully indexed ec_curves"
-'''.format(dict(search_types), dict(extra_types), search_cols, extra_cols))
+""".format(dict(search_types), dict(extra_types), search_cols, extra_cols))
     except Exception:
         print "Failure in exporting ec_curves"
         traceback.print_exc()
@@ -770,7 +783,7 @@ def export_nf_fields():
         search_types["text"].append("label")
         extra_types["text"].append("unitsType")
         with open('import_special.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_nf_fields():
     try:
         db.create_table('nf_fields', {0}, 'label', ['degree', 'disc_abs', 'disc_sign', 'iso_number'], True, {1}, search_order={2}, extra_order={3})
@@ -806,7 +819,7 @@ def index_nf_fields():
         traceback.print_exc()
     else:
         print "Successfully indexed nf_fields"
-'''.format(dict(search_types), dict(extra_types), search_cols, extra_cols))
+""".format(dict(search_types), dict(extra_types), search_cols, extra_cols))
     except Exception:
         print "Failure in exporting nf_fields"
         traceback.print_exc()
@@ -964,7 +977,7 @@ def export_lfunc_zeros():
         types['numeric'] = rcols
         types['text'] = tcols
         with open('/home/roed/import_special.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_lfunc_zeros():
     try:
         db.create_table('lfunc_zeros', {0}, None, ['first_zero'], search_order={1})
@@ -974,7 +987,7 @@ def import_lfunc_zeros():
         traceback.print_exc()
     else:
         print "Successfully imported lfunc_zeros"
-'''.format(dict(types), ordered_cols))
+""".format(dict(types), ordered_cols))
     except Exception:
         print "Failure in exporting lfunc_zeros"
         traceback.print_exc()
@@ -1007,7 +1020,7 @@ def export_mwfp_forms():
             types['jsonb'].append(fld)
         types['text'] = ["maass_id"]
         with open('import.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_mwfp_forms():
     try:
         db.create_table('mwfp_forms', {0}, 'maass_id', ['ev'], False, search_order={1})
@@ -1033,7 +1046,7 @@ def index_mwfp_forms():
         traceback.print_exc()
     else:
         print "Successfully indexed mwfp_forms"
-'''.format(dict(types), ordered_cols))
+""".format(dict(types), ordered_cols))
     except Exception:
         print "Failure in exporting mwfp_forms"
         traceback.print_exc()
@@ -1063,7 +1076,7 @@ def export_mwf_coeffs():
                 flds['Numc'] = intwrap(Numc.get(filename))
                 Fout.write("\t".join(flds[fld] for fld in ["label", "Numc", "coefficients"]) + "\n")
         with open('/home/roed/import_special.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_mwf_coeffs():
     try:
         db.create_table('mwf_coeffs', {'int':'Numc', 'bytea':'coefficients', 'text':'label'}, 'label', search_order=['label', 'Numc', 'coefficients'])
@@ -1073,7 +1086,7 @@ def import_mwf_coeffs():
         traceback.print_exc()
     else:
         print "Successfully imported mwf_coeffs"
-''')
+""")
     except Exception as err:
         print "Failure in exporting mwf_coeffs"
         traceback.print_exc()
@@ -1127,7 +1140,7 @@ def export_mwf_forms():
         for fld in ["Character", "M0", "Norm", "Numc", "Dim", "Level", "Dimension", "dim", "Symmetry", "Weight", "Fricke", "Sign"]:
             types[integer_size(maxvals[fld])].append(fld)
         with open('/home/roed/import_special.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_mwf_forms():
     try:
         db.create_table('mwf_forms', {0}, 'maass_id', sort=['Weight', 'Level', 'Character', 'Eigenvalue'], id_ordered=True, search_order={1})
@@ -1146,7 +1159,7 @@ def import_mwf_forms():
         traceback.print_exc()
     else:
         print "Successfully imported mwf_forms"
-'''.format(dict(types), ordered_cols))
+""".format(dict(types), ordered_cols))
     except Exception as err:
         #print "Failure in exporting mwf_forms"
         #traceback.print_exc()
@@ -1176,7 +1189,7 @@ def export_mwf_plots():
         for fld in ["level", "num_pts", "dpi"]:
             types[integer_size(maxvals[fld])].append(fld)
         with open('/home/roed/import_special.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_mwf_plots():
     try:
         db.create_table('mwf_plots', {0}, 'maass_id', search_order={1})
@@ -1187,7 +1200,7 @@ def import_mwf_plots():
         print err
     else:
         print "Successfully imported mwf_plots"
-'''.format(dict(types), ordered_cols))
+""".format(dict(types), ordered_cols))
     except Exception as err:
         #print "Failure in exporting mwf_plots"
         #traceback.print_exc()
@@ -1215,12 +1228,12 @@ def export_mwf_tables():
         Fout.write("\t".join(flds[fld] for fld in ordered_cols) + "\n")
     types = {'smallint':icols, 'jsonb':jcols+['data']}
     with open('/home/roed/import_special.py', 'a') as Fimp:
-        Fimp.write('''
+        Fimp.write("""
 def import_mwf_tables():
     db.create_table('mwf_tables', {0}, None, search_order={1})
     db.mwf_tables.copy_from('/scratch/importing/mwf_tables.txt', search_cols={1}, includes_ids=True, resort=False)
     print "Successfully imported mwf_tables"
-'''.format(types, ordered_cols))
+""".format(types, ordered_cols))
 
 maxid = 0
 def export_smf_samples():
@@ -1282,7 +1295,7 @@ def export_smf_samples():
         ftypes = {'smallint':'det', 'jsonb':'data', 'integer':'owner_id'}
         etypes = {'smallint':'index', 'jsonb':'data', 'integer':'owner_id'}
         with open('/home/roed/import_special.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_smf_samples():
     try:
         db.create_table('smf_samples', {0}, None, ['name'], search_order={1})
@@ -1300,7 +1313,7 @@ def import_smf_samples():
         print err
     else:
         print "Successfully imported smf_samples"
-'''.format(stypes, sordered_cols, etypes, eordered_cols, ftypes, fordered_cols))
+""".format(stypes, sordered_cols, etypes, eordered_cols, ftypes, fordered_cols))
     except Exception as err:
         #print "Failure in exporting smf_samples"
         #traceback.print_exc()
@@ -1361,7 +1374,7 @@ def export_artin_reps():
         types['smallint'].append("Galn")
         types['integer'].append("Galt")
         with open('import_special.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_artin_reps():
     try:
         db.create_table('artin_reps', {0}, 'Baselabel', ['Dim', 'Conductor'], True, search_order={1})
@@ -1392,7 +1405,7 @@ def index_artin_reps():
         traceback.print_exc()
     else:
         print "Successfully indexed artin_reps"
-'''.format(dict(types), ordered_cols))
+""".format(dict(types), ordered_cols))
     except Exception:
         print "Failure in exporting artin_reps"
         traceback.print_exc()
@@ -1407,25 +1420,28 @@ def export_artin_field_data():
     maxvals = defaultdict(int)
     try:
         ordered_cols = ["ConjClasses", "G-Name", "QpRts-minpoly", "ComplexConjugation", "FrobResolvents", "QpRts-prec", "ArtinReps", "G-Gens", "Polynomial", "QpRts", "Frobs", "QpRts-p", "TransitiveDegree", "Size"]
+	ordered_cols_plus_id = ["id"] + ordered_cols
         with open('exports/artin_field_data.txt', 'w') as Fout:
+            j = 0;
             for i, rec in sort_collection(artin_field_data, None, 'artin.field_data'):
-                flds = {}
-
-                for fld in ["ComplexConjugation", "QpRts-prec", "QpRts-p", "TransitiveDegree"]: # integer columns
-                    maxval_update(flds, maxvals, fld, rec)
-                for fld in ["Size"]: # int_as_str columns
-                    flds[fld] = intwrap(rec.get(fld))
-                if "Polynomial" in rec: # list_as_str columns
-                    flds["Polynomial"] = splitwrap(rec.get("Polynomial"))
-                else:
-                    flds["Polynomial"] = splitwrap(rec.get("NFGal"))
-                for fld in ["ConjClasses", "QpRts-minpoly", "FrobResolvents", "ArtinReps", "G-Gens", "QpRts", "Frobs"]: # json columns
-                    flds[fld] = jsonwrap(rec.get(fld))
-                for fld in ["G-Name"]: # str columns
-                    flds[fld] = strwrap(rec.get(fld))
-                if i is not None:
-                    flds["id"] = str(i)
-                Fout.write("\t".join(flds[fld] for fld in ordered_cols) + "\n")
+                if "Polynomial" in rec:
+                    flds = {}
+                    for fld in ["ComplexConjugation", "QpRts-prec", "QpRts-p", "TransitiveDegree"]: # integer columns
+                        maxval_update(flds, maxvals, fld, rec)
+                    for fld in ["Size"]: # int_as_str columns
+                        flds[fld] = intwrap(rec.get(fld))
+                    if "Polynomial" in rec: # list_as_str columns
+                        flds["Polynomial"] = splitwrap(rec.get("Polynomial"))
+                    #else:
+                    #    flds["Polynomial"] = splitwrap(rec.get("NFGal"))
+                    for fld in ["ConjClasses", "QpRts-minpoly", "FrobResolvents", "ArtinReps", "G-Gens", "QpRts", "Frobs"]: # json columns
+                        flds[fld] = jsonwrap(rec.get(fld))
+                    for fld in ["G-Name"]: # str columns
+                        flds[fld] = strwrap(rec.get(fld))
+                    if j is not None:
+                        flds["id"] = str(j)
+                    Fout.write("\t".join(flds[fld] for fld in ordered_cols_plus_id) + "\n")
+                    j += 1
         types = defaultdict(list)
         for fld in ["ComplexConjugation", "QpRts-prec", "QpRts-p", "TransitiveDegree"]:
             types[integer_size(maxvals[fld])].append(fld)
@@ -1438,7 +1454,7 @@ def export_artin_field_data():
         for fld in ["G-Name"]:
             types['text'].append(fld)
         with open('import_special.py', 'a') as Fimp:
-            Fimp.write('''
+            Fimp.write("""
 def import_artin_field_data():
     try:
         db.create_table('artin_field_data', {0}, None, None, False, search_order={1})
@@ -1463,7 +1479,7 @@ def index_artin_field_data():
         traceback.print_exc()
     else:
         print "Successfully indexed artin_field_data"
-'''.format(dict(types), ordered_cols))
+""".format(dict(types), ordered_cols))
     except Exception:
         print "Failure in exporting artin_field_data"
         traceback.print_exc()
@@ -1489,7 +1505,7 @@ def export_oldstats(tables):
 
 def export_special():
     with open('import_special.py', 'w') as Fimp:
-        Fimp.write('''
+        Fimp.write("""
 from psycopg2 import DatabaseError, connect
 from lmfdb.db_backend import db
 import traceback
@@ -1507,7 +1523,7 @@ def import_special():
     import_artin_field_data()
     import_lfunc_zeros()
     import_oldstats()
-''')
+""")
     export_mwfp_forms()
     export_g2c_instances()
     export_users()
