@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, Counter
 import traceback
 import lmfdb
 from datetime import datetime, timedelta, date, time
@@ -607,7 +607,8 @@ def export_ec_curves():
                         flds["nonmax_rad"] = r'\N'
                     else:
                         flds["nonmax_rad"] = str(prod(nonmax))
-                    for fld in ["torsion_structure", "isogeny_degrees", "sha_primes", "galois_images", "aplist", "iwdata", "min_quad_twist", "local_data", "tor_gro", "heights", "torsion_generators", "2adic_gens", "torsion_primes", "tor_degs", "isogeny_matrix", "tor_fields", "gens", "anlist"]: # json columns
+                    flds["torsion_structure"] = ijsonwrap(rec.get("torsion_structure"))
+                    for fld in ["isogeny_degrees", "sha_primes", "galois_images", "aplist", "iwdata", "min_quad_twist", "local_data", "tor_gro", "heights", "torsion_generators", "2adic_gens", "torsion_primes", "tor_degs", "isogeny_matrix", "tor_fields", "gens", "anlist"]: # json columns
                         flds[fld] = jsonwrap(rec.get(fld))
                     flds["modp_images"] = jsonwrap(rec.get("mod-p_images"))
                     Fsmall.write("\t".join(flds[fld] for fld in ["id"] + search_cols) + "\n")
@@ -832,48 +833,61 @@ def export_av_fqisog():
     conn = lmfdb.base.getDBConnection()
     av_fqisog = conn.abvar.fq_isog
     maxvals = defaultdict(int)
+    def _multiset_code(n):
+        if n == 0:
+            return 'A'
+        return ''.join(chr(65+d) for d in reversed(ZZ(n).digits(26)))
     try:
-        ordered_cols = ["C_cnts", "poly", "is_prim", "brauer_invs", "is_pp", "p_rank", "nf", "label", "pt_cnt", "A_cnts", "prim_models", "is_simp", "galois_t", "galois_n", "angles", "ang_rank", "decomp", "g", "places", "q", "is_jac", "slps", "simple_factors", "max_mult"] + ["dim%s_factors"%n for n in range(1,7)]
+        ordered_cols = ["label", "g", "q", "poly", "poly_str", "angles", "ang_rank", "p_rank", "slps", "A_cnts", "A_cnts_str", "C_cnts", "C_cnts_str", "pt_cnt", "is_jac", "is_pp", "decomp", "simple_factors", "simple_distinct", "is_simp", "brauer_invs", "places", "prim_models", "is_prim", "nf", "galois_t", "galois_n"] + ["dim%s_factors"%n for n in range(1,6)] + ["dim%s_distinct"%n for n in range(1,6)]
         with open('exports/av_fqisog.txt', 'w') as Fout:
             for i, rec in sort_collection(av_fqisog, ['g', 'q', 'poly'], 'abvar.fq_isog'):
                 flds = {}
                 for fld in ["is_pp", "p_rank", "pt_cnt", "galois_t", "galois_n", "ang_rank", "g", "q", "is_jac"]: # integer columns
                     maxval_update(flds, maxvals, fld, rec)
                 for fld in ["C_cnts", "poly", "A_cnts"]: # spaced_str columns
+                    flds[fld + "_str"] = strwrap(rec.get(fld) + " ")
                     flds[fld] = splitwrap(rec.get(fld))
                 for fld in ["prim_models", "angles", "decomp", "places"]: # json columns
                     flds[fld] = jsonwrap(rec.get(fld))
                 decomp = rec["decomp"]
-                flds["simple_factors"] = jsonwrap([F[0] for F in decomp])
-                dims = [int(F[0].split('.')[0]) for F in decomp]
-                mults = [F[1] for F in decomp]
-                for n in range(1,7):
-                    flds["dim%s_factors"%n] = intwrap(sum([mult for dim,mult in zip(dims,mults) if dim == n]))
-                flds["max_mult"] = intwrap(max(mults))
+                # Represent multiset by appending consecutive capital letters
+                simples = sum([[label + _multiset_code(count) for count in range(exp)] for label,exp in decomp],[])
+                flds["simple_factors"] = jsonwrap(simples)
+                flds["simple_distinct"] = jsonwrap([label for label,exp in decomp])
+                dims = [(int(F[0].split('.')[0]), F[1]) for F in decomp]
+                for n in range(1,6):
+                    dmults = [mult for dim,mult in dims if dim == n]
+                    flds["dim%s_distinct"%n] = intwrap(len(dmults))
+                    flds["dim%s_factors"%n] = intwrap(sum(dmults))
                 for fld in ["is_prim", "is_simp"]: # bool columns
                     flds[fld] = boolwrap(rec.get(fld))
-                for fld in ["brauer_invs", "nf", "label", "slps"]: # str columns
+                for fld in ["brauer_invs", "nf", "label"]: # str columns
                     flds[fld] = strwrap(rec.get(fld))
+                slps = rec["slps"].split()
+                multiset_slps = []
+                seen = Counter()
+                for x in slps:
+                    multiset_slps.append(x + _multiset_code(seen[x]))
+                    seen[x] += 1
+                flds["slps"] = jsonwrap(multiset_slps)
                 flds["id"] = str(i)
                 Fout.write("\t".join(flds[fld] for fld in ["id"] + ordered_cols) + "\n")
         types = defaultdict(list)
 
         for fld in ["is_pp", "p_rank", "pt_cnt", "galois_t", "galois_n", "ang_rank", "g", "q", "is_jac"]:
             types[integer_size(maxvals[fld])].append(fld)
-        types["smallint"].extend(["dim%s_factors"%n for n in range(1,7)] + ["max_mult"])
-        for fld in ["C_cnts", "poly", "A_cnts"]:
-            types['jsonb'].append(fld)
-        for fld in ["prim_models", "angles", "decomp", "places", "simple_factors"]:
+        types["smallint"].extend(["dim%s_factors"%n for n in range(1,6)] + ["dim%s_distinct"%n for n in range(1,6)])
+        for fld in ["C_cnts", "poly", "A_cnts", "prim_models", "angles", "decomp", "places", "simple_factors", "simple_distinct", "slps"]:
             types['jsonb'].append(fld)
         for fld in ["is_prim", "is_simp"]:
             types['boolean'].append(fld)
-        for fld in ["brauer_invs", "nf", "label", "slps"]:
+        for fld in ["brauer_invs", "nf", "label", "A_cnts_str", "C_cnts_str", "poly_str"]:
             types['text'].append(fld)
-        with open('import.py', 'a') as Fimp:
+        with open('import_special.py', 'a') as Fimp:
             Fimp.write('''
 def import_av_fqisog():
     try:
-        db.create_table('av_fqisog', {0}, label, ['g', 'q', 'poly'], True, search_order={1})
+        db.create_table('av_fqisog', {0}, 'label', ['g', 'q', 'poly'], True, search_order={1})
     except Exception:
         print "Failure in creating av_fqisog"
         traceback.print_exc()
@@ -890,20 +904,17 @@ def index_av_fqisog():
     try:
         print "Indexing av_fqisog"
         db.av_fqisog.restore_pkeys()
-        db.av_fqisog.create_index([u'A_cnts', 'id'], 'btree')
-        db.av_fqisog.create_index([u'C_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'A_cnts_str', 'id'], 'btree')
+        db.av_fqisog.create_index([u'C_cnts_str', 'id'], 'btree')
         db.av_fqisog.create_index([u'ang_rank', 'id'], 'btree')
-        db.av_fqisog.create_index([u'decomp', 'id'], 'btree') # json col: may want to use GIN
-        db.av_fqisog.create_index([u'g', u'A_cnts', 'id'], 'btree')
-        db.av_fqisog.create_index([u'g', u'C_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'A_cnts_str', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'C_cnts_str', 'id'], 'btree')
         db.av_fqisog.create_index([u'g', u'ang_rank', 'id'], 'btree')
-        db.av_fqisog.create_index([u'g', u'decomp', 'id'], 'btree') # json col: may want to use GIN
-        db.av_fqisog.create_index([u'g', u'poly', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'poly_str', 'id'], 'btree')
         db.av_fqisog.create_index([u'g', u'pt_cnt', 'id'], 'btree')
-        db.av_fqisog.create_index([u'g', u'q', u'A_cnts', 'id'], 'btree')
-        db.av_fqisog.create_index([u'g', u'q', u'C_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'A_cnts_str', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'C_cnts_str', 'id'], 'btree')
         db.av_fqisog.create_index([u'g', u'q', u'ang_rank', 'id'], 'btree')
-        db.av_fqisog.create_index([u'g', u'q', u'decomp', 'id'], 'btree') # json col: may want to use GIN
         db.av_fqisog.create_index([u'g', u'q', u'is_jac', 'id'], 'btree')
         db.av_fqisog.create_index([u'g', u'q', u'is_pp', 'id'], 'btree')
         db.av_fqisog.create_index([u'g', u'q', u'is_prim', 'id'], 'btree')
@@ -911,9 +922,9 @@ def index_av_fqisog():
         db.av_fqisog.create_index([u'g', u'q', u'is_simp', 'id'], 'btree')
         db.av_fqisog.create_index([u'g', u'q', u'label'], 'btree')
         db.av_fqisog.create_index([u'g', u'q', u'p_rank', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'poly_str', 'id'], 'btree')
         db.av_fqisog.create_index([u'g', u'q', u'poly', 'id'], 'btree')
         db.av_fqisog.create_index([u'g', u'q', u'pt_cnt', 'id'], 'btree')
-        db.av_fqisog.create_index([u'g', u'q', u'slps', 'id'], 'btree')
         db.av_fqisog.create_index([u'g', u'q', 'id'], 'btree')
         db.av_fqisog.create_index([u'g', 'id'], 'btree')
         db.av_fqisog.create_index([u'is_jac', 'id'], 'btree')
@@ -924,18 +935,31 @@ def index_av_fqisog():
         db.av_fqisog.create_index([u'nf', 'id'], 'btree')
         db.av_fqisog.create_index([u'p_rank', u'g', u'q', u'label'], 'btree')
         db.av_fqisog.create_index([u'p_rank', 'id'], 'btree')
-        db.av_fqisog.create_index([u'poly', 'id'], 'btree')
+        db.av_fqisog.create_index([u'poly_str', 'id'], 'btree')
         db.av_fqisog.create_index([u'pt_cnt', 'id'], 'btree')
-        db.av_fqisog.create_index([u'q', u'A_cnts', 'id'], 'btree')
-        db.av_fqisog.create_index([u'q', u'C_cnts', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'A_cnts_str', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'C_cnts_str', 'id'], 'btree')
         db.av_fqisog.create_index([u'q', u'ang_rank', 'id'], 'btree')
-        db.av_fqisog.create_index([u'q', u'decomp', 'id'], 'btree') # json col: may want to use GIN
         db.av_fqisog.create_index([u'q', u'g', u'label'], 'btree')
         db.av_fqisog.create_index(['q', 'galois_n', 'galois_t', 'id'], 'btree')
-        db.av_fqisog.create_index([u'q', u'poly', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'poly_str', 'id'], 'btree')
         db.av_fqisog.create_index([u'q', u'pt_cnt', 'id'], 'btree')
         db.av_fqisog.create_index([u'q', 'id'], 'btree')
-        db.av_fqisog.create_index([u'slps', 'id'], 'btree')
+        db.av_fqisog.create_index([u'slps'], 'gin')
+        db.av_fqisog.create_index([u'simple_factors'], 'gin')
+        db.av_fqisog.create_index([u'simple_distinct'], 'gin')
+        db.av_fqisog.create_index([u'dim1_factors', 'id'], 'btree')
+        db.av_fqisog.create_index([u'dim2_factors', 'id'], 'btree')
+        db.av_fqisog.create_index([u'dim1_factors', u'dim2_factors', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'dim1_factors', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'dim2_factors', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'dim1_factors', u'dim2_factors', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'dim1_factors', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'dim2_factors', 'id'], 'btree')
+        db.av_fqisog.create_index([u'q', u'dim1_factors', u'dim2_factors', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'dim1_factors', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'dim2_factors', 'id'], 'btree')
+        db.av_fqisog.create_index([u'g', u'q', u'dim1_factors', u'dim2_factors', 'id'], 'btree')
     except Exception:
         print "Failure in indexing av_fqisog"
         traceback.print_exc()

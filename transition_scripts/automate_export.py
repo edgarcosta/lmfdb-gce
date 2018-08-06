@@ -940,7 +940,7 @@ def export_{collection}():
             Fimp.write('''
 def import_{collection}():
     try:
-        db.create_table('{collection}', {{0}}, {label_col}, {import_sort}, {id_ordered}, search_order={{1}})
+        db.create_table('{collection}', {{0}}, '{label_col}', {import_sort}, {id_ordered}, search_order={{1}})
     except Exception:
         print "Failure in creating {collection}"
         traceback.print_exc()
