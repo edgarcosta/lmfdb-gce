@@ -24,7 +24,7 @@ from sage.rings.polynomial.polynomial_element_generic import Polynomial_generic_
 from sage.rings.polynomial.polynomial_element import Polynomial
 from sage.rings.power_series_poly import PowerSeries_poly
 from sage.modules.free_module_element import vector, FreeModuleElement
-from sage.structure.sage_object import loads
+from sage.misc.persist import loads
 from lmfdb.modular_forms.maass_forms.maass_waveforms.backend.maass_forms_db import MaassDB
 stripzero_re = re.compile(r'^([0-9-]+)(\.0*)?$')
 all_digits = re.compile(r'^-?[0-9]+$')
@@ -115,7 +115,7 @@ def sort_collection(coll, sort, name):
     if sort is None:
         for i, rec in enumerate(coll.find()):
             report_time(i, total, name, t0)
-            yield i, rec
+            yield i+1, rec
     else:
         keys = []
         sort.append("_id")
@@ -271,66 +271,6 @@ class Json(object):
             return obj
         else:
             raise ValueError("Unsupported type: %s"%(type(obj)))
-
-def export_mwfp_forms():
-    conn = lmfdb.base.getDBConnection()
-    mwfp_forms = conn.HTPicard.picard
-    maxvals = defaultdict(int)
-    try:
-        ordered_cols = ["maass_id", "ev", "prec", "sym", "coef"]
-        with open('exports/mwfp_forms.txt', 'w') as Fout:
-            for i, rec in sort_collection(mwfp_forms, None, 'HTPicard.picard'):
-                flds = {}
-
-                flds["maass_id"] = str(rec["_id"])
-                for fld in ["ev", "prec"]: # real columns
-                    flds[fld] = realwrap(rec.get(fld))
-                for fld in ["sym", "coef"]: # json columns
-                    flds[fld] = jsonwrap(rec.get(fld))
-                if i is not None:
-                    flds["id"] = str(i)
-                Fout.write("\t".join(flds[fld] for fld in ordered_cols) + "\n")
-        types = defaultdict(list)
-        for fld in ["ev", "prec"]:
-            types['numeric'].append(fld)
-        for fld in ["sym", "coef"]:
-            types['jsonb'].append(fld)
-        types['text'] = ["maass_id"]
-        with open('import_special.py', 'a') as Fimp:
-            Fimp.write("""
-def import_mwfp_forms():
-    try:
-        db.create_table('mwfp_forms', {0}, 'maass_id', ['ev'], False, search_order={1})
-    except Exception:
-        print "Failure in creating mwfp_forms"
-        traceback.print_exc()
-        return
-    try:
-                db.mwfp_forms.copy_from('/scratch/importing/mwfp_forms.txt', search_cols={1}, includes_ids=True, resort=False)
-    except Exception:
-        print "Failure loading data into mwfp_forms"
-        traceback.print_exc()
-        return
-    print "Successfully imported mwfp_forms"
-    index_mwfp_forms()
-def index_mwfp_forms():
-    try:
-        print "Indexing mwfp_forms"
-        db.mwfp_forms.restore_pkeys()
-        db.mwfp_forms.create_index([u'ev'], 'btree')
-    except Exception:
-        print "Failure in indexing mwfp_forms"
-        traceback.print_exc()
-    else:
-        print "Successfully indexed mwfp_forms"
-""".format(dict(types), ordered_cols))
-    except Exception:
-        print "Failure in exporting mwfp_forms"
-        traceback.print_exc()
-        with open("export_failures.txt",'a') as F:
-            F.write("mwfp_forms\n")
-    else:
-        print "Successfully exported mwfp_forms"
 
 def export_g2c_instances():
     conn = lmfdb.base.getDBConnection()
@@ -714,8 +654,7 @@ def export_nf_fields():
         search_cols = ['label', 'coeffs', 'degree', 'r2', 'cm', 'iso_number', 'disc_abs', 'disc_sign', 'disc_rad', 'ramps', 'galt', 'class_number', 'class_group', 'used_grh']
         extra_cols = ['zk', 'units', 'reg', 'subs', 'unitsGmodule', 'unitsType', 'res', 'loc_algebras']
         with open('exports/nf_fields.txt', 'w') as Fsmall:
-            #with open('exports/nf_fields_extras.txt', 'w') as Fextras:
-            with open('exports/nf_fields_extras.txt', 'a') as Fextras:
+            with open('exports/nf_fields_extras.txt', 'w') as Fextras:
                 for i, rec in enumerate(nf.find()):
                     if i and i%10000 == 0:
                         t = datetime.now()
@@ -733,8 +672,8 @@ def export_nf_fields():
                         flds["disc_rad"] = str(prod(int(p) for p in rec["ramps"]))
                     else:
                         flds["disc_rad"] = r'\N'
-                    #for fld in ["subs", "zk", "unitsGmodule", "units", "res", "loc_algebras"]: # json columns
-                    #    flds[fld] = jsonwrap(rec.get(fld))
+                    for fld in ["subs", "zk", "unitsGmodule", "units", "res", "loc_algebras"]: # json columns
+                        flds[fld] = jsonwrap(rec.get(fld))
                     if "galois" in rec:
                         flds["galt"] = intwrap(rec["galois"]["t"])
                     else:
@@ -769,7 +708,7 @@ def export_nf_fields():
                             cm = 'f'
                     flds["cm"] = cm
                     Fsmall.write('\t'.join(flds[fld] for fld in ["id"] + search_cols) + '\n')
-                    #Fextras.write('\t'.join(flds[fld] for fld in ["id"] + extra_cols) + '\n')
+                    Fextras.write('\t'.join(flds[fld] for fld in ["id"] + extra_cols) + '\n')
         search_types = defaultdict(list)
         extra_types = defaultdict(list)
         for fld in ["class_number", "degree", "disc_abs", "disc_sign", "r2"]:
@@ -984,7 +923,7 @@ def export_lfunc_zeros():
     tcols = ['description']
     try:
         with open('exports/lfunc_zeros.txt', 'w') as Fout:
-            for rec in coll.find():
+            for i, rec in sort_collection(coll, ['first_zero'], 'lfunc_zeros'):
                 flds = {}
                 for fld in icols:
                     flds[fld] = intwrap(rec.get(fld))
@@ -994,7 +933,8 @@ def export_lfunc_zeros():
                     flds[fld] = realwrap(rec.get(fld))
                 for fld in tcols:
                     flds[fld] = strwrap(rec.get(fld))
-                Fout.write("\t".join(flds[fld] for fld in ordered_cols) + "\n")
+                flds['id'] = str(i)
+                Fout.write("\t".join(flds[fld] for fld in ['id'] + ordered_cols) + "\n")
         types = defaultdict(list)
         types['smallint'] = icols
         types['jsonb'] = jcols
@@ -1037,7 +977,6 @@ def export_mwfp_forms():
                 flds["id"] = str(i)
                 Fout.write("\t".join(flds[fld] for fld in ["id"] + ordered_cols) + "\n")
         types = defaultdict(list)
-
         for fld in ["ev", "prec"]:
             types['numeric'].append(fld)
         for fld in ["sym", "coef"]:
@@ -1092,13 +1031,14 @@ def export_mwf_coeffs():
                 if cid is not None and mwf_gridfs.exists(cid):
                     gfile = mwf_gridfs.get(cid)
                     Numc[gfile.filename] = rec.get('Numc')
-            for filename in mwf_gridfs.list():
+            for i, filename in enumerate(mwf_gridfs.list(),1):
                 flds = {}
                 gfile = mwf_gridfs.find_one({'filename':filename})
                 flds['coefficients'] = binarywrap(gfile.read())
                 flds['label'] = filename
                 flds['Numc'] = intwrap(Numc.get(filename))
-                Fout.write("\t".join(flds[fld] for fld in ["label", "Numc", "coefficients"]) + "\n")
+                flds['id'] = str(i)
+                Fout.write("\t".join(flds[fld] for fld in ["id", "label", "Numc", "coefficients"]) + "\n")
         with open('/home/roed/import_special.py', 'a') as Fimp:
             Fimp.write("""
 def import_mwf_coeffs():
@@ -1205,7 +1145,8 @@ def export_mwf_plots():
                 for fld in ["level", "num_pts", "dpi"]: # integer columns
                     maxval_update(flds, maxvals, fld, rec)
                 flds["maass_id"] = str(rec["maass_id"]) if rec.get("maass_id") else r"\N"
-                Fout.write("\t".join(flds[fld] for fld in ordered_cols) + "\n")
+                flds["id"] = str(i)
+                Fout.write("\t".join(flds[fld] for fld in ['id'] + ordered_cols) + "\n")
         types = defaultdict(list)
         types['numeric'] = ["eigenvalue"]
         types['text'] = ["maass_id"]
@@ -1249,7 +1190,8 @@ def export_mwf_tables():
         for fld in jcols:
             flds[fld] = jsonwrap(table[fld])
         flds['data'] = jsonwrap({','.join(str(x) for x in k):v for k,v in table['data'].iteritems()})
-        Fout.write("\t".join(flds[fld] for fld in ordered_cols) + "\n")
+        flds['id'] = "1"
+        Fout.write("\t".join(flds[fld] for fld in ["id"] + ordered_cols) + "\n")
     types = {'smallint':icols, 'jsonb':jcols+['data']}
     with open('/home/roed/import_special.py', 'a') as Fimp:
         Fimp.write("""
@@ -1283,6 +1225,9 @@ def export_smf_samples():
             id_links[_id] = maxid
             return maxid
     try:
+        sample_id = 1
+        fc_id = 1
+        ev_id = 1
         with open('exports/smf_samples.txt', 'w') as Fsamp:
             with open('exports/smf_ev.txt', 'w') as Fev:
                 with open('exports/smf_fc.txt', 'w') as Ffc:
@@ -1299,22 +1244,28 @@ def export_smf_samples():
                                 flds[fld] = boolwrap(rec.get(fld))
                             for fld in tcols:
                                 flds[fld] = strwrap(rec.get(fld))
+                            flds["id"] = str(sample_id)
+                            sample_id += 1
                             F = Fsamp
                         elif rec['data_type'] == 'fc':
                             ordered_cols = fordered_cols
                             flds["det"] = intwrap(rec.get("det"))
                             flds["data"] = jsonwrap(rec.get("data"))
                             flds["owner_id"] = intwrap(get_id_link(rec["owner_id"]))
+                            flds["id"] = str(fc_id)
+                            fc_id += 1
                             F = Ffc
                         elif rec['data_type'] == 'ev':
                             ordered_cols = eordered_cols
                             flds["index"] = intwrap(rec.get("index"))
                             flds["data"] = jsonwrap(rec.get("data"))
                             flds["owner_id"] = intwrap(get_id_link(rec["owner_id"]))
+                            flds["id"] = str(ev_id)
+                            ev_id += 1
                             F = Fev
                         else:
                             raise RuntimeError
-                        F.write("\t".join(flds[fld] for fld in ordered_cols) + "\n")
+                        F.write("\t".join(flds[fld] for fld in ["id"] + ordered_cols) + "\n")
         stypes = {'smallint':icols, 'integer':['id_link'], 'jsonb':jcols, 'boolean':bcols, 'text':tcols}
         ftypes = {'smallint':'det', 'jsonb':'data', 'integer':'owner_id'}
         etypes = {'smallint':'index', 'jsonb':'data', 'integer':'owner_id'}
@@ -1349,10 +1300,10 @@ def import_smf_samples():
 
 def export_artin_reps():
     conn = lmfdb.base.getDBConnection()
-    artin_reps = conn.artin.representations
+    artin_reps = conn.artin.representations_new
     maxvals = defaultdict(int)
     try:
-        ordered_cols = ["Baselabel", "Dim", "Conductor", "Galn", "Galt", "Indicator", "BadPrimes", "HardPrimes", "GaloisConjugates", "GalConjSigns", "CharacterField", "NFGal", "Hide"]
+        ordered_cols = ["Baselabel", "Dim", "Conductor", "Galn", "Galt", "Container", "Indicator", "BadPrimes", "HardPrimes", "GaloisConjugates", "GalConjSigns", "CharacterField", "NFGal", "Hide"]
         with open('exports/artin_reps.txt', 'w') as Fout:
             for i, rec in sort_collection(artin_reps, ['Dim', 'Conductor_key'], 'artin.representations'):
                 flds = {}
@@ -1379,10 +1330,9 @@ def export_artin_reps():
                 else:
                     flds["Galn"] = intwrap(galnt[0])
                     flds["Galt"] = intwrap(galnt[1])
-                for fld in ["Baselabel"]: # str columns
+                for fld in ["Baselabel", "Container"]: # str columns
                     flds[fld] = strwrap(rec.get(fld))
-                if i is not None:
-                    flds["id"] = str(i)
+                flds["id"] = str(i)
                 Fout.write("\t".join(flds[fld] for fld in ["id"] + ordered_cols) + "\n")
         types = defaultdict(list)
         for fld in ["Dim", "Indicator", "CharacterField", "Hide"]:
@@ -1393,7 +1343,7 @@ def export_artin_reps():
             types['jsonb'].append(fld)
         for fld in ["BadPrimes", "GaloisConjugates", "HardPrimes", "GalConjSigns"]:
             types['jsonb'].append(fld)
-        for fld in ["Baselabel"]:
+        for fld in ["Baselabel", "Container"]:
             types['text'].append(fld)
         types['smallint'].append("Galn")
         types['integer'].append("Galt")
@@ -1537,7 +1487,12 @@ def import_special():
     import_mwfp_forms()
     import_g2c_instances()
     import_users()
-    import_lfunc_zeros
+    import_knowls()
+    import_g2c_curves()
+    import_ec_curves()
+    import_nf_fields()
+    import_av_fqisog()
+    import_lfunc_zeros()
     import_mwf_coeffs()
     import_mwf_forms()
     import_mwf_plots()
@@ -1551,7 +1506,12 @@ def import_special():
     export_mwfp_forms()
     export_g2c_instances()
     export_users()
-    export_lfunc_zeros
+    export_knowls()
+    export_g2c_curves()
+    export_ec_curves()
+    export_nf_fields()
+    export_av_fqisog()
+    export_lfunc_zeros()
     export_mwf_coeffs()
     export_mwf_forms()
     export_mwf_plots()
@@ -1559,7 +1519,6 @@ def import_special():
     export_smf_samples()
     export_artin_reps()
     export_artin_field_data()
-    export_lfunc_zeros()
     conn = lmfdb.base.getDBConnection()
     export_oldstats([(conn.elliptic_curves.nfcurves.stats, 'ec_nfcurves'),
                      (conn.Lattices.lat.stats, 'lat_lattices'),
