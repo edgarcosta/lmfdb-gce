@@ -7,8 +7,9 @@ then
   echo "must be run as the postgres user"
   false
 else
-  userdbdump=/scratch/userdb`date -u +%Y%m%d-%H%M`.tar
-  knowlsdump=/scratch/knowls`date -u +%Y%m%d-%H%M`.tar
+  mkdir -p /scratch/knowls_userdb/
+  userdbdump=/scratch/knowls_userdb/userdb`date -u +%Y%m%d-%H%M`.tar
+  knowlsdump=/scratch/knowls_userdb/knowls`date -u +%Y%m%d-%H%M`.tar
   time pg_dump --host devmirror.lmfdb.xyz --clean --if-exists --schema=userdb  -v --file $userdbdump --format tar lmfdb
   time pg_dump --host devmirror.lmfdb.xyz --clean --if-exists --schema=public -t 'kwl_*'  -v --file $knowlsdump --format tar lmfdb
   time pg_restore --clean --if-exists --dbname lmfdb $userdbdump
