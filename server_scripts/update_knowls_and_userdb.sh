@@ -2,7 +2,7 @@
 
 
 set -e
-if [ $USER != postgres ]
+if [ $USER != "postgres" ]
 then
   echo "must be run as the postgres user"
   false
