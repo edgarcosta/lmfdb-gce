@@ -111,7 +111,7 @@ def g2c_curves_addstats():
     db.g2c_curves.stats.add_stats_auto(cols, max_depth=3)
 
 def lf_fields_addstats():
-    cols = ['n', 'p', 'c', 'e', 'galT', 'topslope']
+    cols = ['n', 'p', 'c', 'e', 'galT', 'top_slope']
     db.lf_fields.stats._clear_stats_counts()
     db.lf_fields.stats.add_stats_auto(cols, max_depth=3)
 
@@ -134,7 +134,7 @@ def artin_reps_addstats():
                    {'BadPrimes':{'$notcontains':[5]}},
                    {'BadPrimes':{'$notcontains':[7]}}]
     db.artin_reps.stats._clear_stats_counts()
-    db.artin_reps.stats.add_stats_auto(cols, contstaints, max_depth=3)
+    db.artin_reps.stats.add_stats_auto(cols, constraints, max_depth=3)
 
 def gps_transitive_addstats():
     pass
