@@ -1,4 +1,5 @@
 */5 * * * * bash /home/lmfdb/lmfdb-gce/scripts/lmfdb_fetch.sh >> /home/lmfdb/logs/lmfdb_fetch 2>&1
+@reboot mount /home/lmfdb/data
 @reboot mount /home/lmfdb/buckets/riemann-zeta-zeros/
 @reboot mount /home/lmfdb/buckets/class-groups-quadratic-imaginary-fields/
 @reboot cd /home/lmfdb/lmfdb-gce/ && git fetch && git checkout -f origin/master && bash /home/lmfdb/lmfdb-gce/scripts/lmfdb_fetch.sh && supervisord -c /home/lmfdb/lmfdb-gce/config/supervisord-web.conf
