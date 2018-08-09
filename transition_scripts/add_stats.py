@@ -1,3 +1,4 @@
+import traceback
 def addstats_all():
     failures = []
     for f in [lf_fields_addstats,
@@ -17,6 +18,7 @@ def addstats_all():
             f()
         except Exception:
             failures.append(f)
+            traceback.print_exc()
     if failures:
         print "%s failures: %s"%(len(failures), failures)
     else:
