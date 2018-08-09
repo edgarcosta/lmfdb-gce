@@ -9,7 +9,7 @@ export TEXINPUTS=.:$SAGE_ROOT/local/share/texmf:
 # GIT_DIR points to the bare git repository containing both beta and prod branches
 
 branch=${0##*-}
-export GIT_WORK_TREE='/home/lmfdb/lmfdb-git-$branch'
+export GIT_WORK_TREE="/home/lmfdb/lmfdb-git-$branch"
 cd $GIT_WORK_TREE
-echo Running: gunicorn -c gunicorn-config-$branch lmfdb.website:app
-echo 'gunicorn -c gunicorn-config-$branch lmfdb.website:app' | $SAGE -sh
+echo "Running: gunicorn -c gunicorn-config-$branch lmfdb.website:app"
+echo "gunicorn -c gunicorn-config-$branch lmfdb.website:app" | $SAGE -sh
