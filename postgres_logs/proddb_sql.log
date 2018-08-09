@@ -1,0 +1,46 @@
+# the admin username
+# chande the admin password
+ALTER ROLE postgres PASSWORD 'the desired password';
+ALTER ROLE postgres WITH LOGIN;
+
+
+# set the fast collate
+UPDATE pg_database SET datcollate='C';
+
+#create the database lmfdb
+CREATE DATABASE lmfdb
+    WITH
+    OWNER = postgres
+    LC_COLLATE = 'C';
+
+# the lmfdb username = readonly
+# create the lmfdb user
+CREATE ROLE lmfdb LOGIN PASSWORD 'lmfdb';
+# nonsense
+# GRANT SELECT ON ALL TABLES IN SCHEMA public TO lmfdb;
+GRANT CONNECT ON DATABASE lmfdb TO lmfdb;
+
+# the webserver username = readonly + write knowls
+# CREATE the webserver user
+CREATE ROLE webserver LOGIN password 'thesecret';
+GRANT CONNECT ON DATABASE lmfdb TO webserver;
+
+
+# the editor username
+CREATE ROLE editor login password 'thesecret';
+GRANT CONNECT ON DATABASE lmfdb TO editor;
+GRANT CREATE, CONNECT, TEMPORARY ON DATABASE lmfdb TO editor;
+
+
+#userdb schema
+CREATE SCHEMA userdb AUTHORIZATION editor;
+GRANT USAGE ON SCHEMA userdb TO lmfdb;
+GRANT USAGE ON SCHEMA userdb TO webserver;
+GRANT ALL ON SCHEMA userdb TO editor;
+
+
+
+
+
+
+
