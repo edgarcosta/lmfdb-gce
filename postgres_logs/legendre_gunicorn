@@ -100,7 +100,7 @@ ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-postgres /home/lmfdb/lmfdb-gi
 ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_m0.config  /home/lmfdb/lmfdb-git-beta/mongoclient.config
 # we still want to read from m0, as we just want to test the code on the dev data
 ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_m0.config  /home/lmfdb/lmfdb-git-prod/mongoclient.config
-ln -s /home/lmfdb/lmfdb-gce/config/postgres_beta.ini  /home/lmfdb/lmfdb-git-postgres/config.ini
+ln -s /home/lmfdb/lmfdb-gce/config/postgres_legendre.ini  /home/lmfdb/lmfdb-git-postgres/config.ini
 
 
 # place the password
