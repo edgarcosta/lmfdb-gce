@@ -7,7 +7,7 @@ def addstats_all():
               hecke_algebras_addstats,
               hgcwa_passports_addstats,
               g2c_curves_addstats,
-              bmf_forms_addstats
+              bmf_forms_addstats,
               ec_nfcurves_addstats,
               av_fqisog_addstats,
               artin_reps_addstats,
