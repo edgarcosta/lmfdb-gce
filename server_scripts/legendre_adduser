@@ -16,6 +16,10 @@ lmfdbhome = opj(userhome, "lmfdb")
 sshhome = opj(userhome, ".ssh")
 loginfile = opj(sshhome, "authorized_keys")
 
+def my_chown(filename):
+    # os.chown doesn't work recursively.
+    subprocess.check_call(["chown", "-R", "%s:%s"%username, filename])
+
 # Make user
 try:
     subprocess.check_call(["adduser", "--home", userhome, "--shell", opj(sep, "bin", "bash"), "--disabled-password", "--gecos", '""', username])
@@ -23,7 +27,8 @@ except subprocess.CalledProcessError:
     print "You must run as root"
     sys.exit(1)
 subprocess.check_call(["adduser", username, "lmfdb_devs"])
-userid = pwd.getpwnam(username).pw_uid
+uid = pwd.getpwnam(username).pw_uid
+gid = grp.getgrnam(username).gr_gid
 subprocess.check_call(["ln", "-s", userhome, opj(sep, "home", username)])
 print "User %s created" % username
 os.chdir(userhome)
@@ -33,15 +38,17 @@ os.chdir(lmfdbhome)
 subprocess.check_call(["git", "remote", "rename", "origin", "upstream"])
 subprocess.check_call(["git", "remote", "set-url", "upstream", "git@github.com:LMFDB/lmfdb.git"])
 subprocess.check_call(["git", "remote", "add", "origin", "git@github.com:%s/lmfdb.git"%gitname])
-port = 40000 + userid
+port = 40000 + uid
 subprocess.check_call(["python", opj("lmfdb", "config.py"), "-p", str(port)])
+my_chown(lmfdbhome)
 print "LMFDB set up"
 # Deal with ssh keys
 os.mkdir(sshhome, 0700)
 with open(loginfile, "w") as F:
     F.write(login_keys)
 os.chmod(loginfile, 0644)
-subprocess.check_call(["ssh-keygen", "-b", "2048", "-t", "rsa", "-f", opj(sshhome, "id_rsa"), "-q", "-N", '""'])
+subprocess.check_call(["ssh-keygen", "-b", "2048", "-t", "rsa", "-f", opj(sshhome, "id_rsa"), "-q", "-N", "''"])
+my_chown(sshhome)
 print "Setup complete!\n"
 
 print "Dear %s," % name
