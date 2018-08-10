@@ -29,7 +29,6 @@ subprocess.check_call(["adduser", username, "lmfdb_devs"])
 uid = pwd.getpwnam(username).pw_uid
 subprocess.check_call(["ln", "-s", userhome, opj(sep, "home", username)])
 print "User %s created" % username
-subprocess.check_call([])
 os.chdir(userhome)
 # Clone and setup lmfdb
 usercall(["git", "clone", "-q", "https://github.com/LMFDB/lmfdb.git", lmfdbhome])
