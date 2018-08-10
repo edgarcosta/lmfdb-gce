@@ -18,7 +18,7 @@ loginfile = opj(sshhome, "authorized_keys")
 
 # Make user
 try:
-    subprocess.check_call(["adduser", "--home", userhome, "--shell", opj(sep, "bin", "bash"), "--disabled-password", username])
+    subprocess.check_call(["adduser", "--home", userhome, "--shell", opj(sep, "bin", "bash"), "--disabled-password", "--gecos", username])
 except subprocess.CalledProcessError:
     print "You must run as root"
     sys.exit(1)
