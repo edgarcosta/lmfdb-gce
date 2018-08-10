@@ -28,7 +28,6 @@ except subprocess.CalledProcessError:
     sys.exit(1)
 subprocess.check_call(["adduser", username, "lmfdb_devs"])
 uid = pwd.getpwnam(username).pw_uid
-gid = grp.getgrnam(username).gr_gid
 subprocess.check_call(["ln", "-s", userhome, opj(sep, "home", username)])
 print "User %s created" % username
 os.chdir(userhome)
