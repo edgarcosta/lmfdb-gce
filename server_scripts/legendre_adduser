@@ -28,7 +28,7 @@ except subprocess.CalledProcessError:
     sys.exit(1)
 subprocess.check_call(["adduser", username, "lmfdb_devs"])
 uid = pwd.getpwnam(username).pw_uid
-subprocess.check_call(["ln", "-s", userhome, opj(sep, "home", username)])
+subprocess.check_call(["ln", "-s", opj(sep, "home", username), userhome])
 print "User %s created" % username
 os.chdir(userhome)
 # Clone and setup lmfdb
