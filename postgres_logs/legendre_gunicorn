@@ -62,10 +62,9 @@ sudo useradd SAGE -u 1200 -d /home/sage -m
 sudo -u lmfdb -i
 cd
 git clone https://github.com/edgarcosta/lmfdb-gce.git
-mkdir -p /home/lmfdb/logs/beta /home/lmfdb/logs/prod /home/lmfdb/logs/supervisor/ /home/lmfdb/logs/postgres
+mkdir -p /home/lmfdb/logs/dev /home/lmfdb/logs/postgres /home/lmfdb/logs/supervisor/ 
 crontab  /home/lmfdb/lmfdb-gce/scripts/crontab
-git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-beta
-git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-prod
+git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-dev
 
 #temporarilly
 git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-postgres
@@ -77,35 +76,31 @@ popd
 bash /home/lmfdb/lmfdb-gce/scripts/scripts/lmfdb_fetch.sh
 
 # copy hooks
-ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout-beta /home/lmfdb/lmfdb-git-beta/.git/hooks/post-checkout
-ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout-prod /home/lmfdb/lmfdb-git-prod/.git/hooks/post-checkout
-ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout-postgres /home/lmfdb/lmfdb-git-postgres/.git/hooks/post-checkout
+ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout /home/lmfdb/lmfdb-git-dev/.git/hooks/post-checkout
+ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout /home/lmfdb/lmfdb-git-postgres/.git/hooks/post-checkout
 
 
 # copy scripts
-ln -s /home/lmfdb/lmfdb-gce/scripts/start-beta /home/lmfdb/start-beta
-ln -s /home/lmfdb/lmfdb-gce/scripts/start-prod /home/lmfdb/start-prod
-ln -s /home/lmfdb/lmfdb-gce/scripts/start-postgres /home/lmfdb/start-postgres
+ln -s ~/lmfdb-gce/scripts/start-BRANCH start-dev
+ln -s ~/lmfdb-gce/scripts/start-BRANCH start-postgres
+
+ln -s ~/lmfdb-gce/scripts/restart-BRANCH restart-dev
+ln -s ~/lmfdb-gce/scripts/restart-BRANCH restart-postgres
 ln -s /home/lmfdb/lmfdb-gce/scripts/start-supervisord-legendre /home/lmfdb/start-supervisord
-ln -s /home/lmfdb/lmfdb-gce/scripts/restart-beta /home/lmfdb/restart-beta
-ln -s /home/lmfdb/lmfdb-gce/scripts/restart-prod /home/lmfdb/restart-prod
-ln -s /home/lmfdb/lmfdb-gce/scripts/restart-postgres /home/lmfdb/restart-postgres
 ln -s /home/lmfdb/lmfdb-gce/scripts/stop-supervisord /home/lmfdb/stop-supervisord
 
 
 # copy config files
-ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-beta /home/lmfdb/lmfdb-git-beta
-ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-prod /home/lmfdb/lmfdb-git-prod
+ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-dev /home/lmfdb/lmfdb-git-dev
 ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-postgres /home/lmfdb/lmfdb-git-postgres
-ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_m0.config  /home/lmfdb/lmfdb-git-beta/mongoclient.config
 # we still want to read from m0, as we just want to test the code on the dev data
-ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_m0.config  /home/lmfdb/lmfdb-git-prod/mongoclient.config
-ln -s /home/lmfdb/lmfdb-gce/config/postgres_beta.ini  /home/lmfdb/lmfdb-git-postgres/config.ini
+ln -s /home/lmfdb/lmfdb-gce/config/postgres_legendre.ini  /home/lmfdb/lmfdb-git-postgres/config.ini
+ln -s /home/lmfdb/lmfdb-gce/config/postgres_legendre.ini  /home/lmfdb/lmfdb-git-dev/config.ini
 
 
 # place the password
 read -s password
-echo $password > /home/lmfdb/lmfdb-git-beta/password
+echo $password > /home/lmfdb/lmfdb-git-dev/password
 echo $password > /home/lmfdb/lmfdb-git-postgres/password
 
 
@@ -117,7 +112,11 @@ sudo a2dissite 000-default.conf
 sudo a2ensite lmfdb.conf
 
 
+# logrotate
+sudo apt-get install logrotate
+sudo cp ~/lmfdb-gce/config/etc-logrotate.d-lmfdb /etc/logrotate.d/
+
+
 # add records to dns
-prod.lmfdb.xyz
-beta.lmfdb.xyz
+dev.lmfdb.xyz
 postgres.lmfdb.xyz

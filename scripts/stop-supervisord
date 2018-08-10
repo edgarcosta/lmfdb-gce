@@ -2,5 +2,8 @@
 echo 'Killing supervisord ...'
 kill -TERM `cat /home/lmfdb/supervisord.pid`
 echo 'Killing gunicorn ...'
-kill -TERM `cat /home/lmfdb/gunicorn-prod.pid`
+for branch in dev web prod beta postgres; do
+  echo branch = $branch
+  kill -TERM `cat /home/lmfdb/gunicorn-$branch.pid`;
+done 
 echo '... and done!'

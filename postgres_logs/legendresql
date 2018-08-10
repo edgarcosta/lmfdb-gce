@@ -3,6 +3,9 @@
 ALTER ROLE postgres PASSWORD 'the desired password';
 ALTER ROLE postgres WITH LOGIN;
 
+# set the fast collate
+UPDATE pg_database SET datcollate='C';
+
 #create the database lmfdb
 CREATE DATABASE lmfdb
     WITH

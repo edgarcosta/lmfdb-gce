@@ -1,0 +1,131 @@
+# Create GCE prodweb1 instance
+
+
+Name: prodweb1
+Zone: us-central1-b
+Machine Type: n1-starndard-2
+Boot disk: Ubuntu 18.04 LTS
+Allow: HTTP and HTTPS traffic
+
+Labels:
+http-server
+https-server
+lmfdb
+lmfdb-www
+
+addional disks: data-central as read-only
+
+Startup scrip: TBA
+
+
+# Make the ip address static under VPC Network -> External IP addressed or
+ go to: https://console.cloud.google.com/networking/addresses/?project=lmfdbmirror
+
+switch from ephemeral to static and name it prodweb1
+
+# add the ip to DNS under Network services - > Cloud DNS -> lmfdb-xyz
+add record set
+all default values
+eg: 35.224.5.28  -> prodweb1.lmfdb.xyz
+
+
+
+
+
+sudo apt-get update && sudo apt-get -y upgrade
+sudo apt-get install -y htop neofetch
+
+# install supervisord
+sudo apt-get install -y supervisord
+sudo update-rc.d supervisor disable
+
+# check that is disabled
+systemctl list-unit-files | grep supervisor
+
+#install prerequisitives for sage
+sudo apt-get update
+sudo apt-get  install -y binutils gcc g++ gfortran make m4 perl tar git libssl-dev python
+
+
+#install gcfuse
+export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
+echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install gcsfuse
+
+
+# create users
+sudo useradd sage -u 1200 -d /home/sage -m 
+sudo useradd lmfdb -u 1300 -d /home/lmfdb -m 
+
+
+# copy sage from somewhere or build it  using servers_scripts/install_sage.sh 8.3
+# in this case I built it somewhere else
+# login as sage
+sudo su sage -c "bash"
+ssh-keygen
+cat ~/.ssh/id_rsa.pub
+# copy the key to authorized_keys
+sync -av --progress build-sage-tmp:/home/sage/sage-8.3 /home/sage/
+ln -s /home/sage/sage-8.3 /home/sage/sage-root
+#logout from the user sage
+logout
+sudo ln -s /home/sage/sage-root/sage /usr/local/bin/
+
+
+
+
+#mount disks
+git clone https://github.com/edgarcosta/lmfdb-gce.git ~/lmfdb-gce/
+sudo cp ~/lmfdb-gce/config/fstab /etc/fstab
+#bash  ~/lmfdb-gce/server_scripts/mount.sh
+
+# Setup LMFDB
+# Here
+sudo -u lmfdb -i
+cd
+mkdir -p /home/lmfdb/logs/web /home/lmfdb/logs/supervisor/
+git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-web
+pushd /home/lmfdb/lmfdb-git-web
+git remote add roed314 https://github.com/roed314/lmfdb.git
+popd
+git clone https://github.com/edgarcosta/lmfdb-gce.git ~/lmfdb-gce/
+
+
+#copy hooks
+ln -s /home/lmfdb/lmfdb-gce/scripts/post-checkout /home/lmfdb/lmfdb-git-web/.git/hooks/post-checkout
+
+#copy start and restart scripts
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-BRANCH /home/lmfdb/lmfdb-gce/start-web
+ln -s /home/lmfdb/lmfdb-gce/scripts/restart-BRANCH  /home/lmfdb/lmfdb-gce/restart-web
+ln -s /home/lmfdb/lmfdb-gce/scripts/start-supervisord-web /home/lmfdb/start-supervisord
+
+#link config scripts
+ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-web /home/lmfdb/lmfdb-git-web
+ln -s /home/lmfdb/lmfdb-gce/config/postgres_prodweb.ini  /home/lmfdb/lmfdb-git-web/config.ini
+
+# place the password
+read -s password
+echo $password > /home/lmfdb/lmfdb-git-web/password
+
+# crontab
+crontab  /home/lmfdb/lmfdb-gce/config/crontab-prodweb
+
+# iptables
+#
+# redirect 80 -> 8080:
+sudo apt-get install iptables-persistent
+sudo cp /home/lmfdb/lmfdb-gce/config/etc-iptables-rules.v4  /etc/iptables/rules.v4
+iptables-restore < /etc/iptables/rules.v4
+
+
+
+# logrotate
+sudo apt-get install logrotate
+sudo cp ~/lmfdb-gce/config/etc-logrotate.d-lmfdb /etc/logrotate.d/
+
+
+
+
+

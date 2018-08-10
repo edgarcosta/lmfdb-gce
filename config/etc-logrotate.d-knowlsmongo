@@ -1,5 +1,5 @@
 # put in /etc/logrotate.d/
-/scratch/logs/update_knowls.log
+/home/lmfdb/logs/update_knowls.log
 {
         su lmfdb lmfdb
         rotate 7

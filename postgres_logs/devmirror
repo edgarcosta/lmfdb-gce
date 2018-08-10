@@ -51,6 +51,10 @@ pg_basebackup -h legendre.mit.edu -D /var/lib/postgresql/10/main/ -P -U postgres
 # by adding the following 2 lines to the end of /etc/postgresql/10/main/pg_hba.conf
 # External
 host    lmfdb           lmfdb           0.0.0.0/0               md5
+# proddb
+host    all             all             35.184.77.196/32        md5
+# internal
+host    all             all             10.128.0.0/9        md5
 
 # start the server
 sudo systemctl start postgresql@10-main.service
@@ -63,6 +67,9 @@ sudo reboot
 df -h
 # postgresql is running
 systemctl status postgresql@10-main.service
+
+
+sudo apt-get install logrotate
 
 
 

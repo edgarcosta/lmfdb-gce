@@ -1,0 +1,144 @@
+# Create instance
+
+Name: proddb
+Zone: us-central1-b
+Type: n1-highmem-4
+
+Boot disk: ubuntu 18.04 LTS
+with 25GB
+
+Extra disks:
+Name: proddb-postgresql
+Size: 750GB
+
+
+Name: proddb-scratch
+Size: 250GB
+
+
+# * switch ip to static and add dns record
+
+https://console.cloud.google.com/networking/addresses/list?project=lmfdbmirror
+
+https://console.cloud.google.com/net-services/dns/zones?project=lmfdbmirror
+
+
+
+# upgrade system and install postgresql
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install postgresql-all
+sudo shutdown -h now
+
+
+# format and add disks to fstab
+sudo mkfs.ext4 /dev/sdb
+sudo mkfs.ext4 /dev/sdc
+sudo e2label /dev/sdb proddb-sql
+sudo e2label /dev/sdc scratch
+
+# add the corresponding entry to /etc/fstab
+LABEL=proddb-sql /var/lib/postgresql/10/ ext4 noatime,defaults 0 0
+LABEL=scratch /scratch ext4 noatime,defaults 0 0
+
+# mount the disk
+sudo mkdir -p /var/lib/postgresql/10/
+
+
+# mount the disk
+sudo mount /var/lib/postgresql/10/
+sudo chown postgres -R /var/lib/postgresql/10/
+sudo -u postgres mkdir /var/lib/postgresql/10/wal
+
+
+# edit /etc/postgresql/10/main/postgresql.conf
+
+listen_addresses = '*'
+
+# as postgres
+
+
+# create cluster
+pg_createcluster 10 main
+# if it claims that it already exists, delete it with
+# pg_dropcluster 10 main
+
+
+
+# add the following lines to /var/lib/postgresql/.pgpass
+devmirror.lmfdb.xyz:5432:*:postgres:password desired
+devmirror:5432:*:postgres:password desired
+chmod 600 /var/lib/postgresql/.pgpass
+
+
+
+# add the two lines to /etc/postgresql/10/main/pg_hba.conf
+# internal
+host    all             all             10.128.0.0/9        md5
+
+# update the crontab for proddb
+git clone https://github.com/edgarcosta/lmfdb-gce.git ~/lmfdb-gce/
+crontab ~/lmfdb-gce/server_scripts/crontab_proddb
+
+
+
+#install prerequisitives for sage
+sudo apt-get update
+sudo apt-get  install -y binutils gcc g++ gfortran make m4 perl tar git libssl-dev python
+
+# create users
+sudo useradd sage -u 1200 -d /home/sage -m 
+
+
+# copy sage from somewhere or build it  using servers_scripts/install_sage.sh 8.3
+# in this case I built it somewhere else
+# login as sage
+sudo su sage -c "bash"
+ssh-keygen
+cat ~/.ssh/id_rsa.pub
+# copy the key to authorized_keys
+rsync -av --progress build-sage-tmp:/home/sage/sage-8.3 /home/sage/
+ln -s /home/sage/sage-8.3 /home/sage/sage-root
+#logout from the user sage
+logout
+sudo ln -s /home/sage/sage-root/sage /usr/local/bin/
+
+
+
+
+# copy meta_*
+sudo -u postgres -i
+time pg_dump --host devmirror.lmfdb.xyz --clean --if-exists --schema=public -t 'meta_*'  -v --file /scratch/meta.tar --format tar lmfdb
+time pg_restore --clean --if-exists --dbname lmfdb /scratch/meta.tar
+rm /scratch/meta.tar
+
+
+
+#copy the rest
+
+attach a big enough disk for the dump
+to devmirror
+
+sudo mkfs.ext4 /dev/sdd
+sudo mkdir /dump
+sudo mount /dev/sdd /dump/
+
+# the bottleneck was the disk
+# around 3/4h 
+pg_dump -j 32 --clean --if-exists --schema=public --format directory  -v --file /dump/public_lmfdb  lmfdb
+
+
+# move the disk to proddb
+# time = 5h
+time pg_restore --clean --if-exists --dbname lmfdb /dump/public_lmfdb/ -j 8 -v
+
+# update stats and counts
+pg_dump -j 8 --host devmirror --clean --if-exists --schema=public --format directory  -v --file /dump/stats  -t "*_stats"  lmfdb
+pg_dump -j 8 --host devmirror --clean --if-exists --schema=public --format directory  -v --file /dump/counts  -t "*_counts"  lmfdb
+time pg_restore --clean --if-exists --dbname lmfdb /dump/stats/ -v -j8
+time pg_restore --clean --if-exists --dbname lmfdb /dump/stats/ -v -j8
+
+#
+sudo apt-get install logrotate
+sudo cp ~/lmfdb-gce/config/etc-logrotate.d-knowls /etc/logrotate.d/
+
