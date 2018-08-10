@@ -121,8 +121,9 @@ iptables-restore < /etc/iptables/rules.v4
 
 
 
-#TODO
-add logrotate
+# logrotate
+sudo apt-get install logrotate
+sudo cp ~/lmfdb-gce/config/etc-logrotate.d-lmfdb /etc/logrotate.d/
 
 
 
