@@ -123,11 +123,22 @@ sudo mkfs.ext4 /dev/sdd
 sudo mkdir /dump
 sudo mount /dev/sdd /dump/
 
+# the bottleneck was the disk
+# around 3/4h 
 pg_dump -j 32 --clean --if-exists --schema=public --format directory  -v --file /dump/public_lmfdb  lmfdb
 
 
 # move the disk to proddb
+# time = 5h
 time pg_restore --clean --if-exists --dbname lmfdb /dump/public_lmfdb/ -j 8 -v
 
+# update stats and counts
+pg_dump -j 8 --host devmirror --clean --if-exists --schema=public --format directory  -v --file /dump/stats  -t "*_stats"  lmfdb
+pg_dump -j 8 --host devmirror --clean --if-exists --schema=public --format directory  -v --file /dump/counts  -t "*_counts"  lmfdb
+time pg_restore --clean --if-exists --dbname lmfdb /dump/stats/ -v -j8
+time pg_restore --clean --if-exists --dbname lmfdb /dump/stats/ -v -j8
 
-#TODO add logrotate for crontab and postgres (also on devmirror)
+#
+sudo apt-get install logrotate
+sudo cp ~/lmfdb-gce/config/etc-logrotate.d-knowls /etc/logrotate.d/
+
