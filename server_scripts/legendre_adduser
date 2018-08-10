@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+
+import os, subprocess, pwd, argparse
+opj, sep = os.path.join, os.sep
+
+parser = argparse.ArgumentParser(description='Add a new lmfdb user to legendre')
+parser.add_argument('name', help='the name of the new user (for email)')
+parser.add_argument('username', help='the username for the new user')
+parser.add_argument('github_name', help='the github username for the new user')
+parser.add_argument('login_keys', help='the string to add to authorized_keys')
+args = parser.parse_args()
+name, username, gitname, login_keys = args.name, args.username, args.github_name, args.login_keys
+
+userhome = opj(sep, "scratch", "home", username)
+lmfdbhome = opj(userhome, "lmfdb")
+sshhome = opj(userhome, ".ssh")
+loginfile = opj(sshhome, "authorized_keys")
+
+# Make user
+subprocess.call(["adduser", "--home", userhome, "--shell", opj(sep, "bin", "bash"), "--disabled-password", username])
+subprocess.call(["adduser", username, "lmfdb_devs"])
+userid = pwd.getpwnam(username).pw_uid
+subprocess.call(["ln", "-s", userhome, opj(sep, "home", username)])
+print "User %s created" % username
+os.chdir(userhome)
+# Clone and setup lmfdb
+subprocess.call(["git", "clone", "-q", "https://github.com/LMFDB/lmfdb.git", lmfdbhome])
+os.chdir(lmfdbhome)
+subprocess.call(["git", "remote", "rename", "origin", "upstream"])
+subprocess.call(["git", "remote", "set-url", "upstream", "git@github.com:LMFDB/lmfdb.git"])
+subprocess.call(["git", "remote", "add", "origin", "git@github.com:%s/lmfdb.git"%gitname])
+port = 40000 + userid
+subprocess.call(["python", opj("lmfdb", "config.py"), "-p", str(port)])
+print "LMFDB set up"
+# Deal with ssh keys
+os.mkdir(sshhome, 0700)
+with open(loginfile, "w") as F:
+    F.write(login_keys)
+os.chmod(loginfile, 0644)
+subprocess.call(["ssh-keygen", "-b", "2048", "-t", "rsa", "-f", opj(sshhome, "id_rsa"), "-q", "-N", '""'])
+print "Setup complete!\n"
+
+print "Dear %s," % name
+print "We have created an account for you on legendre.mit.edu."
+print "If you run the lmfdb on legendre, executing the following command locally"
+print "will allow you to view pages in your browser at http://localhost:37777\n"
+print "ssh -o TCPKeepAlive=yes -o ServerAliveInterval=50 -C -N -L 37777:localhost:%s %s@legendre.mit.edu\n" % (port, username)
+print "You should also add the following ssh key to github:\n"
+with open(opj(sshhome, "id_rsa.pub")) as F:
+    print F.read()
