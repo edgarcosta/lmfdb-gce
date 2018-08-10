@@ -16,9 +16,8 @@ lmfdbhome = opj(userhome, "lmfdb")
 sshhome = opj(userhome, ".ssh")
 loginfile = opj(sshhome, "authorized_keys")
 
-def my_chown(filename):
-    # os.chown doesn't work recursively.
-    subprocess.check_call(["chown", "-R", "%s:%s"%(username,username), filename])
+def usercall(cmd):
+    subprocess.check_call(["sudo", "-u", username] + cmd)
 
 # Make user
 try:
@@ -30,24 +29,23 @@ subprocess.check_call(["adduser", username, "lmfdb_devs"])
 uid = pwd.getpwnam(username).pw_uid
 subprocess.check_call(["ln", "-s", userhome, opj(sep, "home", username)])
 print "User %s created" % username
+subprocess.check_call([])
 os.chdir(userhome)
 # Clone and setup lmfdb
-subprocess.check_call(["git", "clone", "-q", "https://github.com/LMFDB/lmfdb.git", lmfdbhome])
+usercall(["git", "clone", "-q", "https://github.com/LMFDB/lmfdb.git", lmfdbhome])
 os.chdir(lmfdbhome)
-subprocess.check_call(["git", "remote", "rename", "origin", "upstream"])
-subprocess.check_call(["git", "remote", "set-url", "upstream", "git@github.com:LMFDB/lmfdb.git"])
-subprocess.check_call(["git", "remote", "add", "origin", "git@github.com:%s/lmfdb.git"%gitname])
+usercall(["git", "remote", "rename", "origin", "upstream"])
+usercall(["git", "remote", "set-url", "upstream", "git@github.com:LMFDB/lmfdb.git"])
+usercall(["git", "remote", "add", "origin", "git@github.com:%s/lmfdb.git"%gitname])
 port = 40000 + uid
-subprocess.check_call(["python", opj("lmfdb", "config.py"), "-p", str(port)])
-my_chown(lmfdbhome)
+usercall(["python", opj("lmfdb", "config.py"), "-p", str(port)])
 print "LMFDB set up"
 # Deal with ssh keys
 os.mkdir(sshhome, 0700)
 with open(loginfile, "w") as F:
     F.write(login_keys)
 os.chmod(loginfile, 0644)
-subprocess.check_call(["ssh-keygen", "-b", "2048", "-t", "rsa", "-f", opj(sshhome, "id_rsa"), "-q", "-N", ""])
-my_chown(sshhome)
+usercall(["ssh-keygen", "-b", "2048", "-t", "rsa", "-f", opj(sshhome, "id_rsa"), "-q", "-N", ""])
 print "Setup complete!\n"
 
 print "Dear %s," % name
