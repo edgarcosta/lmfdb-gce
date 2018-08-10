@@ -91,18 +91,16 @@ ln -s /home/lmfdb/lmfdb-gce/scripts/stop-supervisord /home/lmfdb/stop-supervisor
 
 
 # copy config files
-ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-beta /home/lmfdb/lmfdb-git-beta
-ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-prod /home/lmfdb/lmfdb-git-prod
+ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-dev /home/lmfdb/lmfdb-git-dev
 ln -s /home/lmfdb/lmfdb-gce/config/gunicorn-config-postgres /home/lmfdb/lmfdb-git-postgres
-ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_m0.config  /home/lmfdb/lmfdb-git-beta/mongoclient.config
 # we still want to read from m0, as we just want to test the code on the dev data
-ln -s /home/lmfdb/lmfdb-gce/config/mongoclient_m0.config  /home/lmfdb/lmfdb-git-prod/mongoclient.config
 ln -s /home/lmfdb/lmfdb-gce/config/postgres_legendre.ini  /home/lmfdb/lmfdb-git-postgres/config.ini
+ln -s /home/lmfdb/lmfdb-gce/config/postgres_legendre.ini  /home/lmfdb/lmfdb-git-dev/config.ini
 
 
 # place the password
 read -s password
-echo $password > /home/lmfdb/lmfdb-git-beta/password
+echo $password > /home/lmfdb/lmfdb-git-dev/password
 echo $password > /home/lmfdb/lmfdb-git-postgres/password
 
 
@@ -120,6 +118,5 @@ sudo cp ~/lmfdb-gce/config/etc-logrotate.d-lmfdb /etc/logrotate.d/
 
 
 # add records to dns
-prod.lmfdb.xyz
-beta.lmfdb.xyz
+dev.lmfdb.xyz
 postgres.lmfdb.xyz

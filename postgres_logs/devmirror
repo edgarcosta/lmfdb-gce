@@ -69,6 +69,9 @@ df -h
 systemctl status postgresql@10-main.service
 
 
+sudo apt-get install logrotate
+
+
 
 
 
