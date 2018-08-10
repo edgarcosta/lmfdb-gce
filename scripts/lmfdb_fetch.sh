@@ -30,10 +30,8 @@ fi
 
 if [ -d "/home/lmfdb/lmfdb-git-web" ]; then
 pushd /home/lmfdb/lmfdb-git-web
-git fetch roed314 postgres
-git checkout roed314/postgres -f
-#git fetch
-#git checkout origin/web -f
+git fetch
+git checkout origin/web -f
 popd
 fi
 
