@@ -18,7 +18,7 @@ else
   time pg_restore --clean --if-exists --dbname lmfdb $knowlsdump
   rm -rf $userdb $knowls
   psql --dbname lmfdb --command "REVOKE INSERT, UPDATE, DELETE on kwl_deleted, kwl_history, kwl_knowls FROM webserver;"
-  psql --dbname lmfdb --command "REVOKE SELECT, UPDATE, INSERT, DELETE  ON ALL TABLES IN SCHEMA userdb  FROM webserver;"
+  psql --dbname lmfdb --command "REVOKE UPDATE, INSERT, DELETE  ON ALL TABLES IN SCHEMA userdb  FROM webserver;"
   echo done
 fi
 set +e
