@@ -38,7 +38,7 @@ subprocess.check_call(["git", "remote", "rename", "origin", "upstream"])
 subprocess.check_call(["git", "remote", "set-url", "upstream", "git@github.com:LMFDB/lmfdb.git"])
 subprocess.check_call(["git", "remote", "add", "origin", "git@github.com:%s/lmfdb.git"%gitname])
 port = 40000 + uid
-subprocess.check_call(["python", opj("lmfdb", "config.py"), "-p", str(port)])
+subprocess.check_call(["python", opj("lmfdb", "config.py"), "-p", str(port), "--postgresql-host", "localhost"])
 my_chown(lmfdbhome)
 print "LMFDB set up"
 # Deal with ssh keys
@@ -50,11 +50,31 @@ subprocess.check_call(["ssh-keygen", "-b", "2048", "-t", "rsa", "-f", opj(sshhom
 my_chown(sshhome)
 print "Setup complete!\n"
 
-print "Dear %s," % name
-print "We have created an account for you on legendre.mit.edu."
-print "If you run the lmfdb on legendre, executing the following command locally"
-print "will allow you to view pages in your browser at http://localhost:37777\n"
-print "ssh -o TCPKeepAlive=yes -o ServerAliveInterval=50 -C -N -L 37777:localhost:%s %s@legendre.mit.edu\n" % (port, username)
-print "You should also add the following ssh key to github:\n"
+print r"""Dear %s,
+
+We have created an account for you on legendre.mit.edu.
+Your username is %s; please use the ssh keys that you provided us to log in.
+
+We also have set up the LMFDB on your home directory to use the port %d and read from the database running locally, see ~/lmfdb/config.ini for more details.
+
+To view pages in your browser at to view pages in your browser at http://localhost:37777
+we recommend you to add the following lines to your ~/.ssh/config on your machine:
+
+Host legendre
+Hostname legendre.mit.edu
+LocalForward localhost:37777 localhost:%d
+TCPKeepAlive yes
+ServerAliveInterval 50
+Compression Yes
+user %s
+
+Alternatively, you can also use the following command:
+
+ssh -o TCPKeepAlive=yes -o ServerAliveInterval=50 -C -N -L 37777:localhost:%s %s@legendre.mit.edu
+
+The LMFDB repository in your home directory is set to use your GitHub username %s.
+For your convenience, we have generated an ssh key for you, and you should add it to GitHub:
+""" % (name, username, port, port, username, port, username, gitname)
+
 with open(opj(sshhome, "id_rsa.pub")) as F:
     print F.read()
