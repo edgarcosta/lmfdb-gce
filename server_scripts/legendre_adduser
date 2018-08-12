@@ -57,7 +57,7 @@ Your username is %s; please use the ssh keys that you provided us to log in.
 
 We also have set up the LMFDB on your home directory to use the port %d and read from the database running locally, see ~/lmfdb/config.ini for more details.
 
-To view pages in your browser at to view pages in your browser at http://localhost:37777
+To view pages in your browser at http://localhost:37777
 we recommend you to add the following lines to your ~/.ssh/config on your machine:
 
 Host legendre
