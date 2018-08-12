@@ -1,0 +1,34 @@
+
+sudo apt-get install munin munin-node libdbd-pg-perl
+cd /usr/share/munin/plugins/
+for i in postgres* ; do  ln -s /usr/share/munin/plugins/$i /etc/munin/plugins/ ; done
+cd /etc/munin/plugins/
+for i in postgres_*_ ; do mv $i ${i}lmfdb ; done
+
+
+# apply https://github.com/munin-monitoring/munin/pull/897/commits/b6f193b97c80a4acd3e8ae89f98c1ae0be64ae8c
+# in /usr/share/perl5/Munin/Plugin/
+
+recopy apache config
+
+restart apache and munin*
+
+
+wget https://raw.githubusercontent.com/munin-monitoring/contrib/master/plugins/gunicorn/gunicorn_memory_status
+wget https://raw.githubusercontent.com/munin-monitoring/contrib/master/plugins/gunicorn/gunicorn_status
+for i in postgres dev;do sudo cp gunicorn_memory_status /etc/munin/plugins/gunicorn_memory_status_${i}; sudo cp gunicorn_status /etc/munin/plugins/gunicorn_status_${i} ; done
+sudo chmod +x /etc/munin/plugins/gunicorn_*
+
+
+#add to /etc/munin/plugin-conf.d/munin-node
+[gunicorn_memory_status_dev]
+env.gunicorn_pid_path /home/lmfdb/gunicorn-dev.pid
+[gunicorn_status_dev]
+env.gunicorn_pid_path /home/lmfdb/gunicorn-dev.pid
+[gunicorn_memory_status_postgres]
+env.gunicorn_pid_path /home/lmfdb/gunicorn-postgres.pid
+[gunicorn_status_postgres]
+env.gunicorn_pid_path /home/lmfdb/gunicorn-postgres.pid
+
+
+echo host_name legendre >> /etc/munin/munin-node.conf

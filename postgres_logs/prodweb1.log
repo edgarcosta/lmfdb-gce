@@ -126,6 +126,28 @@ sudo apt-get install logrotate
 sudo cp ~/lmfdb-gce/config/etc-logrotate.d-lmfdb /etc/logrotate.d/
 
 
+sudo apt-get install munin-node
+
+wget https://raw.githubusercontent.com/munin-monitoring/contrib/master/plugins/gunicorn/gunicorn_memory_status
+wget https://raw.githubusercontent.com/munin-monitoring/contrib/master/plugins/gunicorn/gunicorn_status
+sudo cp gunicorn_*_status /etc/munin/plugins
+sudo chmod +x /etc/munin/plugins/gunicorn_*
+
+#add to /etc/munin/plugin-conf.d/munin-node
+[gunicorn_*]
+env.gunicorn_pid_path /home/lmfdb/gunicorn-web.pid
+
+#as root
+echo allow 18.4.43.30 >> /etc/munin/munin-node.conf
+echo host_name $(hostname) >> /etc/munin/munin-node.conf
+cat /etc/munin/munin-node.conf
+systemctl restart munin-node.service
+
+
+
+
+
+
 
 
 

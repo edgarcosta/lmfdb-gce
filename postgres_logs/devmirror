@@ -56,6 +56,7 @@ host    all             all             35.184.77.196/32        md5
 # internal
 host    all             all             10.128.0.0/9        md5
 
+
 # start the server
 sudo systemctl start postgresql@10-main.service
 
@@ -72,6 +73,22 @@ systemctl status postgresql@10-main.service
 sudo apt-get install logrotate
 
 
+# munin
+sudo apt-get install munin-node libdbd-pg-perl
+echo allow 18.4.43.30 >> /etc/munin/munin-node.conf
+echo host_name devmirror >> /etc/munin/munin-node.conf
+echo host_name proddb >> /etc/munin/munin-node.conf
+sudo systemctl restart munin-node.service
+
+
+cd /usr/share/munin/plugins/
+for i in postgres* ; do  ln -s /usr/share/munin/plugins/$i /etc/munin/plugins/ ; done
+cd /etc/munin/plugins/
+for i in postgres_*_ ; do mv $i ${i}lmfdb ; done
+
+
+# apply https://github.com/munin-monitoring/munin/pull/897/commits/b6f193b97c80a4acd3e8ae89f98c1ae0be64ae8c
+# in /usr/share/perl5/Munin/Plugin/
 
 
 

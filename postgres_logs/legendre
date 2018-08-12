@@ -35,3 +35,7 @@ archive_command = 'rsync -a %p postgres@devmirror.lmfdb.xyz:/var/lib/postgresql/
 host    all		all             35.225.45.113/32        md5
 host    replication	all             35.225.45.113/32        md5
 
+# added the following two lines to  /etc/security/limits.conf
+# all lmfdb devs are in this group
+@lmfdb_devs  soft   priority  19
+
