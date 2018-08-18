@@ -10,7 +10,7 @@ load("/home/edgarcosta/lmfdb-gce/transition_scripts/export_special.py")
 
 def backup():
     import subprocess, datetime
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M")
+    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M")
     userdbdump="/scratch/postgres-backup/userdb-backup-%s.tar" % timestamp
     knowlsdump="/scratch/postgres-backup/knowls-backup-%s.tar" % timestamp
     a = subprocess.check_call(["sudo", "-u", "postgres", "pg_dump", "--clean", "--if-exists", "--schema=userdb", "--file", userdbdump, "--format", "tar", "lmfdb"])
