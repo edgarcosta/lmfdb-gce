@@ -61,7 +61,7 @@ def import_users():
             conn = db.conn
             cur = conn.cursor()
             # delete rows of usersdb.users
-            "DELETE FROM userdb.users;"
+            cur.execute("DELETE FROM userdb.users")
             with open('/scratch/importing/users.txt') as F:
                 cur.copy_from(F, 'userdb.users', columns=["username", "password", "bcpassword", "admin", "color_scheme", "full_name", "email", "url", "about", "created"])
                 
