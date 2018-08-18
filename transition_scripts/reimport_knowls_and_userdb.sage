@@ -1,4 +1,5 @@
 os.chdir("/home/edgarcosta/lmfdb/")
+sys.path.append("/home/edgarcosta/lmfdb/")
 import lmfdb
 db = lmfdb.db_backend.db
 DelayCommit = lmfdb.db_backend.DelayCommit
