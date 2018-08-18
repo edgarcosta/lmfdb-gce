@@ -1,4 +1,7 @@
 os.chdir("/home/edgarcosta/lmfdb/")
+import lmfdb
+db = lmfdb.db_backend.db
+DelayCommit = lmfdb.db_backend.DelayCommit
 load("/home/edgarcosta/lmfdb-gce/transition_scripts/export_special.py")
 
 
@@ -17,8 +20,6 @@ def backup():
 
 def import_knowls():
     from psycopg2.sql import SQL
-    db = lmfdb.db_backend.db
-    DelayCommit = lmfdb.db_backend.DelayCommit
     cur = db.conn.cursor()
     tablenames = ['kwl_history', 'kwl_deleted', 'kwl_knowls'];
     with DelayCommit(db, silence=True):
@@ -54,8 +55,6 @@ def import_knowls():
     print "Succeeded in importing knowls"
     
 def import_users():
-    db = lmfdb.db_backend.db
-    DelayCommit = lmfdb.db_backend.DelayCommit
     with DelayCommit(db, silence=True):
         try:
             conn = db.conn
