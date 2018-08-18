@@ -1,3 +1,5 @@
+import os, sys
+from sage.all import load
 os.chdir("/home/edgarcosta/lmfdb/")
 sys.path.append("/home/edgarcosta/lmfdb/")
 import lmfdb
@@ -7,7 +9,7 @@ load("/home/edgarcosta/lmfdb-gce/transition_scripts/export_special.py")
 
 
 def backup():
-    import subprocess
+    import subprocess, datetime
     timestamp = datetime.now().strftime("%Y%m%d-%H%M")
     userdbdump="/scratch/postgres-backup/userdb-backup-%s.tar" % timestamp
     knowlsdump="/scratch/postgres-backup/knowls-backup-%s.tar" % timestamp
@@ -20,7 +22,6 @@ def backup():
     return a + b
 
 def import_knowls():
-    from psycopg2.sql import SQL
     cur = db.conn.cursor()
     tablenames = ['kwl_history', 'kwl_deleted', 'kwl_knowls'];
     with DelayCommit(db, silence=True):
@@ -49,7 +50,6 @@ def import_knowls():
 
         except Exception:
             print "Failure in importing knowls"
-            traceback.print_exc()
             db.conn.rollback()
             raise
     
@@ -65,10 +65,10 @@ def import_users():
             with open('/scratch/importing/users.txt') as F:
                 cur.copy_from(F, 'userdb.users', columns=["username", "password", "bcpassword", "admin", "color_scheme", "full_name", "email", "url", "about", "created"])
                 
-        except DatabaseError as err:
+        except Exception:
             conn.rollback()
             print "Failure in importing users"
-            print err
+            raise
 
     print "Successfully imported users"
 
