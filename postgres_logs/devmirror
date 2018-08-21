@@ -1,7 +1,7 @@
 # upgrade system and install postgresql
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install postgresql-all
+sudo apt-get install postgresql-all postgresql-contrib
 sudo shutdown -h now
 
 
@@ -28,6 +28,14 @@ sudo -u postgres mkdir /var/lib/postgresql/10/wal
 # edit /etc/postgresql/10/main/postgresql.conf
 hot_standby = on
 listen_addresses = '*'
+shared_preload_libraries = 'pg_stat_statements' # enable pg_stat_statements
+pg_stat_statements.max = 10000 # the number of statements to track by pg_stat_statements
+pg_stat_statements.track = all # tell pg_stat_statements to track all kinds of statemetns
+track_activity_query_size = 2048 # the size of bytes that pg_stat_statements can use
+checkpoint_completion_target = 0.8 # recommended by tuner
+log_min_duration_statement = 1000 # track any query that takes longer than 1s
+shared_buffers = 10448MB # set shared_buffer to 40% of system memory, as recommended by doc, minimum recommended is 25%
+effective_cache_size = 13060MB # set to 50%
 
 
 # add the following line to /var/lib/postgresql/.pgpass

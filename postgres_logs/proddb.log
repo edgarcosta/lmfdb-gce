@@ -28,6 +28,7 @@ https://console.cloud.google.com/net-services/dns/zones?project=lmfdbmirror
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install postgresql-all
+sudo apt-get install postgresql-contrib
 sudo shutdown -h now
 
 
