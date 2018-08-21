@@ -70,7 +70,7 @@ user %s
 
 Alternatively, you can also use the following command:
 
-ssh -o TCPKeepAlive=yes -o ServerAliveInterval=50 -C -N -L 37777:localhost:%s %s@legendre.mit.edu
+ssh -o TCPKeepAlive=yes -o ServerAliveInterval=50 -C -L 37777:localhost:%s %s@legendre.mit.edu
 
 The LMFDB repository in your home directory is set to use your GitHub username %s.
 For your convenience, we have generated an ssh key for you, and you should add it to GitHub:
