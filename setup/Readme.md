@@ -1,5 +1,5 @@
 # Current setup
-<a href="images/transition.png"><img src="images/transition.png"  height="600"  ></a>
+<a href="images/transition.png"><img src="images/transition.png"  height="1200"  ></a>
 
 # Old setup
 
