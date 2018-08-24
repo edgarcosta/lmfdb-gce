@@ -19,9 +19,6 @@ ssh-keygen
 # and copy them to postgres@devmirror
 
 
-# disable overcommit on vm
-sudo cp ~/lmfdb-gce/postgres_config/10-no-overcommit.conf /etc/sysctl.d/10-no-overcommit.conf
-sudo sysctl --system
 
 # edit /etc/postgresql/10/main/postgresql.conf
 listen_addresses = '*'
