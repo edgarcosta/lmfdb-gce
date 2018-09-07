@@ -4,21 +4,23 @@
 import subprocess, datetime
 from dateutil import parser
 
+gcloud_path = '/snap/bin/gcloud'
+
 def create_snapshot(name):
     timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M")
     snapshot_name = "%s-%s" % (name, timestamp)
     print "Creating snapshot from %s : %s" % (name, snapshot_name)
-    subprocess.check_call(['gcloud', 'compute',  'disks', 'snapshot', name, '--snapshot-names', snapshot_name, '--zone',"us-central1-b"])
+    subprocess.check_call([gcloud_path, 'compute',  'disks', 'snapshot', name, '--snapshot-names', snapshot_name, '--zone',"us-central1-b"])
 
 def delete_snapshot(name):
     print "Deleting snapshot %s" % (name,)
-    #print subprocess.list2cmdline(['gcloud', 'compute',  'snapshots', 'delete', name])
-    subprocess.check_call(['gcloud', 'compute',  'snapshots', 'delete', name, '--quiet'])
+    #print subprocess.list2cmdline([gcloud_path, 'compute',  'snapshots', 'delete', name])
+    subprocess.check_call([gcloud_path, 'compute',  'snapshots', 'delete', name, '--quiet'])
 
 
 def list_snapshots(diskname):
     filterstr = "--filter=sourceDisk~'%s'" % diskname
-    cmd = ['gcloud', 'compute',  'snapshots', 'list',"--format=json", filterstr ]
+    cmd = [gcloud_path, 'compute',  'snapshots', 'list',"--format=json", filterstr ]
     foo = subprocess.check_output(cmd)
     return eval(foo)
 
