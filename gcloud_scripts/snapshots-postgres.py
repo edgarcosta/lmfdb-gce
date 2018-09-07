@@ -1,5 +1,5 @@
 
-
+# this runs everyday at midnight on proddb.lmfdb.xyz
 
 import subprocess, datetime
 from dateutil import parser
