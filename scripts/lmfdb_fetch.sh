@@ -21,6 +21,13 @@ git checkout roed314/postgres -f
 popd
 fi
 
+if [ -d "/home/lmfdb/lmfdb-git-cmfs" ]; then
+pushd /home/lmfdb/lmfdb-git-cmfs
+git fetch roed314 master
+git checkout roed314/master -f
+popd
+fi
+
 if [ -d "/home/lmfdb/lmfdb-git-dev" ]; then
 pushd /home/lmfdb/lmfdb-git-dev
 git fetch
