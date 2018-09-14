@@ -1,0 +1,17 @@
+bind = "0.0.0.0:8083"
+workers = 5
+SESSION_PROTECTION = None
+#daemon = True
+pidfile = '/home/lmfdb/gunicorn-postgres.pid'
+#
+errorlog = '/home/lmfdb/logs/postgres/errorlog'
+accesslog = '/home/lmfdb/logs/postgres/accesslog'
+loglevel = 'info' # change to 'debug' for more output
+logfile = '/home/lmfdb/logs/postgres/flasklog'
+#
+raw_env = ['BETA=1']
+default_proc_name = 'lmfdb-postgres'
+timeout = 30
+max_requests = 1000
+# The maximum size of HTTP request line in bytes.
+limit_request_line = 8190
