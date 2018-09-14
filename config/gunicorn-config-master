@@ -2,7 +2,7 @@ bind = "0.0.0.0:8083"
 workers = 5
 SESSION_PROTECTION = None
 #daemon = True
-pidfile = '/home/lmfdb/gunicorn-postgres.pid'
+pidfile = '/home/lmfdb/gunicorn-master.pid'
 #
 errorlog = '/home/lmfdb/logs/postgres/errorlog'
 accesslog = '/home/lmfdb/logs/postgres/accesslog'
