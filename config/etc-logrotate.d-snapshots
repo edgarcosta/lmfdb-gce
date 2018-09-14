@@ -1,0 +1,13 @@
+# put in /etc/logrotate.d/
+/scratch/snapshot_logs/snapshot_logs.log
+{
+        su edgarcosta edgarcosta
+        rotate 7
+        daily
+        missingok
+        notifempty
+        copytruncate
+        delaycompress
+        compress
+        create 640 edgarcosta edgarcosta
+}
