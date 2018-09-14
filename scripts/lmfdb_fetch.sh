@@ -21,8 +21,8 @@ git checkout roed314/postgres -f
 popd
 fi
 
-if [ -d "/home/lmfdb/lmfdb-git-cmfs" ]; then
-pushd /home/lmfdb/lmfdb-git-cmfs
+if [ -d "/home/lmfdb/lmfdb-git-master" ]; then
+pushd /home/lmfdb/lmfdb-git-master
 git fetch roed314 master
 git checkout roed314/master -f
 popd
