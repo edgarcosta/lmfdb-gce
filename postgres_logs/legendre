@@ -50,3 +50,7 @@ host    replication	all             35.225.45.113/32        md5
 # all lmfdb devs are in this group
 @lmfdb_devs  soft   priority  19
 
+
+# disable swap at boot
+# add the following line to /etc/rc.local
+swapoff -a 

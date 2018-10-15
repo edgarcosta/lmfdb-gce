@@ -16,7 +16,7 @@ else
   time pg_dump --host devmirror.lmfdb.xyz --clean --if-exists --schema=public -t 'kwl_*'  -v --file $knowlsdump --format tar lmfdb
   time pg_restore --clean --if-exists --dbname lmfdb $userdbdump
   time pg_restore --clean --if-exists --dbname lmfdb $knowlsdump
-  rm -rf $userdb $knowls
+  rm -rf $userdbdump $knowlsdump
   psql --dbname lmfdb --command "REVOKE INSERT, UPDATE, DELETE on kwl_deleted, kwl_history, kwl_knowls FROM webserver;"
   psql --dbname lmfdb --command "REVOKE UPDATE, INSERT, DELETE  ON ALL TABLES IN SCHEMA userdb  FROM webserver;"
   echo done
