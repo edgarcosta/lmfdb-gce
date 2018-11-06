@@ -39,7 +39,7 @@ checkpoint_completion_target = 0.8 # recommended by tuner
 log_min_duration_statement = 1000 # track any query that takes longer than 1s
 shared_buffers = 51573MB # set shared_buffer to 40% of system memory, as recommended by doc, minimum recommended is 25%
 effective_cache_size = 51573MB # also set to 40%, as the server might be used to other calculations
-
+extra_float_digits = 3 # otherwise we might loose precision when reading from the database
 
 # add the three lines to /etc/postgresql/10/main/pg_hba.conf
 # Devmirror
