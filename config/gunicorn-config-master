@@ -4,13 +4,13 @@ SESSION_PROTECTION = None
 #daemon = True
 pidfile = '/home/lmfdb/gunicorn-master.pid'
 #
-errorlog = '/home/lmfdb/logs/postgres/errorlog'
-accesslog = '/home/lmfdb/logs/postgres/accesslog'
+errorlog = '/home/lmfdb/logs/master/errorlog'
+accesslog = '/home/lmfdb/logs/master/accesslog'
 loglevel = 'info' # change to 'debug' for more output
-logfile = '/home/lmfdb/logs/postgres/flasklog'
+logfile = '/home/lmfdb/logs/master/flasklog'
 #
 raw_env = ['BETA=1']
-default_proc_name = 'lmfdb-postgres'
+default_proc_name = 'lmfdb-master'
 timeout = 30
 max_requests = 1000
 # The maximum size of HTTP request line in bytes.
