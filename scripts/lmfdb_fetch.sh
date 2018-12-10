@@ -35,6 +35,15 @@ git checkout alexjbest/katex -f
 popd
 fi
 
+if [ -d "/home/lmfdb/lmfdb-git-cmfskatex" ]; then
+pushd /home/lmfdb/lmfdb-git-cmfskatex
+git fetch alexjbest cmfskatex
+git checkout alexjbest/cmfskatex -f
+popd
+fi
+
+
+
 if [ -d "/home/lmfdb/lmfdb-git-dev" ]; then
 pushd /home/lmfdb/lmfdb-git-dev
 git fetch
