@@ -37,8 +37,8 @@ fi
 
 if [ -d "/home/lmfdb/lmfdb-git-cmfskatex" ]; then
 pushd /home/lmfdb/lmfdb-git-cmfskatex
-git fetch alexjbest cmfskatex
-git checkout alexjbest/cmfskatex -f
+git fetch edgarcosta cmfskatex
+git checkout edgarcosta/cmfskatex -f
 popd
 fi
 
