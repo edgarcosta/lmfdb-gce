@@ -28,9 +28,11 @@ wal_level = replica
 synchronous_commit = on
 # in logfile segments, 16MB each; 0 disables
 wal_keep_segments = 256 # 4 GB
+max_wal_size = 4GB
 archive_mode = on
 archive_command = 'rsync -a %p postgres@devmirror.lmfdb.xyz:/var/lib/postgresql/10/wal/%f'
 
+max_connections = 300
 shared_preload_libraries = 'pg_stat_statements' # enable pg_stat_statements
 pg_stat_statements.max = 10000 # the number of statements to track by pg_stat_statements
 pg_stat_statements.track = all # tell pg_stat_statements to track all kinds of statemetns
