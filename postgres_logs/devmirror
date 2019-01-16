@@ -37,6 +37,8 @@ log_min_duration_statement = 1000 # track any query that takes longer than 1s
 shared_buffers = 10448MB # set shared_buffer to 40% of system memory, as recommended by doc, minimum recommended is 25%
 effective_cache_size = 13060MB # set to 50%
 
+extra_float_digits = 3 # otherwise we might loose precision when reading from the database
+
 
 # add the following line to /var/lib/postgresql/.pgpass
 legendre.mit.edu:5432:*:postgres:password desired

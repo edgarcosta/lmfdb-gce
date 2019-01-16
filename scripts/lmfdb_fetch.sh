@@ -28,6 +28,22 @@ git checkout roed314/master -f
 popd
 fi
 
+if [ -d "/home/lmfdb/lmfdb-git-katex" ]; then
+pushd /home/lmfdb/lmfdb-git-katex
+git fetch alexjbest katex
+git checkout alexjbest/katex -f
+popd
+fi
+
+if [ -d "/home/lmfdb/lmfdb-git-cmfskatex" ]; then
+pushd /home/lmfdb/lmfdb-git-cmfskatex
+git fetch edgarcosta cmfskatex
+git checkout edgarcosta/cmfskatex -f
+popd
+fi
+
+
+
 if [ -d "/home/lmfdb/lmfdb-git-dev" ]; then
 pushd /home/lmfdb/lmfdb-git-dev
 git fetch

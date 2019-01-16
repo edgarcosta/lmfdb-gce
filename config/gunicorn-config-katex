@@ -1,16 +1,16 @@
-bind = "0.0.0.0:8083"
+bind = "0.0.0.0:8084"
 workers = 5
 SESSION_PROTECTION = None
 #daemon = True
-pidfile = '/home/lmfdb/gunicorn-master.pid'
+pidfile = '/home/lmfdb/gunicorn-katex.pid'
 #
-errorlog = '/home/lmfdb/logs/master/errorlog'
-accesslog = '/home/lmfdb/logs/master/accesslog'
+errorlog = '/home/lmfdb/logs/katex/errorlog'
+accesslog = '/home/lmfdb/logs/katex/accesslog'
 loglevel = 'info' # change to 'debug' for more output
-logfile = '/home/lmfdb/logs/master/flasklog'
+logfile = '/home/lmfdb/logs/katex/flasklog'
 #
 raw_env = ['BETA=1']
-default_proc_name = 'lmfdb-master'
+default_proc_name = 'lmfdb-katex'
 timeout = 30
 max_requests = 1000
 # The maximum size of HTTP request line in bytes.
