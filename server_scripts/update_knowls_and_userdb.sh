@@ -12,7 +12,7 @@ else
   echo timestamp = `date -u +%Y%m%d-%H%M`
   userdbdump=/scratch/knowls_userdb/userdb`date -u +%Y%m%d-%H%M`.tar
   knowlsdump=/scratch/knowls_userdb/knowls`date -u +%Y%m%d-%H%M`.tar
-  time pg_dump --host devmirror --clean --if-exists --schema=userdb -t 'users' -v --file $userdbdump --format tar lmfdb
+  time pg_dump --host devmirror --clean --if-exists --schema=userdb -t 'users*' -v --file $userdbdump --format tar lmfdb
   time pg_dump --host devmirror --clean --if-exists --schema=public -t 'kwl_*'  -v --file $knowlsdump --format tar lmfdb
   time pg_restore --clean --if-exists --dbname lmfdb $userdbdump
   time pg_restore --clean --if-exists --dbname lmfdb $knowlsdump
