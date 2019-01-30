@@ -1,19 +1,7 @@
 # put in /etc/logrotate.d/
-/home/lmfdb/logs/beta/accesslog
-/home/lmfdb/logs/beta/errorlog
-/home/lmfdb/logs/beta/supervisor.log
-/home/lmfdb/logs/prod/accesslog
-/home/lmfdb/logs/prod/errorlog
-/home/lmfdb/logs/prod/supervisor.log
-/home/lmfdb/logs/web/accesslog
-/home/lmfdb/logs/web/errorlog
-/home/lmfdb/logs/web/supervisor.log
-/home/lmfdb/logs/dev/accesslog
-/home/lmfdb/logs/dev/errorlog
-/home/lmfdb/logs/dev/supervisor.log
-/home/lmfdb/logs/postgres/accesslog
-/home/lmfdb/logs/postgres/errorlog
-/home/lmfdb/logs/postgres/supervisor.log
+/home/lmfdb/logs/*/accesslog
+/home/lmfdb/logs/*/errorlog
+/home/lmfdb/logs/*/supervisor.log
 /home/lmfdb/logs/lmfdb_fetch
 /home/lmfdb/lmfdb-git-*/flasklog
 /
