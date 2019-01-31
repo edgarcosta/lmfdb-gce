@@ -35,10 +35,10 @@ git checkout alexjbest/katex -f
 popd
 fi
 
-if [ -d "/home/lmfdb/lmfdb-git-cmfskatex" ]; then
-pushd /home/lmfdb/lmfdb-git-cmfskatex
-git fetch edgarcosta cmfskatex
-git checkout edgarcosta/cmfskatex -f
+if [ -d "/home/lmfdb/lmfdb-git-abvar" ]; then
+pushd /home/lmfdb/lmfdb-git-abvar
+git fetch roed314 abvar
+git checkout roed314/abvar -f
 popd
 fi
 
