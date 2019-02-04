@@ -1,4 +1,4 @@
 */5 * * * * bash /home/lmfdb/lmfdb-gce/scripts/lmfdb_fetch.sh >> /home/lmfdb/logs/lmfdb_fetch 2>&1
 @reboot mount /scratch/lmfdb-buckets/riemann-zeta-zeros
 @reboot mount /scratch/lmfdb-buckets/class-groups-quadratic-imaginary-fields/
-@reboot cd /home/lmfdb/lmfdb-gce/ && git fetch && git checkout -f origin/master && bash /home/lmfdb/lmfdb-gce/scripts/lmfdb_fetch.sh && supervisord -c /home/lmfdb/lmfdb-gce/config/supervisord-legendre.conf
+@reboot sleep 60s && cd /home/lmfdb/lmfdb-gce/ && git fetch && git checkout -f origin/master && bash /home/lmfdb/lmfdb-gce/scripts/lmfdb_fetch.sh && rm -rf /home/lmfdb/gunicorn-*.pid /home/lmfdb/supervisord.pid && supervisord -c /home/lmfdb/lmfdb-gce/config/supervisord-legendre.conf
