@@ -32,7 +32,6 @@ MAKE="make -j${j}" make build
 make test 
 make testlong 
 ./sage -i gap_packages 
-./sage -i database_gap 
 ./sage -i pip 
 ./sage -b 
 wget https://raw.githubusercontent.com/LMFDB/lmfdb/master/requirements.txt 
