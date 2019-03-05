@@ -27,6 +27,7 @@ sudo chown postgres -R /var/lib/postgresql/10/
 sudo -u postgres mkdir /var/lib/postgresql/10/wal
 # edit /etc/postgresql/10/main/postgresql.conf
 hot_standby = on
+max_standby_streaming_delay = -1 # this allows indefinitely long selects on devmirror, however, this queries will prevent devmirror to be updated
 listen_addresses = '*'
 shared_preload_libraries = 'pg_stat_statements' # enable pg_stat_statements
 pg_stat_statements.max = 10000 # the number of statements to track by pg_stat_statements
