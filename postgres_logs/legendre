@@ -32,6 +32,8 @@ max_wal_size = 4GB
 archive_mode = on
 archive_command = 'rsync -a %p postgres@devmirror.lmfdb.xyz:/var/lib/postgresql/10/wal/%f'
 
+max_worker_processes = 32 # devmirror must have >= value
+
 max_connections = 300
 shared_preload_libraries = 'pg_stat_statements' # enable pg_stat_statements
 pg_stat_statements.max = 10000 # the number of statements to track by pg_stat_statements

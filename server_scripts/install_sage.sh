@@ -26,13 +26,13 @@ version=$1
 #sudo apt-get install binutils gcc g++ gfortran make m4 perl tar git libssl-dev
 wget http://mirrors.xmission.com/sage/src/sage-${version}.tar.gz -O sage-${version}.tar.gz
 tar xf sage-${version}.tar.gz
-cd sage-${version} 
+cd sage-${version}
 #it can get stuck here while building documentation
 MAKE="make -j${j}" make build
-make test 
-make testlong 
-./sage -i gap_packages 
-./sage -i pip 
+MAKE="make -j${j}" test
+MAKE="make -j${j}" testlong
+./sage -i gap_packages
+./sage -i pip
 ./sage -b 
 wget https://raw.githubusercontent.com/LMFDB/lmfdb/master/requirements.txt 
 ./sage -pip install -r requirements.txt 

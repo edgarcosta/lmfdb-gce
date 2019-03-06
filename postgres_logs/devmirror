@@ -38,6 +38,7 @@ shared_buffers = 10448MB # set shared_buffer to 40% of system memory, as recomme
 effective_cache_size = 13060MB # set to 50%
 
 extra_float_digits = 3 # otherwise we might loose precision when reading from the database
+max_worker_processes = 32 # matching legendre
 
 
 # add the following line to /var/lib/postgresql/.pgpass
