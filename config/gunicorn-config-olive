@@ -1,16 +1,16 @@
-bind = "0.0.0.0:8084"
+bind = "0.0.0.0:8091"
 workers = 5
 SESSION_PROTECTION = None
 #daemon = True
-pidfile = '/home/lmfdb/gunicorn-abvar.pid'
+pidfile = '/home/lmfdb/gunicorn-olive.pid'
 #
-errorlog = '/home/lmfdb/logs/abvar/errorlog'
-accesslog = '/home/lmfdb/logs/abvar/accesslog'
+errorlog = '/home/lmfdb/logs/olive/errorlog'
+accesslog = '/home/lmfdb/logs/olive/accesslog'
 loglevel = 'info' # change to 'debug' for more output
-logfile = '/home/lmfdb/logs/abvar/flasklog'
+logfile = '/home/lmfdb/logs/olive/flasklog'
 #
 raw_env = ['BETA=1']
-default_proc_name = 'lmfdb-abvar'
+default_proc_name = 'lmfdb-olive'
 timeout = 30
 max_requests = 1000
 # The maximum size of HTTP request line in bytes.
