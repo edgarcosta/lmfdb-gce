@@ -100,6 +100,15 @@ git checkout roed314/red -f
 popd
 fi
 
+# teal.lmfdb.xyz
+# running on 8094
+if [ -d "/home/lmfdb/lmfdb-git-teal" ]; then
+pushd /home/lmfdb/lmfdb-git-teal
+git fetch roed314 teal
+git checkout roed314/teal -f
+popd
+fi
+
 
 
 
