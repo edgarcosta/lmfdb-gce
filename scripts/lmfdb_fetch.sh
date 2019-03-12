@@ -22,10 +22,18 @@ popd
 fi
 
 
-
+# cmfs.lmfdb.xyz=scratch.lmfdb.xyz
+# gunicorn-config-master
+# running on 8083
+if [ -d "/home/lmfdb/lmfdb-git-master" ]; then
+pushd /home/lmfdb/lmfdb-git-master
+git fetch roed314 master
+git checkout roed314/master -f
+popd
+fi
 
 # abvar.lmfdb.xyz
-# gunicorn-config-abar
+# gunicorn-config-abvar
 # running on 8084
 if [ -d "/home/lmfdb/lmfdb-git-abvar" ]; then
 pushd /home/lmfdb/lmfdb-git-abvar
