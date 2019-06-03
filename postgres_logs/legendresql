@@ -1,5 +1,5 @@
 # the admin username
-# chande the admin password
+# change the admin password
 ALTER ROLE postgres PASSWORD 'the desired password';
 ALTER ROLE postgres WITH LOGIN;
 

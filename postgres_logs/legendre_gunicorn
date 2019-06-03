@@ -1,5 +1,5 @@
 # install supervisord
-sudo apt-get install -y supervisord
+sudo apt-get install -y supervisor
 sudo update-rc.d supervisor disable
 # check that is disabled
 systemctl list-unit-files | grep supervisor
@@ -62,7 +62,7 @@ sudo useradd SAGE -u 1200 -d /home/sage -m
 sudo -u lmfdb -i
 cd
 git clone https://github.com/edgarcosta/lmfdb-gce.git
-mkdir -p /home/lmfdb/logs/dev /home/lmfdb/logs/postgres /home/lmfdb/logs/supervisor/ 
+mkdir -p /home/lmfdb/logs/dev /home/lmfdb/logs/postgres /home/lmfdb/logs/supervisor/
 crontab  /home/lmfdb/lmfdb-gce/scripts/crontab
 git clone https://github.com/LMFDB/lmfdb.git /home/lmfdb/lmfdb-git-dev
 

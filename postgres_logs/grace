@@ -1,0 +1,208 @@
+# *** Postgres ***
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo -u postgres mv /var/lib/postgresql/10/main/ /var/lib/postgresql/
+sudo -u postgres rm -r /var/lib/postgresql/10/
+# creates a raid0 volume and mounts it
+# it is very important to do it by id, otherwise, the pool might not be imported at boot time
+sudo zpool create postgres -m /var/lib/postgresql/10 /dev/disk/by-id/nvme-nvme.8086-50484b4538313*
+sudo zpool create scratch -m /scratch /dev/disk/by-id/nvme-eui.01000000010000005cd2e4*
+# check status
+sudo zpool status
+sudo chown -R postgres /var/lib/postgresql/10
+sudo chmod 777 /scratch/
+sudo -u postgres mv /var/lib/postgresql/main/ /var/lib/postgresql/10/
+sudo zpool set cachefile=/etc/zfs/zpool.cache postgres
+sudo zpool set cachefile=/etc/zfs/zpool.cache scratch
+# assure that the following services are enabled
+# * zfs-import-cache
+# * zfs-mount
+# * zfs-import.target
+# reboot, to test that /var/lib/postgresql/10 gets mounted
+
+
+sudo apt install linux-tools-common linux-tools-generic linux-cloud-tools-generic
+sudo cpupower frequency-set --governor=performance
+sudo x86_energy_perf_policy performance
+
+
+# TODO consider using Huge Page Memory
+
+
+# check if on /etc/postgresql/10/main/postgresql.conf we have
+ssl = on
+ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
+ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
+# if not
+# Generate a self signed certificate
+# https://blog.raveland.org/post/self_signed/
+openssl genrsa -out server.key 4096
+openssl req -new -key server.key -out server.csr
+openssl x509 -req -days 3650 -in server.csr -signkey server.key -out server.crt
+# move the files to right place and set
+ssl_cert_file = '/scratch/postgresql/10/server.crt'
+ssl_key_file = '/scratch/postgresql/10/server.key'
+
+# generate ssh-keys
+ssh-keygen
+# and copy them to postgres@devmirror
+# cat /var/lib/postgresql/.ssh/id_rsa.pub
+# and paste in /var/lib/postgresql/.ssh/authorized_keys
+#
+# on devmirror add the following line to /var/lib/postgresql/.pgpass
+grace.mit.edu:5432:*:postgres:password desired
+
+# on grace add the 3 lines to /var/lib/postgresql/.pgpass
+devmirror.lmfdb.xyz:5432:*:postgres:password desired
+proddb.lmfdb.xyz:5432:*:postgres:password desired
+legendre.mit.edu:5432:*:postgres:password desired
+#
+#
+# add the five lines to /etc/postgresql/10/main/pg_hba.conf
+# so that devmirror and legendre can connect to grace.mit.edu
+# devmirror.lmfdb.xyz
+host    all		all             35.225.45.113/32        md5
+host    replication	all       35.225.45.113/32        md5
+# legendre.mit.edu
+host    all   all             18.4.43.30/32           md5
+# make sure that legendre and devmirror have similar lines
+
+# edit /etc/postgresql/10/main/postgresql.conf
+data_directory = '/scratch/postgresql/10/main'
+# we limit access through /etc/postgresql/10/main/pg_hba.conf
+listen_addresses = '*'
+# this is default, but one should enforce it
+wal_level = replica
+synchronous_commit = on
+# in logfile segments, 16MB each; 0 disables
+wal_keep_segments = 256 # 4 GB
+max_wal_size = 4GB
+checkpoint_completion_target = 0.7 # recommended by tuner
+archive_mode = on
+archive_command = 'rsync -a %p postgres@devmirror.lmfdb.xyz:/var/lib/postgresql/10/wal/%f'
+
+max_worker_processes = 32 # devmirror must have >= value
+
+max_connections = 512
+shared_preload_libraries = 'pg_stat_statements' # enable pg_stat_statements
+pg_stat_statements.max = 10000 # the number of statements to track by pg_stat_statements
+pg_stat_statements.track = all # tell pg_stat_statements to track all kinds of statemetns
+track_activity_query_size = 2048 # the size of bytes that pg_stat_statements can use
+log_min_duration_statement = 1000 # track any query that takes longer than 1s
+shared_buffers = 300GB # set shared_buffer to 40% of system memory, as recommended by doc, minimum recommended is 25%
+effective_cache_size = 300GB # also set to 40%, as the server might be used to other calculations
+effective_io_concurrency = 800 # 200*4, as we have 4 nvme drives, however is unlikely we see any benefits from such a high value
+extra_float_digits = 3 # otherwise we might loose precision when reading from the database
+
+
+# Through psql
+# set the fast collate
+UPDATE pg_database SET datcollate='C';
+# replication
+SELECT * FROM pg_create_physical_replication_slot('devmirror');
+SELECT * FROM pg_replication_slots;
+
+
+# when ready disable postgres on legendre
+# with: sudo update-rc.d postgresql disable
+# assure it is disabled with
+# systemctl list-unit-files | grep post
+
+
+# *** Sage ***
+
+sudo useradd sage -u 1200 -d /home/sage -m -s /bin/bash
+sudo apt-get update
+sudo apt-get  install -y binutils gcc g++ gfortran make m4 perl tar git libssl-dev python
+sudo -iu sage
+wget https://raw.githubusercontent.com/edgarcosta/lmfdb-gce/master/server_scripts/install_sage.sh
+#edit install sage j = 28 to use 28 cores
+bash install_sage.sh 8.7
+ln -s sage-8.7 sage-root
+sudo ln -s /home/sage/sage-root/sage /usr/local/bin/sage
+
+
+# *** LMFDB ***
+#
+# install supervisord
+sudo apt-get install -y supervisor
+sudo update-rc.d supervisor disable
+# check that is disabled
+systemctl list-unit-files | grep supervisor
+
+
+#install gcfuse
+export GCSFUSE_REPO=gcsfuse-`lsb_release -c -s`
+echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install gcsfuse
+
+sudo useradd lmfdb -u 1300 -d /home/lmfdb -m -s /bin/bash
+
+# gcloud authenticate as lmfdb.cloud@gmail.com
+sudo -iu lmfdb
+mkdir /scratch/lmfdb-data
+ssh-keygen
+#copy content of .ssh/id_rsa.pub to .ssh/authorized_keys at lmfdb@legendre.mit.edu
+rsync -lav lmfdb@legendre.mit.edu:/scratch/lmfdb-data/ /scratch/lmfdb-data
+scp legendre.mit.edu:STORAGEKEY.json .
+logout
+
+sudo -u lmfdb mkdir -p /scratch/lmfdb-buckets/riemann-zeta-zeros /scratch/lmfdb-buckets/class-groups-quadratic-imaginary-fields/
+sudo -u lmfdb mount /scratch/lmfdb-buckets/riemann-zeta-zeros
+sudo -u lmfdb mount /scratch/lmfdb-buckets/class-groups-quadratic-imaginary-fields/
+sudo chown -R lmfdb /scratch/lmfdb-data
+sudo -u lmfdb ln -s /scratch/lmfdb-data /home/lmfdb/data
+sudo -u lmfdb ln -s /scratch/lmfdb-buckets/class-groups-quadratic-imaginary-fields/ /scratch/lmfdb-data/class_numbers
+sudo -u lmfdb ln -s /scratch/lmfdb-buckets/riemann-zeta-zeros/ /scratch/lmfdb-data/zeros/zeta/data
+
+
+# just copy everything from legendre with rsync
+rsync -av legendre.mit.edu:*start* .
+rsync -av legendre.mit.edu:*stop* .
+rsync -av legendre.mit.edu:lmfdb-* .
+rsync -av legendre.mit.edu:logs  .
+
+# set up crontab
+crontab lmfdb-gce/config/crontab-legendre
+
+
+# *** APACHE ***
+sudo apt-get install apache2
+sudo cp /home/lmfdb/lmfdb-gce/config/apache-lmfdb-legendre.conf /etc/apache2/sites-available/lmfdb.conf
+sudo a2enmod headers expires proxy proxy_http
+sudo a2dissite 000-default.conf
+sudo a2ensite lmfdb.conf
+
+
+# *** MUNIN ***
+sudo apt-get install munin-node libdbd-pg-perl libwww-perl
+#
+# as root
+echo allow 18.4.43.30 >> /etc/munin/munin-node.conf
+echo allow 18.1.37.31 >> /etc/munin/munin-node.conf
+echo host_name $(hostname) >> /etc/munin/munin-node.conf
+
+
+cd /usr/share/munin/plugins/
+for i in postgres* ; do  ln -s /usr/share/munin/plugins/$i /etc/munin/plugins/ ; done
+cd /etc/munin/plugins/
+for i in postgres_*_ ; do mv $i ${i}lmfdb ; done
+
+
+# as normal user
+#
+wget https://raw.githubusercontent.com/munin-monitoring/contrib/master/plugins/gunicorn/gunicorn_memory_status
+wget https://raw.githubusercontent.com/munin-monitoring/contrib/master/plugins/gunicorn/gunicorn_status
+for i in web dev;do sudo cp gunicorn_memory_status /etc/munin/plugins/gunicorn_memory_status_${i}; sudo cp gunicorn_status /etc/munin/plugins/gunicorn_status_${i} ; done
+sudo chmod +x /etc/munin/plugins/gunicorn_*
+
+
+# edit on legendre and on grace accordingly
+sudo vim /etc/munin/munin.conf
+
+
+
+# do this on prodweb*, proddb, devmirror, legendre, saint-germain
+echo allow 18.1.37.31 >> /etc/munin/munin-node.conf

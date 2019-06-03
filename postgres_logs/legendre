@@ -1,6 +1,6 @@
 
 sudo apt-get install postgresql-contrib
-# check if
+# check if on /etc/postgresql/10/main/postgresql.conf we have
 ssl = on
 ssl_cert_file = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
 ssl_key_file = '/etc/ssl/private/ssl-cert-snakeoil.key'
@@ -45,10 +45,12 @@ shared_buffers = 51573MB # set shared_buffer to 40% of system memory, as recomme
 effective_cache_size = 51573MB # also set to 40%, as the server might be used to other calculations
 extra_float_digits = 3 # otherwise we might loose precision when reading from the database
 
-# add the three lines to /etc/postgresql/10/main/pg_hba.conf
+# add the five lines to /etc/postgresql/10/main/pg_hba.conf
 # Devmirror
 host    all		all             35.225.45.113/32        md5
 host    replication	all             35.225.45.113/32        md5
+# grace.mit.edu
+host    all   all             18.1.37.31/32           md5
 
 # added the following two lines to  /etc/security/limits.conf
 # all lmfdb devs are in this group
