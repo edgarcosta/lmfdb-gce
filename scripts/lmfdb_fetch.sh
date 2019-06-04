@@ -16,7 +16,7 @@ for branch in web dev prod; do
     git checkout origin/$branch -f
     popd
   fi
-end for
+done
 
 # cmfs.lmfdb.xyz=scratch.lmfdb.xyz running on 8083 gunicorn-config-master
 # abvar.lmfdb.xyz running on 8084 gunicorn-config-abvar
@@ -35,8 +35,7 @@ for branch in master abvar blue olive pink purle red; do
     git checkout roed314/$branch -f
     popd
   fi
-end for
-
+done
 
 
 
