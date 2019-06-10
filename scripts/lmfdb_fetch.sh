@@ -28,7 +28,7 @@ done
 # teal.lmfdb.xyz running on 8094
 # groups.lmfdb.xyz running on 8100
 # tori.lmfdb.xyz running on 8101
-for branch in master abvar blue olive pink purle red groups tori; do
+for branch in master abvar blue olive pink purle red teal groups tori; do
   if [ -d "/home/lmfdb/lmfdb-git-${branch}" ]; then
     pushd /home/lmfdb/lmfdb-git-$branch
     git fetch roed314 $branch
