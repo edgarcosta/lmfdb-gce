@@ -79,7 +79,7 @@ Alternatively, instead of adding these lines to ~/.ssh/config you can create the
 ssh -o TCPKeepAlive=yes -o ServerAliveInterval=50 -C -L 37777:localhost:%s %s@legendre.mit.edu
 
 
-Once you are connected to legendre.mit.edu, you can run on legendre the usual comman: sage -python start-lmfdb.py --debug
+Once you are connected to legendre.mit.edu, you can run on legendre the usual command: sage -python start-lmfdb.py --debug
 
 Lastly, the LMFDB repository in your home directory is set to use your GitHub username %s.
 For your convenience, we have generated an ssh key for you, and to be able to interact with GitHub from legendre you should add it to GitHub:
