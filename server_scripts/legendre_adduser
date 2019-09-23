@@ -60,7 +60,7 @@ print r"""Dear %s,
 We have created an account for you on legendre.mit.edu.
 Your username is %s; use the ssh keys that you provided us to log in, as this is a passwordless account.
 
-Having an account on legendre.mit.edu allows you to connect to the database running on the same server, and we recommend you that you take advantage of this by running LMFDB on legendre.
+Having an account on legendre.mit.edu allows you to connect to the database running on grace.mit.edu, and we recommend you that you take advantage of this by running LMFDB on legendre.
 For your convenience, we have set up a copy of LMFDB on your home directory (~/lmfdb) to take advantage of this, more precisely, to use the port %d and read from the database running locally, this is set in ~/lmfdb/config.ini.
 
 You can then interact with this version of LMFDB running on legendre through your browser at http://localhost:37777 by setting an SSH tunnel from 37777 (on your machine) to %d on legendre.mit.edu.
@@ -84,7 +84,7 @@ Alternatively, instead of adding these lines to ~/.ssh/config you can create the
 ssh -o TCPKeepAlive=yes -o ServerAliveInterval=50 -C -L 37777:localhost:%s %s@legendre.mit.edu
 
 
-Once you are connected to legendre.mit.edu, you can run on legendre the usual comman: sage -python start-lmfdb.py --debug
+Once you are connected to legendre.mit.edu, you can run on legendre the usual command: sage -python start-lmfdb.py --debug
 
 Lastly, the LMFDB repository in your home directory is set to use your GitHub username %s.
 For your convenience, we have generated an ssh key for you, and to be able to interact with GitHub from legendre you should add it to GitHub:
