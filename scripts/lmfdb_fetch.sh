@@ -28,14 +28,7 @@ done
 # teal.lmfdb.xyz running on 8094
 # groups.lmfdb.xyz running on 8100
 # tori.lmfdb.xyz running on 8101
-for branch in master abvar blue olive pink purle red teal groups tori; do
-  if [ -d "/home/lmfdb/lmfdb-git-${branch}" ]; then
-    pushd /home/lmfdb/lmfdb-git-$branch
-    git fetch roed314 $branch
-    git checkout roed314/$branch -f
-    popd
-  fi
-done
+awk -F: '{ print "pushd /home/lmfdb/lmfdb-git-"$1" && git fetch "$2" "$3" && git checkout "$2"/"$3}' /home/lmfdb/branch-assignments.txt | bash
 
 
 
