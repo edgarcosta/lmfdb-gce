@@ -28,7 +28,7 @@ done
 # teal.lmfdb.xyz running on 8094
 # groups.lmfdb.xyz running on 8100
 # tori.lmfdb.xyz running on 8101
-awk -F: '{ print "pushd /home/lmfdb/lmfdb-git-"$1" && git fetch "$2" "$3" && git checkout "$2"/"$3" && popd" }' /home/lmfdb/lmfdb-gce/scripts/branch-assignments.txt | bash
+awk -F: '{ print "if [ -d /home/lmfdb/lmfdb-git-"$1" ]; then pushd /home/lmfdb/lmfdb-git-"$1" && git fetch "$2" "$3" && git checkout "$2"/"$3" && popd; fi" }' /home/lmfdb/lmfdb-gce/scripts/branch-assignments.txt | bash
 
 
 
