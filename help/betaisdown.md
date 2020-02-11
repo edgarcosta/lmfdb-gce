@@ -3,7 +3,7 @@
 Figure out what dependecy for LMFDB failed and restart that service and `supervisord` if needed.
 Alternatively, reboot the server and hope for the best.
 
-# Is legendre.mit.edu alive?
+# Is grace.mit.edu alive?
 
 If not try to reboot it.
 Does it respond to pings what about ssh? Does it timeout?
