@@ -9,7 +9,7 @@ branch=${0##*-}
 echo restarting $branch server
 
 # delete all cached .pyc files
-find ~/lmfdb-git-$BRANCH -name '*.pyc' -delete
+find ~/lmfdb-git-$branch -name '*.pyc' -delete
 
 # restart server
 kill -HUP `cat ~/gunicorn-$branch.pid`
