@@ -28,6 +28,7 @@ wget http://mirrors.mit.edu/sage/src/sage-${version}.tar.gz -O sage-${version}.t
 tar xf sage-${version}.tar.gz
 cd sage-${version}
 #it can get stuck here while building documentation
+./configure
 MAKE="make -j${j}" make build
 MAKE="make -j${j}" make test
 MAKE="make -j${j}" make testlong
