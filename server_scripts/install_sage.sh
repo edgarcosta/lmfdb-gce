@@ -36,15 +36,15 @@ MAKE="make -j${j}" make testlong
 ./sage -b 
 wget https://raw.githubusercontent.com/LMFDB/lmfdb/master/requirements.txt 
 ./sage -pip install -r requirements.txt 
-wget https://raw.githubusercontent.com/roed314/seminars/master/requirements.txt -o semrequirements.txt
-./sage -pip install -r semrequirements.txt
-./sage -pip install bcrypt 
+wget https://raw.githubusercontent.com/roed314/seminars/master/requirements.txt -O semrequirements.txt
+./sage -pip install -r semrequirements.txt --upgrade
+./sage -pip install bcrypt
 ./sage -pip install gunicorn pyflakes
-./sage -pip install greenlet eventlet gevent 
+./sage -pip install greenlet eventlet gevent
 ./sage -b 
-cd .. 
-chmod a+rX -R sage-${version} 
-echo "If you want this to be the new version to be used, don't forget to do:" 
-echo "$ rm ~/sage-root && ln -s sage-${version} ~/sage-root" 
+cd ..
+chmod a+rX -R sage-${version}
+echo "If you want this to be the new version to be used, don't forget to do:"
+echo "$ rm ~/sage-root && ln -s sage-${version} ~/sage-root"
 set +e
 
