@@ -4,6 +4,7 @@
 #  Copyright (C)  2016-2017  Edgar Costa
 #  See the file LICENSE for license details.
 
+#FOOBAR
 
 PREFIX="" #"/usr/local"
 FLINT_DIR="" # "/usr/local"
