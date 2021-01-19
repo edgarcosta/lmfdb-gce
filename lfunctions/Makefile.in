@@ -1,0 +1,67 @@
+#  Copyright (C)  2016-2017 Edgar Costa
+#  See the file LICENSE for license details.
+
+MAKEFLAGS+=-j$(JOBS)
+
+SOURCE_DIRS = src
+BUILD_DIRS = $(patsubst %, build/%, $(SOURCE_DIRS)) build/test build/examples $(patsubst %, build/%/test, $(SOURCE_DIRS))
+AT=@
+define NEWLINE
+
+endef
+
+export
+
+HEADERS = $(wildcard include/*.h)
+SOURCES = $(wildcard $(patsubst %, %/*.c, $(SOURCE_DIRS)))
+OBJS = $(patsubst %.c, build/%.o, $(SOURCES))
+
+
+EXECUTABLES_SOURCES = $(wildcard examples/*.c) $(wildcard examples/*.cpp)
+EXECUTABLES = $(patsubst %.c, build/%.exe, $(wildcard examples/*.c)) $(patsubst %.cpp, build/%.exe, $(wildcard examples/*.cpp))
+TEST_SOURCES = $(wildcard test/*.c) $(wildcard test/*.cpp)
+TESTS = $(patsubst %.c, build/%.exe, $(wildcard test/*.c)) $(patsubst %.cpp, build/%.exe, $(wildcard test/*.cpp))
+
+all: $(OBJS) test lib executables
+
+clean:
+	rm -rf build
+
+
+executables: $(EXECUTABLES)
+
+test: $(TESTS)
+
+lib: build/liblfun.so
+
+build/liblfun.so: $(OBJS) $(HEADERS) | build_dirs
+	$(CC) $(CFLAGS) -shared $(INCS) $(OBJS) -o $@ $(LIBS)
+
+build/%.o: %.c $(HEADERS) | build_dirs
+	$(CC) $(CFLAGS) $(INCS) -c $< -o $@;
+
+build/%.o: %.cpp $(HEADERS) | build_dirs
+	$(CXX) $(CXXFLAGS) $(INCS) -c $< -o $@;
+
+$(TESTS) : %.exe : %.o $(OBJS)
+	$(CXX) $(CXXFLAGS) $(INCS) $^ -o $@ $(LIBS)
+
+build/%.valgrind : %.c $(SOURCES)
+	$(CC) $(CFLAGS) $(INCS) $^ -o $@ $(LIBS)
+
+build/%.valgrind : %.c $(SOURCES)
+	$(CXX) $(CXXFLAGS) $(INCS) $^ -o $@ $(LIBS)
+
+$(EXECUTABLES) : %.exe : %.o $(OBJS)
+	$(CXX) $(CXXFLAGS) $(INCS) $^ -o $@ $(LIBS)
+
+build_dirs: $(BUILD_DIRS)
+
+$(BUILD_DIRS): % :
+	mkdir -p $@
+
+
+print-%:
+	@echo '$*=$($*)'
+
+.PHONY: clean
