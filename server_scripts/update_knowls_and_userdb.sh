@@ -18,7 +18,7 @@ else
   time psql --host devmirror --dbname lmfdb --command "\\copy (SELECT name, table_description, col_description FROM meta_tables) TO '$descdump' WITH CSV;"
   time pg_restore --single-transaction --clean --if-exists --dbname lmfdb $userdbdump
   time pg_restore --single-transaction --clean --if-exists --dbname lmfdb $knowlsdump
-  time psql --dbname lmfdb --command "DO language plpgsql \$\$ BEGIN; CREATE TEMP TABLE tmp (name text,  table_description text, col_description jsonb); COPY tmp FROM '$descdump' (FORMAT csv); UPDATE meta_tables SET (table_description, col_description) = (tmp.table_description, tmp.col_description) FROM tmp WHERE meta_tables.name = tmp.name; RAISE NOTICE 'updating meta_tables done'; END; \$\$"
+  time psql --dbname lmfdb --command " CREATE TEMP TABLE tmp (name text,  table_description text, col_description jsonb); COPY tmp FROM '$descdump' (FORMAT csv); UPDATE meta_tables SET (table_description, col_description) = (tmp.table_description, tmp.col_description) FROM tmp WHERE meta_tables.name = tmp.name; DO language plpgsql \$\$ BEGIN RAISE NOTICE 'updating meta_tables done' END \$\$; END;"
   du -sh $userdbdump $knowlsdump
   rm -rf $userdbdump $knowlsdump
   psql --dbname lmfdb --command "REVOKE INSERT, UPDATE, DELETE ON kwl_locks, kwl_knowls FROM webserver;"
