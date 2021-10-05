@@ -16,9 +16,7 @@ parser.add_argument('login_keys', help='the string to add to authorized_keys')
 args = parser.parse_args()
 name, username, gitname, login_keys = args.name, args.username, args.github_name, args.login_keys
 
-if not requests.get(f'https://github.com/{gitname}/lmfdb'):
-    print(f"The user '{gitname}' has not forked LMFDB repository")
-    sys.exit(1)
+hasfork =  bool(requests.get(f'https://github.com/{gitname}/lmfdb'))
 
 
 defaulthome = opj(sep, "home", username)
@@ -56,8 +54,9 @@ port = 40000 + uid
 subprocess.check_call(["sage", "-python", opj("lmfdb", "utils", "config.py"), "-p", str(port), "--postgresql-host", "grace.mit.edu"])
 # we start with http for the fetch
 subprocess.check_call(["git", "remote", "add", "origin", f"https://github.com/{gitname}/lmfdb.git"])
-subprocess.check_call(["git", "fetch", "origin"])
-subprocess.check_call(["git", "branch", "master", "-u", "origin/master"])
+if hasfork:
+    subprocess.check_call(["git", "fetch", "origin"])
+    subprocess.check_call(["git", "branch", "master", "-u", "origin/master"])
 # and now set the url to use ssh
 subprocess.check_call(["git", "remote", "set-url", "origin", f"git@github.com:{gitname}/lmfdb.git"])
 my_chown(lmfdbhome)
@@ -107,6 +106,17 @@ For your convenience, we have generated an ssh key for you, and to be able to in
 """)
 with open(opj(sshhome, "id_rsa.pub")) as F:
     print(F.read())
+
+
+if not hasfork:
+    print(f"""
+After you have forked the LMFDB repository and added your key should run the following commands to finish setting up your lmfdb directory:
+
+cd ~/lmfdb/
+git fetch origin
+git branch master -u origin/master
+
+""")
 
 
 
