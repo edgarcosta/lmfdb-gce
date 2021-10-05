@@ -44,14 +44,15 @@ subprocess.check_call(["git", "clone", "-q", "https://github.com/LMFDB/lmfdb.git
 os.chdir(lmfdbhome)
 subprocess.check_call(["git", "remote", "rename", "origin", "upstream"])
 subprocess.check_call(["git", "remote", "set-url", "upstream", "git@github.com:LMFDB/lmfdb.git"])
+# configure LMFDB
+port = 40000 + uid
+subprocess.check_call(["python", opj("lmfdb", "utils", "config.py"), "-p", str(port), "--postgresql-host", "grace.mit.edu"])
 # we start with http for the fetch
 subprocess.check_call(["git", "remote", "add", "origin", f"https://github.com/{gitname}/lmfdb.git"])
 subprocess.check_call(["git", "fetch", "origin"])
 subprocess.check_call(["git", "branch", "master", "-u", "origin/master"])
 # and now set the url to use ssh
 subprocess.check_call(["git", "remote", "set-url", "origin", f"git@github.com:{gitname}/lmfdb.git"])
-port = 40000 + uid
-subprocess.check_call(["python", opj("lmfdb", "utils", "config.py"), "-p", str(port), "--postgresql-host", "grace.mit.edu"])
 my_chown(lmfdbhome)
 print("LMFDB set up")
 # Deal with ssh keys
