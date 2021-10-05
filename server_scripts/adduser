@@ -121,6 +121,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-
-print(f"{bcolors.WARNING}Do not forget to fill out https://docs.google.com/spreadsheets/d/1sHhD1e7nKp1wp_DNkWlfFv37ZwzmMekUzuqczIVYuNQ/{bcolors.ENDC}")
-
+print("#"*96)
+print("#"*5 + f" {bcolors.FAIL}Do not forget to fill out the servers spreadsheet:{bcolors.ENDC} " + " "*34 + "#"*5)
+print("#"*5 + " https://docs.google.com/spreadsheets/d/1sHhD1e7nKp1wp_DNkWlfFv37ZwzmMekUzuqczIVYuNQ/ " + "#"*5 )
+print("#"*96)
