@@ -2,6 +2,9 @@
 
 import os, sys, subprocess, pwd, argparse, socket
 hostname = socket.gethostname().lower()
+if hostname not in ['legendre', 'lovelace']:
+    print("Script must be edited appropriately for other servers!!!")
+    sys.exit(1)
 opj, sep = os.path.join, os.sep
 import requests
 
@@ -18,8 +21,10 @@ if not requests.get(f'https://github.com/{gitname}/lmfdb'):
     sys.exit(1)
 
 
-
-userhome = opj(sep, "scratch", "home", username)
+if hosname == "legendre":
+    userhome = opj(sep, "scratch", "home", username)
+else:
+    userhome = None
 lmfdbhome = opj(userhome, "lmfdb")
 sshhome = opj(userhome, ".ssh")
 loginfile = opj(sshhome, "authorized_keys")
@@ -30,7 +35,10 @@ def my_chown(filename):
 
 # Make user
 try:
-    subprocess.check_call(["adduser", "--home", userhome, "--shell", opj(sep, "bin", "bash"), "--disabled-password", "--gecos", '""', username])
+    if userhome:
+        subprocess.check_call(["adduser", "--home", userhome, "--shell", opj(sep, "bin", "bash"), "--disabled-password", "--gecos", '""', username])
+    else:
+        subprocess.check_call(["adduser", "--shell", opj(sep, "bin", "bash"), "--disabled-password", "--gecos", '""', username])
 except subprocess.CalledProcessError:
     print("You must run as root")
     sys.exit(1)
