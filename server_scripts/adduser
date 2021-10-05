@@ -45,11 +45,11 @@ os.chdir(lmfdbhome)
 subprocess.check_call(["git", "remote", "rename", "origin", "upstream"])
 subprocess.check_call(["git", "remote", "set-url", "upstream", "git@github.com:LMFDB/lmfdb.git"])
 # we start with http for the fetch
-subprocess.check_call(["git", "remote", "add", "origin", f"https://github.com/{gitname}/lmfdb.git" % gitname])
+subprocess.check_call(["git", "remote", "add", "origin", f"https://github.com/{gitname}/lmfdb.git"])
 subprocess.check_call(["git", "fetch", "origin"])
 subprocess.check_call(["git", "branch", "master", "-u", "origin/master"])
 # and now set the url to use ssh
-subprocess.check_call(["git", "remote", "set-url", "origin", "git@github.com:{gitname}/lmfdb.git"%gitname])
+subprocess.check_call(["git", "remote", "set-url", "origin", f"git@github.com:{gitname}/lmfdb.git"])
 port = 40000 + uid
 subprocess.check_call(["python", opj("lmfdb", "utils", "config.py"), "-p", str(port), "--postgresql-host", "grace.mit.edu"])
 my_chown(lmfdbhome)
@@ -69,14 +69,14 @@ We have created an account for you on {hostname}.mit.edu.
 Your username is {username}; use the ssh keys that you provided us to log in, as this is a passwordless account.
 
 Having an account on {hostname}.mit.edu allows you to connect to the database running on grace.mit.edu, and we recommend you that you take advantage of this by running LMFDB on {hostname}.
-For your convenience, we have set up a copy of LMFDB on your home directory (~/lmfdb) to take advantage of this, more precisely, to use the port %d and read from the database running locally, this is set in ~/lmfdb/config.ini.
+For your convenience, we have set up a copy of LMFDB on your home directory (~/lmfdb) to take advantage of this, more precisely, to use the port {port} and read from the database running locally, this is set in ~/lmfdb/config.ini.
 
-You can then interact with this version of LMFDB running on {hostname} through your browser at http://localhost:37777 by setting an SSH tunnel from 37777 (on your machine) to %d on {hostname}.mit.edu.
+You can then interact with this version of LMFDB running on {hostname} through your browser at http://localhost:37777 by setting an SSH tunnel from 37777 (on your machine) to {port} on {hostname}.mit.edu.
 This can be done automatically by adding the following lines to ~/.ssh/config on your machine:
 
 Host {hostname}
 Hostname {hostname}.mit.edu
-LocalForward localhost:37777 localhost:%d
+LocalForward localhost:37777 localhost:{port}
 TCPKeepAlive yes
 ServerAliveInterval 50
 Compression Yes
