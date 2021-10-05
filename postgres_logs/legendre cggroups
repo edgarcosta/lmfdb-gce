@@ -1,0 +1,84 @@
+==> /etc/cgconfig.conf <==
+group lmfdb_devs {
+    memory {
+        memory.limit_in_bytes="240G";
+    }
+}
+
+==> /etc/cgred.conf <==
+# /etc/sysconfig/cgred.conf - CGroup Rules Engine Daemon configuration file
+#
+# The four options listed below (CONFIG_FILE, LOG_FILE, NODAEMON, LOG) are
+# the only valid ones.  Defining anything else in this file will cause the
+# CGroup Rules Engine program to fail.  So, don't do it.
+
+# The pathname to the configuration file for CGroup Rules Engine
+CONFIG_FILE="/etc/cgrules.conf"
+
+# Uncomment the following line to log to specified file instead of syslog
+#LOG_FILE="/var/log/cgrulesengd.log"
+
+# Uncomment the second line to run CGroup Rules Engine in non-daemon mode
+NODAEMON=""
+#NODAEMON="--nodaemon"
+
+# Set owner of cgred socket. 'cgexec' tool should have write access there
+# (either using suid and/or sgid permissions or Linux capabilities).
+SOCKET_USER=""
+SOCKET_GROUP="cgred"
+
+# Uncomment the second line to disable logging for CGroup Rules Engine
+# Uncomment the third line to enable more verbose logging.
+LOG=""
+#LOG="--nolog"
+#LOG="-v"
+
+
+==> /etc/cgrules.conf <==
+#<user>    <controllers>           <destination>
+@lmfdb_devs       memory           lmfdb_devs
+
+
+==> /etc/systemd/system/cgconfigparser.service <==
+[Unit]
+Description=cgroup config parser
+After=network.target
+
+[Service]
+User=root
+Group=root
+ExecStart=/usr/sbin/cgconfigparser -l /etc/cgconfig.conf
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target
+
+==> /etc/systemd/system/cgrulesgend.service <==
+[Unit]
+Description=cgroup rules generator
+After=network.target cgconfigparser.service
+
+[Service]
+User=root
+Group=root
+Type=forking
+EnvironmentFile=-/etc/cgred.conf
+ExecStart=/usr/sbin/cgrulesengd
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+# Test:
+/usr/sbin/cgconfigparser -l /etc/cgconfig.conf 
+/usr/sbin/cgrulesengd -vvv
+cat /sys/fs/cgroup/lmfdb_devs/web2/tasks
+
+# enable service
+systemctl daemon-reload
+systemctl enable cgconfigparser
+systemctl enable cgrulesgend
+systemctl start cgconfigparser
+systemctl start cgrulesgend
