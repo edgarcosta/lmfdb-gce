@@ -110,7 +110,7 @@ with open(opj(sshhome, "id_rsa.pub")) as F:
 
 if not hasfork:
     print(f"""
-After you have forked the LMFDB repository and added your key should run the following commands to finish setting up your lmfdb directory:
+After you have forked the LMFDB repository and added the ssh key to GitHub you should run the following commands to finish setting up your lmfdb installation:
 
 cd ~/lmfdb/
 git fetch origin
