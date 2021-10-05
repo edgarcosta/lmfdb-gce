@@ -21,10 +21,11 @@ if not requests.get(f'https://github.com/{gitname}/lmfdb'):
     sys.exit(1)
 
 
+defaulthome = opj(sep, "home", username)
 if hostname in ["legendre", "diophantus", "saint-germain"]:
     userhome = opj(sep, "scratch", "home", username)
 else:
-    userhome = opj(sep, "home", username)
+    userhome = defaulthome
 lmfdbhome = opj(userhome, "lmfdb")
 sshhome = opj(userhome, ".ssh")
 loginfile = opj(sshhome, "authorized_keys")
@@ -41,7 +42,8 @@ except subprocess.CalledProcessError:
     sys.exit(1)
 subprocess.check_call(["adduser", username, "lmfdb_devs"])
 uid = pwd.getpwnam(username).pw_uid
-subprocess.check_call(["ln", "-s", userhome, opj(sep, "home", username)])
+if userhome != defaulthome:
+    subprocess.check_call(["ln", "-s", userhome, defaulthome])
 print(f"User {username} created")
 os.chdir(userhome)
 # Clone and setup lmfdb
@@ -51,7 +53,7 @@ subprocess.check_call(["git", "remote", "rename", "origin", "upstream"])
 subprocess.check_call(["git", "remote", "set-url", "upstream", "git@github.com:LMFDB/lmfdb.git"])
 # configure LMFDB
 port = 40000 + uid
-subprocess.check_call(["python", opj("lmfdb", "utils", "config.py"), "-p", str(port), "--postgresql-host", "grace.mit.edu"])
+subprocess.check_call(["sage", "-python", opj("lmfdb", "utils", "config.py"), "-p", str(port), "--postgresql-host", "grace.mit.edu"])
 # we start with http for the fetch
 subprocess.check_call(["git", "remote", "add", "origin", f"https://github.com/{gitname}/lmfdb.git"])
 subprocess.check_call(["git", "fetch", "origin"])
