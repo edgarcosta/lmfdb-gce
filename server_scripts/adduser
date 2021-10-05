@@ -21,10 +21,10 @@ if not requests.get(f'https://github.com/{gitname}/lmfdb'):
     sys.exit(1)
 
 
-if hostname == "legendre":
+if hostname in ["legendre", "diophantus", "saint-germain"]:
     userhome = opj(sep, "scratch", "home", username)
 else:
-    userhome = None
+    userhome = opj(sep, "home", username)
 lmfdbhome = opj(userhome, "lmfdb")
 sshhome = opj(userhome, ".ssh")
 loginfile = opj(sshhome, "authorized_keys")
@@ -35,10 +35,7 @@ def my_chown(filename):
 
 # Make user
 try:
-    if userhome:
-        subprocess.check_call(["adduser", "--home", userhome, "--shell", opj(sep, "bin", "bash"), "--disabled-password", "--gecos", '""', username])
-    else:
-        subprocess.check_call(["adduser", "--shell", opj(sep, "bin", "bash"), "--disabled-password", "--gecos", '""', username])
+    subprocess.check_call(["adduser", "--home", userhome, "--shell", opj(sep, "bin", "bash"), "--disabled-password", "--gecos", '""', username])
 except subprocess.CalledProcessError:
     print("You must run as root")
     sys.exit(1)
