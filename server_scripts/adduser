@@ -21,7 +21,7 @@ if not requests.get(f'https://github.com/{gitname}/lmfdb'):
     sys.exit(1)
 
 
-if hosname == "legendre":
+if hostname == "legendre":
     userhome = opj(sep, "scratch", "home", username)
 else:
     userhome = None
