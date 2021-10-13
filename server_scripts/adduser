@@ -66,7 +66,7 @@ os.mkdir(sshhome, 0o700)
 with open(loginfile, "w") as F:
     F.write(login_keys)
 os.chmod(loginfile, 0o644)
-subprocess.check_call(["ssh-keygen", "-b", "2048", "-t", "rsa", "-f", opj(sshhome, "id_rsa"), "-q", "-N", "", "-C", f"{username}s@{hostname}"])
+subprocess.check_call(["ssh-keygen", "-b", "2048", "-t", "rsa", "-f", opj(sshhome, "id_rsa"), "-q", "-N", "", "-C", f"{username}@{hostname}"])
 my_chown(sshhome)
 print("Setup complete!\n")
 
