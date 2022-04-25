@@ -48,16 +48,16 @@ legendre.mit.edu:5432:*:postgres:password desired
 
 # Now do as postgres
 sudo -u postgres -i
-mkdir /var/lib/postgresql/10/main/
-pg_basebackup -h legendre.mit.edu -D /var/lib/postgresql/10/main/ -P -U postgres --wal-method=stream
+mkdir /var/lib/postgresql/13/main/
+time pg_basebackup -h grace.mit.edu -D /var/lib/postgresql/13/main/ -P -U postgres --wal-method=stream -R
 
 # add the file /var/lib/postgresql/10/recovery.conf
   standby_mode = 'on'
-  primary_conninfo = 'host=legendre.mit.edu port=5432 user=postgres'
+  primary_conninfo = 'host=grace.mit.edu port=5432 user=postgres'
   # assures that the master does not remove WAL segments until they have been received by all standbys
   primary_slot_name = 'devmirror'
-  #restore_command = 'scp /var/lib/postgresql/10/wal/%f "%p"'
-  archive_cleanup_command = 'pg_archivecleanup /var/lib/postgresql/10/wal %r'
+  #restore_command = 'scp /var/lib/postgresql/13/wal/%f "%p"'
+  archive_cleanup_command = 'pg_archivecleanup /var/lib/postgresql/13/wal %r'
 
 # only allow external access to the lmfdb database and for the lmfdb user
 # by adding the following 2 lines to the end of /etc/postgresql/10/main/pg_hba.conf

@@ -1,3 +1,4 @@
+wsgi_app = 'lmfdb.website:app'
 bind = "0.0.0.0:8081"
 workers = 15
 SESSION_PROTECTION = None

@@ -90,6 +90,7 @@ pg_stat_statements.track = all # tell pg_stat_statements to track all kinds of s
 track_activity_query_size = 2048 # the size of bytes that pg_stat_statements can use
 log_min_duration_statement = 1000 # track any query that takes longer than 1s
 shared_buffers = 300GB # set shared_buffer to 40% of system memory, as recommended by doc, minimum recommended is 25%
+working_mem = 256MB # helps with sorting in memory
 effective_cache_size = 300GB # also set to 40%, as the server might be used to other calculations
 effective_io_concurrency = 800 # 200*4, as we have 4 nvme drives, however is unlikely we see any benefits from such a high value
 extra_float_digits = 3 # otherwise we might loose precision when reading from the database

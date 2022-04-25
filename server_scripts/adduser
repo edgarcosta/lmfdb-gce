@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+
+import os, sys, subprocess, pwd, argparse, socket
+hostname = socket.gethostname().lower()
+if hostname not in ['legendre', 'lovelace']:
+    print("Script must be edited appropriately for other servers!!!")
+    sys.exit(1)
+opj, sep = os.path.join, os.sep
+import requests
+
+parser = argparse.ArgumentParser(description=f'Add a new lmfdb user to {hostname}')
+parser.add_argument('name', help='the name of the new user (for email)')
+parser.add_argument('username', help='the username for the new user')
+parser.add_argument('github_name', help='the github username for the new user')
+parser.add_argument('login_keys', help='the string to add to authorized_keys')
+args = parser.parse_args()
+name, username, gitname, login_keys = args.name, args.username, args.github_name, args.login_keys
+
+hasfork =  bool(requests.get(f'https://github.com/{gitname}/lmfdb'))
+
+
+defaulthome = opj(sep, "home", username)
+if hostname in ["legendre", "diophantus", "saint-germain"]:
+    userhome = opj(sep, "scratch", "home", username)
+else:
+    userhome = defaulthome
+lmfdbhome = opj(userhome, "lmfdb")
+sshhome = opj(userhome, ".ssh")
+loginfile = opj(sshhome, "authorized_keys")
+
+def my_chown(filename):
+    # os.chown doesn't work recursively.
+    subprocess.check_call(["chown", "-R", f"{username}:{username}", filename])
+
+# Make user
+try:
+    subprocess.check_call(["adduser", "--home", userhome, "--shell", opj(sep, "bin", "bash"), "--disabled-password", "--gecos", '""', username])
+except subprocess.CalledProcessError:
+    print("You must run as root")
+    sys.exit(1)
+subprocess.check_call(["adduser", username, "lmfdb_devs"])
+uid = pwd.getpwnam(username).pw_uid
+if userhome != defaulthome:
+    subprocess.check_call(["ln", "-s", userhome, defaulthome])
+print(f"User {username} created")
+os.chdir(userhome)
+# Clone and setup lmfdb
+subprocess.check_call(["git", "clone", "-q", "https://github.com/LMFDB/lmfdb.git", lmfdbhome])
+os.chdir(lmfdbhome)
+subprocess.check_call(["git", "remote", "rename", "origin", "upstream"])
+subprocess.check_call(["git", "remote", "set-url", "upstream", "git@github.com:LMFDB/lmfdb.git"])
+# configure LMFDB
+port = 40000 + uid
+subprocess.check_call(["sage", "-python", opj("lmfdb", "utils", "config.py"), "-p", str(port), "--postgresql-host", "grace.mit.edu"])
+# we start with http for the fetch
+subprocess.check_call(["git", "remote", "add", "origin", f"https://github.com/{gitname}/lmfdb.git"])
+if hasfork:
+    subprocess.check_call(["git", "fetch", "origin"])
+    subprocess.check_call(["git", "branch", "master", "-u", "origin/master"])
+# and now set the url to use ssh
+subprocess.check_call(["git", "remote", "set-url", "origin", f"git@github.com:{gitname}/lmfdb.git"])
+my_chown(lmfdbhome)
+print("LMFDB set up")
+# Deal with ssh keys
+os.mkdir(sshhome, 0o700)
+with open(loginfile, "w") as F:
+    F.write(login_keys)
+os.chmod(loginfile, 0o644)
+subprocess.check_call(["ssh-keygen", "-b", "2048", "-t", "rsa", "-f", opj(sshhome, "id_rsa"), "-q", "-N", "", "-C", f"{username}@{hostname}"])
+my_chown(sshhome)
+print("Setup complete!\n")
+
+print(f"""Dear {name},
+
+We have created an account for you on {hostname}.mit.edu.
+Your username is {username}; use the ssh keys that you provided us to log in, as this is a passwordless account.
+
+Having an account on {hostname}.mit.edu allows you to connect to the database running on grace.mit.edu, and we recommend you that you take advantage of this by running LMFDB on {hostname}.
+For your convenience, we have set up a copy of LMFDB on your home directory (~/lmfdb) to take advantage of this, more precisely, to use the port {port} and read from the database running locally, this is set in ~/lmfdb/config.ini.
+
+You can then interact with this version of LMFDB running on {hostname} through your browser at http://localhost:37777 by setting an SSH tunnel from 37777 (on your machine) to {port} on {hostname}.mit.edu.
+This can be done automatically by adding the following lines to ~/.ssh/config on your machine:
+
+Host {hostname}
+Hostname {hostname}.mit.edu
+LocalForward localhost:37777 localhost:{port}
+TCPKeepAlive yes
+ServerAliveInterval 50
+Compression Yes
+user {username}
+
+after you have added these lines to ~/.ssh/config, you can then connect to {hostname}.mit.edu by simply typing:
+
+ssh {hostname}
+
+and it will also create the desired SSH tunnel automatically.
+Alternatively, instead of adding these lines to ~/.ssh/config you can create the tunnel and connect to {hostname}.mit.edu with the following command:
+
+ssh -o TCPKeepAlive=yes -o ServerAliveInterval=50 -C -L 37777:localhost:{port} {username}@{hostname}.mit.edu
+
+
+Once you are connected to {hostname}.mit.edu, you can run on {hostname} the usual command: sage -python start-lmfdb.py --debug
+
+Lastly, the LMFDB repository in your home directory is set to use your GitHub username {gitname}.
+For your convenience, we have generated an ssh key for you, and to be able to interact with GitHub from {hostname} you should add it to GitHub:
+""")
+with open(opj(sshhome, "id_rsa.pub")) as F:
+    print(F.read())
+
+
+if not hasfork:
+    print(f"""
+After you have forked the LMFDB repository and added the ssh key to GitHub you should run the following commands to finish setting up your lmfdb installation:
+
+cd ~/lmfdb/
+git fetch origin
+git branch master -u origin/master
+
+""")
+
+
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+print("#"*96)
+print("#"*5 + f" {bcolors.FAIL}Do not forget to fill out the servers spreadsheet:{bcolors.ENDC} " + " "*34 + "#"*5)
+print("#"*5 + " https://docs.google.com/spreadsheets/d/1sHhD1e7nKp1wp_DNkWlfFv37ZwzmMekUzuqczIVYuNQ/ " + "#"*5 )
+print("#"*96)

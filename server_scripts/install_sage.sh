@@ -28,23 +28,24 @@ wget http://mirrors.mit.edu/sage/src/sage-${version}.tar.gz -O sage-${version}.t
 tar xf sage-${version}.tar.gz
 cd sage-${version}
 #it can get stuck here while building documentation
+./configure
 MAKE="make -j${j}" make build
 MAKE="make -j${j}" make test
 MAKE="make -j${j}" make testlong
 ./sage -i gap_packages
 ./sage -i pip
-./sage -b 
-wget https://raw.githubusercontent.com/LMFDB/lmfdb/master/requirements.txt 
-./sage -pip install -r requirements.txt 
-wget https://raw.githubusercontent.com/roed314/seminars/master/requirements.txt -o semrequirements.txt
-./sage -pip install -r semrequirements.txt
-./sage -pip install bcrypt 
+./sage -b
+wget https://raw.githubusercontent.com/LMFDB/lmfdb/master/requirements.txt
+./sage -pip install -r requirements.txt
+wget https://raw.githubusercontent.com/roed314/seminars/master/requirements.txt -O semrequirements.txt
+./sage -pip install -r semrequirements.txt --upgrade
+./sage -pip install bcrypt
 ./sage -pip install gunicorn pyflakes
-./sage -pip install greenlet eventlet gevent 
-./sage -b 
-cd .. 
-chmod a+rX -R sage-${version} 
-echo "If you want this to be the new version to be used, don't forget to do:" 
-echo "$ rm ~/sage-root && ln -s sage-${version} ~/sage-root" 
+./sage -pip install greenlet eventlet gevent
+./sage -b
+cd ..
+chmod a+rX -R sage-${version}
+echo "If you want this to be the new version to be used, don't forget to do:"
+echo "$ rm ~/sage-root && ln -s sage-${version} ~/sage-root"
 set +e
 
