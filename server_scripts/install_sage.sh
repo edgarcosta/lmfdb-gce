@@ -39,6 +39,8 @@ wget https://raw.githubusercontent.com/LMFDB/lmfdb/master/requirements.txt
 ./sage -pip install -r requirements.txt
 wget https://raw.githubusercontent.com/roed314/seminars/master/requirements.txt -O semrequirements.txt
 ./sage -pip install -r semrequirements.txt --upgrade
+wget https://raw.githubusercontent.com/AndrewVSutherland/psetpartners/master/requirements.txt -O psetrequirements.txt
+./sage -pip install -r psetrequirements.txt --upgrade
 ./sage -pip install bcrypt
 ./sage -pip install gunicorn pyflakes
 ./sage -pip install greenlet eventlet gevent
