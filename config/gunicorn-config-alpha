@@ -1,0 +1,18 @@
+wsgi_app = 'lmfdb.website:app'
+bind = "0.0.0.0:8082"
+workers = 15
+SESSION_PROTECTION = None
+#daemon = True
+pidfile = '/home/lmfdb/gunicorn-alpha.pid'
+#
+errorlog = '/home/lmfdb/logs/alpha/errorlog'
+accesslog = '/home/lmfdb/logs/alpha/accesslog'
+loglevel = 'info' # change to 'debug' for more output
+logfile = '/home/lmfdb/logs/alpha/flasklog'
+#
+raw_env = ['BETA=1']
+default_proc_name = 'lmfdb-alpha'
+timeout = 30
+max_requests = 1000
+# The maximum size of HTTP request line in bytes.
+limit_request_line = 8190
