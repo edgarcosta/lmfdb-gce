@@ -1,5 +1,5 @@
 # Current setup
-<a href="images/transition.svg"><img src="images/postgres.svg"  height="600"  ></a>
+<a href="images/postgres.svg"><img src="images/postgres.svg"  height="600"  ></a>
 
 # Old setup
 
