@@ -1,7 +1,6 @@
 wsgi_app = 'lmfdb.website:app'
 bind = "0.0.0.0:8084"
 workers = 5
-worker_class = "gevent"
 SESSION_PROTECTION = None
 #daemon = True
 pidfile = '/home/lmfdb/gunicorn-abvar.pid'
