@@ -6,10 +6,11 @@ date
 # running on 8080
 #
 # beta.lmfdb.org=beta.lmfdb.xyz=dev.lmfdb.xyz running on 8081 gunicorn-config-dev
+# alpha.lmfdb.org running on 8082 gunicorn-config-alpha
 # MONGO
 # prod.lmfdb.xyz running on 8080 gunicorn-config-prod
 
-for branch in web dev prod; do
+for branch in alpha web dev prod; do
   if [ -d "/home/lmfdb/lmfdb-git-${branch}" ]; then
     pushd /home/lmfdb/lmfdb-git-$branch
     git fetch
