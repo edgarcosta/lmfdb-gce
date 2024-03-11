@@ -56,7 +56,7 @@ subprocess.check_call(["sage", "-python", opj("lmfdb", "utils", "config.py"), "-
 subprocess.check_call(["git", "remote", "add", "origin", f"https://github.com/{gitname}/lmfdb.git"])
 if hasfork:
     subprocess.check_call(["git", "fetch", "origin"])
-    subprocess.check_call(["git", "branch", "master", "-u", "origin/master"])
+    subprocess.check_call(["git", "branch", "main", "-u", "origin/main"])
 # and now set the url to use ssh
 subprocess.check_call(["git", "remote", "set-url", "origin", f"git@github.com:{gitname}/lmfdb.git"])
 my_chown(lmfdbhome)
@@ -114,7 +114,7 @@ After you have forked the LMFDB repository and added the ssh key to GitHub you s
 
 cd ~/lmfdb/
 git fetch origin
-git branch master -u origin/master
+git branch main -u origin/main
 
 """)
 
