@@ -4,6 +4,7 @@
 /home/lmfdb/logs/*/supervisor.log
 /home/lmfdb/logs/lmfdb_fetch
 /home/lmfdb/lmfdb-git-*/flasklog
+/home/lmfdb/lmfdb-git-*/slow_queries.log
 {
         su lmfdb lmfdb
         rotate 7
