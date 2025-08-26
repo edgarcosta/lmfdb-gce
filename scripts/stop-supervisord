@@ -2,8 +2,9 @@
 echo 'Killing supervisord ...'
 kill -TERM `cat /home/lmfdb/supervisord.pid`
 echo 'Killing gunicorn ...'
-for branch in dev web prod master abvar blue olive pink purple red teal; do
-  echo branch = $branch
-  kill -TERM `cat /home/lmfdb/gunicorn-$branch.pid`;
+for file in /home/lmfdb/gunicorn-*.pid; do
+  name=${f#gunicorn-}   # strip prefix
+  echo brank = "${name%.pid}"   # strip suffix
+  kill -TERM `cat $file`;
 done 
 echo '... and done!'
