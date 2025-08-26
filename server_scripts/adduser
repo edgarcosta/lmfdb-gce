@@ -75,7 +75,7 @@ print(f"""Dear {name},
 We have created an account for you on {hostname}.mit.edu.
 Your username is {username}; use the ssh keys that you provided us to log in, as this is a passwordless account.
 
-Having an account on {hostname}.mit.edu allows you to connect to the database running on grace.mit.edu, and we recommend you that you take advantage of this by running LMFDB on {hostname}.
+Having an account on {hostname}.mit.edu allows you to connect to the database running on grace.mit.edu, and we recommend that you take advantage of this by running LMFDB on {hostname}.
 For your convenience, we have set up a copy of LMFDB on your home directory (~/lmfdb) to take advantage of this, more precisely, to use the port {port} and read from the database running locally, this is set in ~/lmfdb/config.ini.
 
 You can then interact with this version of LMFDB running on {hostname} through your browser at http://localhost:37777 by setting an SSH tunnel from 37777 (on your machine) to {port} on {hostname}.mit.edu.
@@ -115,6 +115,8 @@ After you have forked the LMFDB repository and added the ssh key to GitHub you s
 cd ~/lmfdb/
 git fetch origin
 git branch main -u origin/main
+git config --global user.name "{name}"
+git config --global user.email "[INSERT EMAIL HERE]"
 
 """)
 
