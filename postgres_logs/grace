@@ -207,3 +207,11 @@ sudo vim /etc/munin/munin.conf
 
 # do this on prodweb*, proddb, devmirror, legendre, saint-germain
 echo allow 18.1.37.31 >> /etc/munin/munin-node.conf
+
+
+# Enable huge pages
+echo "vm.nr_hugepages = 193000" | sudo tee /etc/sysctl.d/postgresql-hugepages.conf
+
+sudoedit /etc/default/grub
+# GRUB_CMDLINE_LINUX="default_hugepagesz=2M hugepagesz=2M hugepages=193000"
+sudo update-grub
