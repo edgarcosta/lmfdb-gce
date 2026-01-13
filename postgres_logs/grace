@@ -210,8 +210,12 @@ echo allow 18.1.37.31 >> /etc/munin/munin-node.conf
 
 
 # Enable huge pages
-echo "vm.nr_hugepages = 193000" | sudo tee /etc/sysctl.d/postgresql-hugepages.conf
+echo "vm.nr_hugepages = 160000" | sudo tee /etc/sysctl.d/postgresql-hugepages.conf
+# disable transparent
+echo never | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
+echo never | sudo tee /sys/kernel/mm/transparent_hugepage/defrag
+
 
 sudoedit /etc/default/grub
-# GRUB_CMDLINE_LINUX="default_hugepagesz=2M hugepagesz=2M hugepages=193000"
+# GRUB_CMDLINE_LINUX="default_hugepagesz=2M hugepagesz=2M hugepages=160000 transparent_hugepage=never"
 sudo update-grub
