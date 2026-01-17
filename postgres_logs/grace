@@ -210,12 +210,29 @@ echo allow 18.1.37.31 >> /etc/munin/munin-node.conf
 
 
 # Enable huge pages
-echo "vm.nr_hugepages = 160000" | sudo tee /etc/sysctl.d/postgresql-hugepages.conf
+echo "vm.nr_hugepages = 35000" | sudo tee /etc/sysctl.d/postgresql-hugepages.conf
 # disable transparent
 echo never | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
 echo never | sudo tee /sys/kernel/mm/transparent_hugepage/defrag
 
 
 sudoedit /etc/default/grub
-# GRUB_CMDLINE_LINUX="default_hugepagesz=2M hugepagesz=2M hugepages=160000 transparent_hugepage=never"
+# GRUB_CMDLINE_LINUX="default_hugepagesz=2M hugepagesz=2M hugepages=34000 transparent_hugepage=never"
 sudo update-grub
+
+
+# We want to limit ZFS to ~320GB so it doesn't starve Postgres of RAM.
+echo "options zfs zfs_arc_max=343597383680" | sudo tee /etc/modprobe.d/zfs.conf
+echo 343597383680 | sudo tee /sys/module/zfs/parameters/zfs_arc_max
+
+
+# Turn off access time updates (saves IOPS)
+sudo zfs set atime=off postgres
+sudo zfs set atime=off scratch
+
+# Store extended attributes in the inode (improves Linux performance)
+sudo zfs set xattr=sa postgres
+
+# Enable LZ4 compression, for free on this machine
+sudo zfs set compression=lz4 postgres
+sudo zfs set compression=lz4 scratch
