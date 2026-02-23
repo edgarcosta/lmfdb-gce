@@ -3,7 +3,7 @@ _user="$(id -u -n)"
 _uid="$(id -u)"
 echo "User name : $_user"
 echo "User name ID (UID) : $_uid"
-j=1;
+j=$(nproc 2>/dev/null || echo 4)
 echo "Using $j threads to compile"
 set -e
 #uid = 1200
@@ -23,19 +23,15 @@ echo "Sleeping 5s"
 sleep 5s;
 
 version=$1
-#sudo apt-get install binutils gcc g++ gfortran make m4 perl tar git libssl-dev
-wget http://mirrors.mit.edu/sage/src/sage-${version}.tar.gz -O sage-${version}.tar.gz
+# run prerequisites_sage.sh first for system dependencies
+wget https://mirrors.mit.edu/sage/src/sage-${version}.tar.gz -O sage-${version}.tar.gz
 tar xf sage-${version}.tar.gz
 cd sage-${version}
-#it can get stuck here while building documentation
 ./configure
-MAKE="make -j${j}" make build
-MAKE="make -j${j}" make test
-MAKE="make -j${j}" make testlong
+MAKE="make -j${j}" make
 ./sage -i gap_packages
-./sage -i pip
 ./sage -b
-wget https://raw.githubusercontent.com/LMFDB/lmfdb/master/requirements.txt
+wget https://raw.githubusercontent.com/LMFDB/lmfdb/main/requirements.txt
 ./sage -pip install -r requirements.txt
 wget https://raw.githubusercontent.com/roed314/seminars/master/requirements.txt -O semrequirements.txt
 ./sage -pip install -r semrequirements.txt --upgrade
