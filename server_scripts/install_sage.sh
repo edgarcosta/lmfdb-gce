@@ -14,19 +14,19 @@ fi
 
 if [ -z "$1" ]
 then
-    echo "Usage: $0 VERSION [--native] [--no-system]"
-    echo "  --native      compile with -march=native (AVX-512, etc.)"
+    echo "Usage: $0 VERSION [--no-native] [--no-system]"
+    echo "  --no-native   disable -march=native (default: enabled)"
     echo "  --no-system   build all dependencies from source"
     exit 1;
 fi
 
 version=$1; shift
-USE_NATIVE=false
+USE_NATIVE=true
 NO_SYSTEM=false
 for arg in "$@"; do
     case "$arg" in
-        --native)    USE_NATIVE=true ;;
-        --no-system) NO_SYSTEM=true ;;
+        --no-native)  USE_NATIVE=false ;;
+        --no-system)  NO_SYSTEM=true ;;
         *) echo "Unknown option: $arg"; exit 1 ;;
     esac
 done
