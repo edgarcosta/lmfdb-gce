@@ -12,22 +12,51 @@ then
     echo "Only the user sage with UID = 1200 should be installing sage"; exit 1;
 fi
 
-if [ -n "$1" ]
+if [ -z "$1" ]
 then
-    echo "Compiling version $1"
-else
-    echo "Needs at least on argument, the version desired"; exit 1;
+    echo "Usage: $0 VERSION [--native] [--no-system]"
+    echo "  --native      compile with -march=native (AVX-512, etc.)"
+    echo "  --no-system   build all dependencies from source"
+    exit 1;
 fi
+
+version=$1; shift
+USE_NATIVE=false
+NO_SYSTEM=false
+for arg in "$@"; do
+    case "$arg" in
+        --native)    USE_NATIVE=true ;;
+        --no-system) NO_SYSTEM=true ;;
+        *) echo "Unknown option: $arg"; exit 1 ;;
+    esac
+done
+
+echo "Compiling version $version"
+$USE_NATIVE && echo "  -march=native enabled"
+$NO_SYSTEM && echo "  building all dependencies from source"
 
 echo "Sleeping 5s"
 sleep 5s;
 
-version=$1
 # run prerequisites_sage.sh first for system dependencies
 wget https://mirrors.mit.edu/sage/src/sage-${version}.tar.gz -O sage-${version}.tar.gz
 tar xf sage-${version}.tar.gz
 cd sage-${version}
-./configure
+
+CONFIGURE_FLAGS="--without-system-python3"
+
+if $NO_SYSTEM; then
+    CONFIGURE_FLAGS=$(ls build/pkgs/*/spkg-configure.m4 | \
+        sed 's|build/pkgs/\(.*\)/spkg-configure.m4|--without-system-\1|' | tr '\n' ' ')
+fi
+
+if $USE_NATIVE; then
+    export CFLAGS="${CFLAGS} -march=native"
+    export CXXFLAGS="${CXXFLAGS} -march=native"
+    export FCFLAGS="${FCFLAGS} -march=native"
+fi
+
+./configure $CONFIGURE_FLAGS
 MAKE="make -j${j}" make
 ./sage -i gap_packages
 ./sage -b
@@ -46,4 +75,3 @@ chmod a+rX -R sage-${version}
 echo "If you want this to be the new version to be used, don't forget to do:"
 echo "$ rm ~/sage-root && ln -s sage-${version} ~/sage-root"
 set +e
-
