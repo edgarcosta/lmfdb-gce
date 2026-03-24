@@ -53,7 +53,7 @@ wget https://mirrors.mit.edu/sage/src/sage-${version}.tar.gz -O sage-${version}.
 tar xf sage-${version}.tar.gz
 cd sage-${version}
 
-CONFIGURE_FLAGS=(--without-system-python3)
+CONFIGURE_FLAGS=()
 PERF_NATIVE_PACKAGES=(
     openblas
     gmp
