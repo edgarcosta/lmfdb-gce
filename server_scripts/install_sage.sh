@@ -49,8 +49,29 @@ echo "Sleeping 5s"
 sleep 5s;
 
 # run prerequisites_sage.sh first for system dependencies
-wget https://mirrors.mit.edu/sage/src/sage-${version}.tar.gz -O sage-${version}.tar.gz
-tar xf sage-${version}.tar.gz
+archive="sage-${version}.tar.gz"
+archive_url="https://mirrors.mit.edu/sage/src/${archive}"
+
+if [ -f "$archive" ] && tar tzf "$archive" >/dev/null 2>&1; then
+    echo "Using existing $archive"
+else
+    if [ -f "$archive" ]; then
+        echo "Existing $archive is incomplete or invalid; attempting to resume download"
+    fi
+    wget -c "$archive_url"
+    if ! tar tzf "$archive" >/dev/null 2>&1; then
+        echo "Resumed download is still invalid; re-downloading $archive from scratch"
+        rm -f "$archive"
+        wget "$archive_url"
+    fi
+fi
+
+if ! tar tzf "$archive" >/dev/null 2>&1; then
+    echo "Downloaded archive $archive is invalid"
+    exit 1
+fi
+
+tar xf "$archive"
 cd sage-${version}
 
 CONFIGURE_FLAGS=()
@@ -122,6 +143,8 @@ wget https://raw.githubusercontent.com/AndrewVSutherland/psetpartners/master/req
 ./sage -pip install bcrypt
 ./sage -pip install gunicorn pyflakes
 ./sage -pip install greenlet eventlet gevent
+./sage -pip install --no-build-isolation --upgrade git+https://github.com/edgarcosta/pyrforest.git
+./sage -pip install --upgrade git+https://github.com/edgarcosta/pycontrolledreduction.git@master#egg=pycontrolledreduction
 ./sage -b
 cd ..
 chmod a+rX -R sage-${version}
