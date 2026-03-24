@@ -14,26 +14,36 @@ fi
 
 if [ -z "$1" ]
 then
-    echo "Usage: $0 VERSION [--no-native] [--no-system]"
+    echo "Usage: $0 VERSION [--no-native] [--no-perf-native] [--no-system] [--editable]"
     echo "  --no-native   disable -march=native (default: enabled)"
+    echo "  --no-perf-native use system packages for the performance shortlist"
     echo "  --no-system   build all dependencies from source"
+    echo "  --editable    keep Sage in editable mode (default: disabled)"
     exit 1;
 fi
 
 version=$1; shift
 USE_NATIVE=true
+PERF_NATIVE=true
 NO_SYSTEM=false
+USE_EDITABLE=false
 for arg in "$@"; do
     case "$arg" in
         --no-native)  USE_NATIVE=false ;;
+        --no-perf-native) PERF_NATIVE=false ;;
         --no-system)  NO_SYSTEM=true ;;
+        --editable)   USE_EDITABLE=true ;;
         *) echo "Unknown option: $arg"; exit 1 ;;
     esac
 done
 
 echo "Compiling version $version"
 $USE_NATIVE && echo "  -march=native enabled"
+$PERF_NATIVE && echo "  performance-critical packages built from source (default)"
+! $PERF_NATIVE && echo "  using system packages for the performance shortlist"
 $NO_SYSTEM && echo "  building all dependencies from source"
+$USE_EDITABLE && echo "  editable Sage install enabled"
+! $USE_EDITABLE && echo "  non-editable Sage install enabled"
 
 echo "Sleeping 5s"
 sleep 5s;
@@ -43,11 +53,54 @@ wget https://mirrors.mit.edu/sage/src/sage-${version}.tar.gz -O sage-${version}.
 tar xf sage-${version}.tar.gz
 cd sage-${version}
 
-CONFIGURE_FLAGS="--without-system-python3"
+CONFIGURE_FLAGS=(--without-system-python3)
+PERF_NATIVE_PACKAGES=(
+    openblas
+    gmp
+    ntl
+    fflas_ffpack
+    linbox
+    givaro
+    m4ri
+    m4rie
+    ecm
+    primecount
+    pari
+    flint
+)
+
+append_config_flag() {
+    local flag=$1
+    local existing
+    for existing in "${CONFIGURE_FLAGS[@]}"; do
+        if [ "$existing" = "$flag" ]; then
+            return
+        fi
+    done
+    CONFIGURE_FLAGS+=("$flag")
+}
+
+if ! $USE_EDITABLE; then
+    if ./configure --help | grep -q -- '--disable-editable'; then
+        append_config_flag --disable-editable
+    else
+        echo "  warning: this Sage version does not support --disable-editable; continuing without it"
+    fi
+fi
+
+if $PERF_NATIVE && ! $NO_SYSTEM; then
+    for pkg in "${PERF_NATIVE_PACKAGES[@]}"; do
+        append_config_flag "--without-system-$pkg"
+    done
+fi
 
 if $NO_SYSTEM; then
-    CONFIGURE_FLAGS=$(ls build/pkgs/*/spkg-configure.m4 | \
-        sed 's|build/pkgs/\(.*\)/spkg-configure.m4|--without-system-\1|' | tr '\n' ' ')
+    while IFS= read -r flag; do
+        append_config_flag "$flag"
+    done < <(
+        ls build/pkgs/*/spkg-configure.m4 | \
+        sed 's|build/pkgs/\(.*\)/spkg-configure.m4|--without-system-\1|'
+    )
 fi
 
 if $USE_NATIVE; then
@@ -56,7 +109,7 @@ if $USE_NATIVE; then
     export FCFLAGS="${FCFLAGS} -march=native"
 fi
 
-./configure $CONFIGURE_FLAGS
+./configure "${CONFIGURE_FLAGS[@]}"
 MAKE="make -j${j}" make
 ./sage -i gap_packages
 ./sage -b
