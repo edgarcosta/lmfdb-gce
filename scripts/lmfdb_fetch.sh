@@ -31,15 +31,14 @@ done
 # tori.lmfdb.xyz running on 8101
 #
 # branch-assignments.txt is untracked, so the @reboot checkout of lmfdb-gce
-# leaves it alone; create it from branch-assignments.template.
+# leaves it alone; create it from branch-assignments.template. Servers without
+# it (no color servers) skip this section silently.
 # A branch is only checked out if it contains the commit in security_base.txt;
 # otherwise its line gets a marker comment, removed once the branch has the fix.
 assignments=/home/lmfdb/lmfdb-gce/scripts/branch-assignments.txt
 security_base=$(< /home/lmfdb/lmfdb-gce/scripts/security_base.txt)
 marker=" # lacks security fix"
-if [ ! -f "$assignments" ]; then
-  echo "$assignments not found; copy branch-assignments.template to create it"
-else
+if [ -f "$assignments" ]; then
   updated=$(mktemp)
   # Read on fd 3: git fetch over ssh would otherwise swallow the rest of stdin.
   while IFS= read -r line <&3 || [ -n "$line" ]; do
