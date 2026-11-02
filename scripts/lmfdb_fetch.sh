@@ -48,20 +48,26 @@ set_error() {
   fi
 }
 if [ -f "$assignments" ]; then
-  updated=$(mktemp)
+  original=$(< "$assignments")
+  updated=
   # Read on fd 3: git fetch over ssh would otherwise swallow the rest of stdin.
-  while IFS= read -r line <&3 || [ -n "$line" ]; do
+  while IFS= read -r line <&3; do
     IFS=$': \t' read -r name remote branch <<< "${line%%#*}"
     if [ -n "$name" ] && [ -d "/home/lmfdb/lmfdb-git-$name" ]; then
       pushd "/home/lmfdb/lmfdb-git-$name"
       if ! git remote get-url "$remote" > /dev/null 2>&1; then
         set_error "no remote $remote"
       elif git fetch "$remote" "$branch"; then
-        if git merge-base --is-ancestor "$security_base" "$remote/$branch"; then
-          set_error ""
-          git checkout "$remote/$branch"
-        else
+        # Check and check out the same commit: an overlapping run may move the
+        # remote-tracking ref in between.
+        if ! target=$(git rev-parse --verify --quiet "refs/remotes/$remote/$branch^{commit}"); then
+          set_error "cannot resolve $remote/$branch"
+        elif ! git merge-base --is-ancestor "$security_base" "$target"; then
           set_error "lacks security fix $security_base"
+        elif git checkout --detach "$target"; then
+          set_error ""
+        else
+          set_error "checkout failed"
         fi
       else
         # Exit code 2 means the remote answered but has no such branch; any
@@ -73,11 +79,16 @@ if [ -f "$assignments" ]; then
       fi
       popd
     fi
-    printf '%s\n' "$line" >> "$updated"
-  done 3< "$assignments"
-  # Rewrite only when an ERROR comment changed; cat keeps the file's owner and mode.
-  cmp -s "$updated" "$assignments" || cat "$updated" > "$assignments"
-  rm -f "$updated"
+    updated+=$line$'\n'
+  done 3<<< "$original"
+  # Rewrite only when an ERROR comment changed, and not if someone edited the
+  # file during the fetches (the next run annotates their version). Writing a
+  # copy and renaming it keeps the mode and never leaves a truncated file.
+  if [ "$updated" != "$original"$'\n' ] && [ "$(< "$assignments")" = "$original" ]; then
+    tmp=$(mktemp "$assignments.XXXXXX") && cp -p "$assignments" "$tmp" &&
+      printf '%s' "$updated" > "$tmp" && mv "$tmp" "$assignments" ||
+      { echo "could not update $assignments"; rm -f "$tmp"; }
+  fi
 fi
 
 
