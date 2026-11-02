@@ -1,0 +1,14 @@
+# <server>:<remote>:<branch>, checked out in /home/lmfdb/lmfdb-git-<server>.
+# Text after # is a comment. lmfdb_fetch.sh appends "# ERROR: <reason>" to lines it
+# won't check out (no such remote or branch, the remote can't be fetched, or the
+# branch lacks the commit in security_base.txt) and drops it once fixed.
+master:roed314:main
+abvar:roed314:abvar
+blue:roed314:red
+olive:roed314:olive
+pink:roed314:pink
+purple:roed314:purple
+red:roed314:red
+teal:roed314:teal
+groups:roed314:groups
+tori:roed314:tori
