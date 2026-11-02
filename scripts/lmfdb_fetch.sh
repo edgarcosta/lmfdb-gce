@@ -33,11 +33,20 @@ done
 # branch-assignments.txt is untracked, so the @reboot checkout of lmfdb-gce
 # leaves it alone; create it from branch-assignments.template. Servers without
 # it (no color servers) skip this section silently.
-# A branch is only checked out if it contains the commit in security_base.txt;
-# otherwise its line gets a marker comment, removed once the branch has the fix.
+# A branch is only checked out if its remote and branch exist and it contains
+# the commit in security_base.txt. Otherwise its line gets a "# ERROR:" comment,
+# removed once the problem is fixed.
 assignments=/home/lmfdb/lmfdb-gce/scripts/branch-assignments.txt
 security_base=$(< /home/lmfdb/lmfdb-gce/scripts/security_base.txt)
-marker=" # lacks security fix"
+marker=" # ERROR:"
+# Replace the current line's ERROR comment with $1, or just drop it if $1 is empty.
+set_error() {
+  line=${line%"$marker"*}
+  if [ -n "$1" ]; then
+    echo "not checking out $remote/$branch for $name: $1"
+    line="$line$marker $1"
+  fi
+}
 if [ -f "$assignments" ]; then
   updated=$(mktemp)
   # Read on fd 3: git fetch over ssh would otherwise swallow the rest of stdin.
@@ -45,20 +54,28 @@ if [ -f "$assignments" ]; then
     IFS=$': \t' read -r name remote branch <<< "${line%%#*}"
     if [ -n "$name" ] && [ -d "/home/lmfdb/lmfdb-git-$name" ]; then
       pushd "/home/lmfdb/lmfdb-git-$name"
-      if git fetch "$remote" "$branch"; then
-        line=${line%"$marker"*}
+      if ! git remote get-url "$remote" > /dev/null 2>&1; then
+        set_error "no remote $remote"
+      elif git fetch "$remote" "$branch"; then
         if git merge-base --is-ancestor "$security_base" "$remote/$branch"; then
+          set_error ""
           git checkout "$remote/$branch"
         else
-          echo "not checking out $remote/$branch for $name: it lacks security fix $security_base"
-          line="$line$marker $security_base"
+          set_error "lacks security fix $security_base"
+        fi
+      else
+        # Exit code 2 means the remote answered but has no such branch; any
+        # other failure (e.g. network) leaves the line as it was.
+        git ls-remote --exit-code "$remote" "refs/heads/$branch" > /dev/null
+        if [ $? -eq 2 ]; then
+          set_error "no branch $branch on $remote"
         fi
       fi
       popd
     fi
     printf '%s\n' "$line" >> "$updated"
   done 3< "$assignments"
-  # Rewrite only when a marker changed; cat keeps the file's owner and mode.
+  # Rewrite only when an ERROR comment changed; cat keeps the file's owner and mode.
   cmp -s "$updated" "$assignments" || cat "$updated" > "$assignments"
   rm -f "$updated"
 fi

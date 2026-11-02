@@ -1,6 +1,7 @@
 # <server>:<remote>:<branch>, checked out in /home/lmfdb/lmfdb-git-<server>.
-# Text after # is a comment. lmfdb_fetch.sh appends "# lacks security fix <commit>"
-# to lines whose branch lacks the commit in security_base.txt, and drops it once fixed.
+# Text after # is a comment. lmfdb_fetch.sh appends "# ERROR: <reason>" to lines it
+# won't check out (no such remote, no such branch, or the branch lacks the commit
+# in security_base.txt) and drops it once the problem is fixed.
 master:roed314:main
 abvar:roed314:abvar
 blue:roed314:red
