@@ -70,12 +70,15 @@ if [ -f "$assignments" ]; then
           set_error "checkout failed"
         fi
       else
-        # Exit code 2 means the remote answered but has no such branch; any
-        # other failure (e.g. network) leaves the line as it was.
+        # ls-remote can't tell a wrong URL from a network outage, so both get
+        # the same comment. If it succeeds, the fetch failure was transient
+        # (e.g. a ref lock held by an overlapping run) and the line is kept.
         git ls-remote --exit-code "$remote" "refs/heads/$branch" > /dev/null
-        if [ $? -eq 2 ]; then
-          set_error "no branch $branch on $remote"
-        fi
+        case $? in
+          0) ;;
+          2) set_error "no branch $branch on $remote" ;;
+          *) set_error "cannot fetch from $remote (wrong URL, or network down)" ;;
+        esac
       fi
       popd
     fi
