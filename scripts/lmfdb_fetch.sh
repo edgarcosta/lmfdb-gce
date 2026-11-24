@@ -29,7 +29,70 @@ done
 # teal.lmfdb.xyz running on 8094
 # groups.lmfdb.xyz running on 8100
 # tori.lmfdb.xyz running on 8101
-awk -F: '{ print "if [ -d /home/lmfdb/lmfdb-git-"$1" ]; then pushd /home/lmfdb/lmfdb-git-"$1" && git fetch "$2" "$3" && git checkout "$2"/"$3" && popd; fi" }' /home/lmfdb/lmfdb-gce/scripts/branch-assignments.txt | bash
+#
+# branch-assignments.txt is untracked, so the @reboot checkout of lmfdb-gce
+# leaves it alone; create it from branch-assignments.template. Servers without
+# it (no color servers) skip this section silently.
+# A branch is only checked out if its remote and branch exist and it contains
+# the commit in security_base.txt. Otherwise its line gets a "# ERROR:" comment,
+# removed once the problem is fixed.
+assignments=/home/lmfdb/lmfdb-gce/scripts/branch-assignments.txt
+security_base=$(< /home/lmfdb/lmfdb-gce/scripts/security_base.txt)
+marker=" # ERROR:"
+# Replace the current line's ERROR comment with $1, or just drop it if $1 is empty.
+set_error() {
+  line=${line%"$marker"*}
+  if [ -n "$1" ]; then
+    echo "not checking out $remote/$branch for $name: $1"
+    line="$line$marker $1"
+  fi
+}
+if [ -f "$assignments" ]; then
+  original=$(< "$assignments")
+  updated=
+  # Read on fd 3: git fetch over ssh would otherwise swallow the rest of stdin.
+  while IFS= read -r line <&3; do
+    IFS=$': \t' read -r name remote branch <<< "${line%%#*}"
+    if [ -n "$name" ] && [ -d "/home/lmfdb/lmfdb-git-$name" ]; then
+      pushd "/home/lmfdb/lmfdb-git-$name"
+      if ! git remote get-url "$remote" > /dev/null 2>&1; then
+        set_error "no remote $remote"
+      elif git fetch "$remote" "$branch"; then
+        # Check and check out the same commit: an overlapping run may move the
+        # remote-tracking ref in between.
+        if ! target=$(git rev-parse --verify --quiet "refs/remotes/$remote/$branch^{commit}"); then
+          set_error "cannot resolve $remote/$branch"
+        elif ! git merge-base --is-ancestor "$security_base" "$target"; then
+          set_error "lacks security fix $security_base"
+        elif git checkout --detach "$target"; then
+          set_error ""
+        else
+          set_error "checkout failed"
+        fi
+      else
+        # ls-remote can't tell a wrong URL from a network outage, so both get
+        # the same comment. If it succeeds, the fetch failure was transient
+        # (e.g. a ref lock held by an overlapping run) and the line is kept.
+        git ls-remote --exit-code "$remote" "refs/heads/$branch" > /dev/null
+        case $? in
+          0) ;;
+          2) set_error "no branch $branch on $remote" ;;
+          *) set_error "cannot fetch from $remote (wrong URL, or network down)" ;;
+        esac
+      fi
+      popd
+    fi
+    updated+=$line$'\n'
+  done 3<<< "$original"
+  # Rewrite only when an ERROR comment changed, and not if someone edited the
+  # file during the fetches (the next run annotates their version). Writing a
+  # copy and renaming it keeps the mode and never leaves a truncated file.
+  if [ "$updated" != "$original"$'\n' ] && [ "$(< "$assignments")" = "$original" ]; then
+    tmp=$(mktemp "$assignments.XXXXXX") && cp -p "$assignments" "$tmp" &&
+      printf '%s' "$updated" > "$tmp" && mv "$tmp" "$assignments" ||
+      { echo "could not update $assignments"; rm -f "$tmp"; }
+  fi
+fi
 
 
 
